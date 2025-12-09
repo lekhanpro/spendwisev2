@@ -133,8 +133,8 @@ export const Auth: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
-      <div className="w-full max-w-md bg-slate-800 rounded-3xl shadow-2xl p-8 border border-slate-700">
+    <div className="min-h-screen flex items-center justify-center bg-black p-4">
+      <div className="w-full max-w-md bg-zinc-900 rounded-3xl shadow-2xl p-8 border border-zinc-800">
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
             <span className="text-4xl">💰</span>
@@ -142,7 +142,7 @@ export const Auth: React.FC = () => {
           <h1 className="text-3xl font-bold text-white mb-2">
             {isLogin ? "Welcome Back!" : "Join SpendWise"}
           </h1>
-          <p className="text-slate-400">
+          <p className="text-gray-400">
             {isLogin
               ? "Sign in to manage your finances"
               : "Start your journey to financial freedom"}
@@ -152,8 +152,8 @@ export const Auth: React.FC = () => {
         {message && (
           <div
             className={`mb-6 p-4 rounded-2xl text-sm font-medium ${message.type === "success"
-                ? "bg-green-900/50 text-green-300 border border-green-700"
-                : "bg-red-900/50 text-red-300 border border-red-700"
+              ? "bg-green-900/50 text-green-300 border border-green-700"
+              : "bg-red-900/50 text-red-300 border border-red-700"
               }`}
           >
             {message.text}
@@ -170,7 +170,7 @@ export const Auth: React.FC = () => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3.5 bg-slate-700 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder-slate-400"
+                className="w-full px-4 py-3.5 bg-zinc-800 text-white rounded-xl border-2 border-zinc-700 focus:border-white focus:ring-4 focus:ring-white/20 outline-none transition-all placeholder-gray-500"
                 placeholder="Choose a username"
                 required={!isLogin}
               />
@@ -185,7 +185,7 @@ export const Auth: React.FC = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3.5 bg-slate-700 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder-slate-400"
+              className="w-full px-4 py-3.5 bg-zinc-800 text-white rounded-xl border-2 border-zinc-700 focus:border-white focus:ring-4 focus:ring-white/20 outline-none transition-all placeholder-gray-500"
               placeholder="you@example.com"
               required
             />
@@ -199,7 +199,7 @@ export const Auth: React.FC = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3.5 bg-slate-700 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder-slate-400"
+              className="w-full px-4 py-3.5 bg-zinc-800 text-white rounded-xl border-2 border-zinc-700 focus:border-white focus:ring-4 focus:ring-white/20 outline-none transition-all placeholder-gray-500"
               placeholder="••••••••"
               required
               minLength={6}
@@ -215,7 +215,7 @@ export const Auth: React.FC = () => {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3.5 bg-slate-700 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder-slate-400"
+                className="w-full px-4 py-3.5 bg-zinc-800 text-white rounded-xl border-2 border-zinc-700 focus:border-white focus:ring-4 focus:ring-white/20 outline-none transition-all placeholder-gray-500"
                 placeholder="••••••••"
                 required={!isLogin}
                 minLength={6}
@@ -226,12 +226,12 @@ export const Auth: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 active:scale-95 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+            className="w-full py-4 rounded-xl font-bold text-black bg-white hover:bg-gray-100 active:scale-95 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed mt-2"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
                 <svg
-                  className="animate-spin h-5 w-5 text-white"
+                  className="animate-spin h-5 w-5 text-black"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -261,20 +261,20 @@ export const Auth: React.FC = () => {
         </form>
 
         <div className="my-6 flex items-center gap-4">
-          <div className="h-px bg-slate-700 flex-1" />
-          <span className="text-sm text-slate-400 font-medium">Or continue with</span>
-          <div className="h-px bg-slate-700 flex-1" />
+          <div className="h-px bg-zinc-800 flex-1" />
+          <span className="text-sm text-gray-500 font-medium">Or continue with</span>
+          <div className="h-px bg-zinc-800 flex-1" />
         </div>
 
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full py-4 rounded-xl font-semibold bg-slate-700 text-white border-2 border-slate-600 hover:border-slate-500 hover:bg-slate-600 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 active:scale-95"
+          className="w-full py-4 rounded-xl font-semibold bg-white text-gray-700 hover:bg-gray-100 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 active:scale-95"
         >
           {loading ? (
             <span className="flex items-center gap-2">
               <svg
-                className="animate-spin h-5 w-5 text-slate-300"
+                className="animate-spin h-5 w-5 text-gray-500"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -321,7 +321,7 @@ export const Auth: React.FC = () => {
         </button>
 
         <div className="mt-8 text-center">
-          <p className="text-slate-400">
+          <p className="text-gray-400">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => {
@@ -332,7 +332,7 @@ export const Auth: React.FC = () => {
                 setConfirmPassword("");
                 setUsername("");
               }}
-              className="font-bold text-blue-400 hover:text-blue-300 transition-colors"
+              className="font-bold text-white hover:text-gray-300 transition-colors"
             >
               {isLogin ? "Sign Up" : "Sign In"}
             </button>
