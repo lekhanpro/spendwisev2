@@ -10,47 +10,46 @@ export const Settings: React.FC = () => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   return (
-    <div className="p-4 pb-24 space-y-4 animate-slide-up">
-      <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Settings</h1>
-      
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4 flex items-center justify-between">
+    <div className="space-y-4 animate-slide-up">
+      <h1 className="text-2xl font-bold text-white">Settings</h1>
+
+      {/* Account Card - Glass Effect */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4 flex items-center justify-between">
         <div>
-          <p className="font-medium text-slate-800 dark:text-white">Account</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{session?.user?.email}</p>
+          <p className="font-medium text-white">Account</p>
+          <p className="text-sm text-gray-400">{session?.user?.email}</p>
         </div>
-        <button 
+        <button
           onClick={handleLogout}
-          className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+          className="px-4 py-2 bg-zinc-800 border border-zinc-700 text-white rounded-lg text-sm font-medium hover:bg-zinc-700 transition-colors"
         >
           Sign Out
         </button>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl divide-y divide-slate-100 dark:divide-slate-700">
+      {/* Settings Options - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl divide-y divide-zinc-800">
         {/* Dark Mode */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <div className="text-slate-500 dark:text-slate-400">{darkMode ? <Icons.Moon /> : <Icons.Sun />}</div>
+            <div className="text-gray-400">{darkMode ? <Icons.Moon /> : <Icons.Sun />}</div>
             <div>
-              <p className="font-medium text-slate-800 dark:text-white">Dark Mode</p>
-              <p className="text-sm text-slate-400">Switch between light and dark theme</p>
+              <p className="font-medium text-white">Dark Mode</p>
+              <p className="text-sm text-gray-500">Always enabled for modern look</p>
             </div>
           </div>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className={`w-12 h-6 rounded-full transition-colors ${darkMode ? 'bg-blue-500' : 'bg-slate-300'}`}
-          >
-            <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${darkMode ? 'translate-x-6' : 'translate-x-0.5'}`} />
-          </button>
+          <div className="w-12 h-6 rounded-full bg-blue-500">
+            <div className="w-5 h-5 bg-white rounded-full shadow transform translate-x-6 mt-0.5" />
+          </div>
         </div>
 
         {/* Currency Selector */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <div className="text-slate-500 dark:text-slate-400 text-xl">💱</div>
+            <div className="text-gray-400 text-xl">💱</div>
             <div>
-              <p className="font-medium text-slate-800 dark:text-white">Currency</p>
-              <p className="text-sm text-slate-400">Select your preferred currency</p>
+              <p className="font-medium text-white">Currency</p>
+              <p className="text-sm text-gray-500">Select your preferred currency</p>
             </div>
           </div>
           <select
@@ -59,7 +58,7 @@ export const Settings: React.FC = () => {
               const selected = SUPPORTED_CURRENCIES.find(c => c.code === e.target.value);
               if (selected) setCurrency(selected);
             }}
-            className="px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm font-medium text-white outline-none focus:ring-2 focus:ring-blue-500"
           >
             {SUPPORTED_CURRENCIES.map(c => (
               <option key={c.code} value={c.code}>{c.code} ({c.symbol})</option>
@@ -72,18 +71,18 @@ export const Settings: React.FC = () => {
           <div className="flex items-center gap-3 mb-3">
             <span className="text-xl">📁</span>
             <div>
-              <p className="font-medium text-slate-800 dark:text-white">Categories</p>
-              <p className="text-sm text-slate-400">{categories.length} categories available</p>
+              <p className="font-medium text-white">Categories</p>
+              <p className="text-sm text-gray-500">{categories.length} categories available</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             {categories.slice(0, 10).map(cat => (
-              <span key={cat.id} className="px-3 py-1 rounded-full text-sm bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+              <span key={cat.id} className="px-3 py-1 rounded-full text-sm bg-zinc-800 border border-zinc-700 text-gray-300">
                 {cat.icon} {cat.name}
               </span>
             ))}
             {categories.length > 10 && (
-              <span className="px-3 py-1 rounded-full text-sm bg-slate-100 dark:bg-slate-700 text-slate-400">
+              <span className="px-3 py-1 rounded-full text-sm bg-zinc-800 border border-zinc-700 text-gray-500">
                 +{categories.length - 10} more
               </span>
             )}
@@ -91,46 +90,46 @@ export const Settings: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Management */}
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-slate-800 dark:text-white mb-3">Data Management</h3>
+      {/* Data Management - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-white mb-3">Data Management</h3>
         <div className="space-y-3">
           <button
             onClick={() => setShowResetConfirm(true)}
-            className="w-full py-3 rounded-xl font-medium bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+            className="w-full py-3 rounded-xl font-medium bg-red-500/20 border border-red-500/50 text-red-400 hover:bg-red-500/30 transition-colors"
           >
             Reset All Data
           </button>
         </div>
       </div>
 
-      {/* About */}
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-slate-800 dark:text-white mb-2">About SpendWise</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+      {/* About - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-white mb-2">About SpendWise</h3>
+        <p className="text-sm text-gray-400">
           SpendWise is your personal finance companion. Track expenses, manage budgets, and achieve your financial goals with ease.
         </p>
-        <p className="text-xs text-slate-400 mt-3">Version 1.0.0</p>
+        <p className="text-xs text-gray-500 mt-3">Version 1.0.0</p>
       </div>
 
-      {/* Privacy */}
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-slate-800 dark:text-white mb-2">🔒 Privacy</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          All your data is stored locally on your device. We don't collect, store, or transmit any of your financial information.
+      {/* Privacy - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-white mb-2">🔒 Privacy</h3>
+        <p className="text-sm text-gray-400">
+          All your data is stored securely with Firebase. We use industry-standard encryption to protect your financial information.
         </p>
       </div>
 
       {/* Reset Confirmation Modal */}
       <Modal isOpen={showResetConfirm} onClose={() => setShowResetConfirm(false)} title="Reset All Data?">
         <div className="space-y-4">
-          <p className="text-slate-600 dark:text-slate-300">
+          <p className="text-gray-300">
             This will permanently delete all your transactions, budgets, and goals. This action cannot be undone.
           </p>
           <div className="flex gap-3">
             <button
               onClick={() => setShowResetConfirm(false)}
-              className="flex-1 py-3 rounded-xl font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+              className="flex-1 py-3 rounded-xl font-medium bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700"
             >
               Cancel
             </button>
