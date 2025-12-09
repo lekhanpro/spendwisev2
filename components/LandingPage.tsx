@@ -156,7 +156,7 @@ export const LandingPage: React.FC = () => {
                 <div className="flex justify-center gap-6 mt-4">
                     <a href="#" className="hover:text-white transition-colors">Privacy</a>
                     <a href="#" className="hover:text-white transition-colors">Terms</a>
-                    <a href="https://github.com/lekhanpro/spendwise" className="hover:text-white transition-colors">GitHub</a>
+                    <a href="https://github.com/lekhanpro/spendwisev2" className="hover:text-white transition-colors">GitHub</a>
                 </div>
             </footer>
         </div>
