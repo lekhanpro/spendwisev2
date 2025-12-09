@@ -1,3 +1,4 @@
+
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { Icons } from './Icons';
@@ -14,7 +15,7 @@ export const Reports: React.FC = () => {
     d.setHours(0, 0, 0, 0);
     return d.getTime();
   };
-  
+
   const getMonthEnd = (date = new Date()) => {
     const d = new Date(date);
     d.setMonth(d.getMonth() + 1);
@@ -49,13 +50,13 @@ export const Reports: React.FC = () => {
     .map(([catId, amount]) => {
       const value = amount as number;
       const cat = categories.find(c => c.id === catId);
-      return { 
-        name: cat?.name || catId, 
-        value, 
-        color: cat?.color || '#64748b', 
+      return {
+        name: cat?.name || catId,
+        value,
+        color: cat?.color || '#64748b',
         icon: cat?.icon || '📦',
         id: catId,
-        percentage: (value / expenses) * 100 
+        percentage: (value / expenses) * 100
       };
     })
     .sort((a, b) => b.value - a.value);
@@ -99,10 +100,10 @@ export const Reports: React.FC = () => {
   };
 
   return (
-    <div className="p-4 pb-24 space-y-4 animate-slide-up">
+    <div className="space-y-4 animate-slide-up">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Reports</h1>
-        <button onClick={exportCSV} className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-md text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+        <h1 className="text-2xl font-bold text-white">Reports</h1>
+        <button onClick={exportCSV} className="p-2 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-xl shadow-md text-gray-400 hover:text-white hover:bg-zinc-800 transition-colors">
           <Icons.Download />
         </button>
       </div>
@@ -113,9 +114,9 @@ export const Reports: React.FC = () => {
           <button
             key={value}
             onClick={() => setPeriod(value)}
-            className={`px-4 py-2 rounded-full font-medium whitespace-nowrap transition-colors ${period === value
-              ? 'bg-blue-500 text-white'
-              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-sm'}`}
+            className={`px-4 py-2 rounded-full font-medium whitespace-nowrap transition-all border ${period === value
+              ? 'bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20'
+              : 'bg-zinc-900/50 border-zinc-800 text-gray-400 hover:text-white hover:border-zinc-700'}`}
           >
             {label}
           </button>
@@ -124,85 +125,86 @@ export const Reports: React.FC = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-4 text-white shadow-lg">
-          <p className="text-sm text-green-100">Total Income</p>
-          <p className="text-2xl font-bold">{formatCurrency(income)}</p>
+        <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 rounded-2xl p-4 text-emerald-100 shadow-lg">
+          <p className="text-sm text-emerald-200/70">Total Income</p>
+          <p className="text-2xl font-bold text-emerald-400">{formatCurrency(income)}</p>
         </div>
-        <div className="bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-4 text-white shadow-lg">
-          <p className="text-sm text-red-100">Total Expenses</p>
-          <p className="text-2xl font-bold">{formatCurrency(expenses)}</p>
+        <div className="bg-red-500/20 backdrop-blur-md border border-red-500/30 rounded-2xl p-4 text-red-100 shadow-lg">
+          <p className="text-sm text-red-200/70">Total Expenses</p>
+          <p className="text-2xl font-bold text-red-400">{formatCurrency(expenses)}</p>
         </div>
       </div>
 
-      {/* Spending Breakdown */}
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-slate-800 dark:text-white mb-4">Spending Breakdown</h3>
+      {/* Spending Breakdown - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-white mb-4">Spending Breakdown</h3>
         <div className="flex gap-4 items-center">
           <div className="w-40 h-40 flex-shrink-0">
-             {categoryData.length > 0 ? (
-               <ResponsiveContainer width="100%" height="100%">
-                 <PieChart>
-                    <Pie data={categoryData} dataKey="value" nameKey="name" outerRadius={60} innerRadius={0}>
-                      {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
-                    </Pie>
-                 </PieChart>
-               </ResponsiveContainer>
-             ) : (
-                <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-full">
-                  <p className="text-xs text-slate-400">No data</p>
-                </div>
-             )}
+            {categoryData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={categoryData} dataKey="value" nameKey="name" outerRadius={60} innerRadius={0} stroke="none">
+                    {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-zinc-800 rounded-full border border-zinc-700">
+                <p className="text-xs text-gray-500">No data</p>
+              </div>
+            )}
           </div>
-          <div className="flex-1 space-y-2 max-h-40 overflow-y-auto pr-2">
+          <div className="flex-1 space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
             {categoryData.map(cat => (
               <div key={cat.id} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                <span className="flex-1 text-sm text-slate-600 dark:text-slate-300 truncate">{cat.name}</span>
-                <span className="text-sm font-medium text-slate-800 dark:text-white">{cat.percentage.toFixed(0)}%</span>
+                <span className="flex-1 text-sm text-gray-300 truncate">{cat.name}</span>
+                <span className="text-sm font-medium text-white">{cat.percentage.toFixed(0)}%</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Category Details */}
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-slate-800 dark:text-white mb-4">Category Details</h3>
+      {/* Category Details - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-white mb-4">Category Details</h3>
         <div className="space-y-3">
           {categoryData.map(cat => (
             <div key={cat.id} className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: cat.color + '20' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl border border-zinc-700" style={{ backgroundColor: cat.color + '15' }}>
                 {cat.icon}
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-slate-700 dark:text-slate-200">{cat.name}</span>
-                  <span className="font-semibold text-slate-800 dark:text-white">{formatCurrency(cat.value)}</span>
+                  <span className="font-medium text-gray-200">{cat.name}</span>
+                  <span className="font-semibold text-white">{formatCurrency(cat.value)}</span>
                 </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+                <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                   <div className="h-1.5 rounded-full" style={{ width: `${cat.percentage}%`, backgroundColor: cat.color }} />
                 </div>
               </div>
             </div>
           ))}
           {categoryData.length === 0 && (
-            <p className="text-center text-slate-400 py-4">No expenses in this period</p>
+            <p className="text-center text-gray-500 py-4">No expenses in this period</p>
           )}
         </div>
       </div>
 
-      {/* Monthly Comparison */}
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-slate-800 dark:text-white mb-4">6-Month Comparison</h3>
+      {/* Monthly Comparison - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-white mb-4">6-Month Comparison</h3>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={comparisonData}>
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis hide />
-              <Tooltip 
-                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+              <Tooltip
+                contentStyle={{ backgroundColor: 'rgba(24, 24, 27, 0.9)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#fff' }}
+                cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
               />
-              <Legend wrapperStyle={{ fontSize: '12px' }}/>
+              <Legend wrapperStyle={{ fontSize: '12px', color: '#9ca3af' }} />
               <Bar dataKey="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Expenses" fill="#ef4444" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -210,22 +212,22 @@ export const Reports: React.FC = () => {
         </div>
       </div>
 
-      {/* Insights */}
-      <div className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4 border border-blue-100 dark:border-blue-900">
-        <h3 className="font-semibold text-slate-800 dark:text-white mb-3">💡 Insights</h3>
+      {/* Insights - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-white mb-3">💡 Insights</h3>
         <div className="space-y-2">
           {categoryData[0] && (
-            <p className="text-sm text-slate-600 dark:text-slate-300">
-              <span className="font-medium">{categoryData[0].name}</span> is your biggest expense category at {formatCurrency(categoryData[0].value)} ({categoryData[0].percentage.toFixed(0)}% of total).
+            <p className="text-sm text-gray-300">
+              <span className="font-medium text-white">{categoryData[0].name}</span> is your biggest expense category at {formatCurrency(categoryData[0].value)} ({categoryData[0].percentage.toFixed(0)}% of total).
             </p>
           )}
           {income > expenses && (
-            <p className="text-sm text-green-600 dark:text-green-400">
+            <p className="text-sm text-green-400">
               Great job! You saved {formatCurrency(income - expenses)} this period.
             </p>
           )}
           {expenses > income && (
-            <p className="text-sm text-red-600 dark:text-red-400">
+            <p className="text-sm text-red-400">
               Watch out! You spent {formatCurrency(expenses - income)} more than you earned.
             </p>
           )}
