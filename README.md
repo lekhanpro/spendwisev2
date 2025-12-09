@@ -124,7 +124,7 @@ spendwise/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/spendwise.git
+   git clone https://github.com/lekhanpro/spendwise.git
    cd spendwise
    ```
 
@@ -178,7 +178,7 @@ The project includes automated deployment via GitHub Actions.
 
 #### Quick Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/spendwise)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/lekhanpro/spendwise)
 
 #### Manual Setup
 
@@ -328,9 +328,9 @@ The app uses React Context for global state management:
 
 ## Development Team
 
-| Name | Role | Contact |
-|------|------|---------|
-| **[Your Name]** | Lead Developer | your.email@example.com |
+| Name | Role | Responsibilities | Contact |
+|------|------|------------------|---------|
+| **Lekhan HR** | Core Developer | Frontend and Backend Development | lekhan2007@gmail.com |
 
 ## Contributing
 
@@ -354,11 +354,11 @@ The app uses React Context for global state management:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT and Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
-For issues and feature requests, please use the [GitHub Issues](https://github.com/YOUR_USERNAME/spendwise/issues) page.
+For issues and feature requests, please use the [GitHub Issues](https://github.com/lekhanpro/spendwise/issues) page.
 
 ## Acknowledgments
 
@@ -369,6 +369,6 @@ For issues and feature requests, please use the [GitHub Issues](https://github.c
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 1.0.1  
 **Built with**: ❤️ and React  
 **Deployed on**: Vercel
