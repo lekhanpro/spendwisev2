@@ -1,8 +1,10 @@
 {
+    "id": "com.spendwise.app",
     "name": "SpendWise",
     "short_name": "SpendWise",
     "description": "Smart Personal Finance Manager - Track expenses, set budgets, achieve goals",
     "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#3b82f6",
@@ -12,7 +14,13 @@
             "src": "/logo.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         },
         {
             "src": "/logo-192.png",
@@ -25,19 +33,6 @@
         "finance",
         "productivity"
     ],
-    "screenshots": [],
-    "shortcuts": [
-        {
-            "name": "Add Transaction",
-            "short_name": "Add",
-            "description": "Add a new transaction",
-            "url": "/?action=add",
-            "icons": [
-                {
-                    "src": "/logo.png",
-                    "sizes": "192x192"
-                }
-            ]
-        }
-    ]
+    "lang": "en",
+    "dir": "ltr"
 }
