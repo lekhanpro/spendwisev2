@@ -7,6 +7,7 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendEmailVerification,
 } from "firebase/auth";
 
 export const auth = getAuth(app);
@@ -20,9 +21,12 @@ export function signInWithGoogle() {
   return signInWithPopup(auth, provider);
 }
 
-// Email/password sign-up
-export function signUpWithEmail(email: string, password: string) {
-  return createUserWithEmailAndPassword(auth, email, password);
+// Email/password sign-up with email verification
+export async function signUpWithEmail(email: string, password: string) {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  // Send email verification
+  await sendEmailVerification(userCredential.user);
+  return userCredential;
 }
 
 // Email/password sign-in

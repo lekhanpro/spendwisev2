@@ -29,7 +29,7 @@ export const Auth: React.FC = () => {
         await signUpWithEmail(email, password);
         setMessage({
           type: "success",
-          text: "Account created successfully. You are now logged in.",
+          text: "Account created! Please check your email to verify your account.",
         });
       }
       // onAuthStateChanged in App.tsx will handle redirect into app
@@ -79,11 +79,10 @@ export const Auth: React.FC = () => {
 
         {message && (
           <div
-            className={`mb-6 p-4 rounded-xl text-sm font-medium ${
-              message.type === "success"
+            className={`mb-6 p-4 rounded-xl text-sm font-medium ${message.type === "success"
                 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                 : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-            }`}
+              }`}
           >
             {message.text}
           </div>
