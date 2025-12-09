@@ -40,14 +40,16 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build Release APK
+      - name: Build Debug APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleDebug
 
-      - name: Rename APK
-        run: mv android/app/build/outputs/apk/release/app-release-unsigned.apk SpendWise-${{ github.ref_name || 'v1.0.0' }}.apk
+      - name: Sign APK
+        run: |
+          # The debug APK is already signed with debug key
+          cp android/app/build/outputs/apk/debug/app-debug.apk SpendWise-${{ github.ref_name }}.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -63,10 +65,20 @@ jobs:
           generate_release_notes: true
           name: SpendWise ${{ github.ref_name }}
           body: |
-            ## SpendWise Android App
+            ## 📱 SpendWise Android App
             
-            Download and install the APK to use SpendWise on your Android device.
+            **Download and install the APK on your Android device.**
             
-            This app loads the live website: https://spendwisev2.vercel.app
+            ### Features:
+            - 💰 Track income & expenses
+            - 📊 Budget management
+            - 🎯 Savings goals
+            - 📈 Financial reports
+            - 🔔 Notifications & reminders
+            
+            ### Installation:
+            1. Download the APK file
+            2. Enable "Install from unknown sources" in Settings
+            3. Open the APK file to install
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

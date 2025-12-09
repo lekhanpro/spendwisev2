@@ -4,14 +4,19 @@ const config: CapacitorConfig = {
   appId: 'com.spendwise.app',
   appName: 'SpendWise',
   webDir: 'dist',
-  server: {
-    url: 'https://spendwisev2.vercel.app',
-    cleartext: true
-  },
   android: {
     allowMixedContent: true,
     captureInput: true,
     webContentsDebuggingEnabled: false
+  },
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert']
+    },
+    LocalNotifications: {
+      smallIcon: 'ic_stat_icon_config_sample',
+      iconColor: '#3b82f6'
+    }
   }
 };
 
