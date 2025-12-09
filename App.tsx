@@ -33,22 +33,21 @@ const MainContent: React.FC = () => {
   const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
-    // Check if we're on the Vercel app (simple check by hostname or just default behavior)
-    // For now, we'll show landing page initially unless user is logged in
+    // Check if we're on GitHub Pages
+    const isGitHubPages = window.location.hostname.includes('github.io');
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setFirebaseUser(user);
       setAuthLoading(false);
-      if (user) {
+      // Only auto-switch to app if user is logged in AND we are NOT on GitHub Pages
+      if (user && !isGitHubPages) {
         setShowLanding(false);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // If user clicks "Launch App" from landing page, we can handle it here
-  // But since we are linking to the Vercel URL, this logic is mainly for the Vercel deployment itself
-  // or if they use the same domain.
-
+  // If auth is still verifying
   if (authLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -57,13 +56,13 @@ const MainContent: React.FC = () => {
     );
   }
 
-  // If on Landing Page mode and not logged in
-  if (showLanding && !firebaseUser) {
+  const isGitHubPages = window.location.hostname.includes('github.io');
+
+  // Always show Landing Page if on GitHub Pages OR if explicitly showing landing (and not logged in)
+  if (isGitHubPages || (showLanding && !firebaseUser)) {
     return (
       <>
         <LandingPage />
-        {/* Hidden login trigger for internal navigation if needed */}
-        {/* <button onClick={() => setShowLanding(false)} className="fixed bottom-4 right-4 opacity-0">Login</button> */}
       </>
     );
   }
