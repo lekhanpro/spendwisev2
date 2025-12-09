@@ -54,37 +54,11 @@ const MainContent: React.FC = () => {
     return <Auth />;
   }
 
-  // If user exists but email is NOT verified → show verification message
+  // If user exists but email is NOT verified → sign them out and show Auth
   if (!firebaseUser.emailVerified) {
-    return (
-      <div style={{ padding: 24, maxWidth: 500, margin: '0 auto', textAlign: 'center' }}>
-        <h2>Email Verification Required</h2>
-        <p>Please check your email and click the verification link to access your account.</p>
-        <p style={{ color: '#666', fontSize: 14 }}>
-          Email: <strong>{firebaseUser.email}</strong>
-        </p>
-        <button
-          onClick={async () => {
-            await auth.signOut();
-            setFirebaseUser(null);
-          }}
-          style={{
-            marginTop: 16,
-            padding: '10px 20px',
-            backgroundColor: '#dc3545',
-            color: 'white',
-            border: 'none',
-            borderRadius: 4,
-            cursor: 'pointer'
-          }}
-        >
-          Sign Out
-        </button>
-        <p style={{ marginTop: 16, fontSize: 14, color: '#666' }}>
-          After verifying your email, please sign in again.
-        </p>
-      </div>
-    );
+    // Sign out unverified users automatically
+    auth.signOut();
+    return <Auth />;
   }
 
   // Otherwise, render original UI

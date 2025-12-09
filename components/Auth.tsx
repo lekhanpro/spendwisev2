@@ -4,11 +4,14 @@ import {
   signInWithEmail,
   signUpWithEmail,
 } from "../lib/auth";
+import { updateProfile } from "firebase/auth";
 
 export const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState<{
     type: "error" | "success";
@@ -23,16 +26,66 @@ export const Auth: React.FC = () => {
     try {
       if (isLogin) {
         // Firebase email/password sign-in
-        await signInWithEmail(email, password);
+        const userCredential = await signInWithEmail(email, password);
+
+        // Check if email is verified
+        if (!userCredential.user.emailVerified) {
+          setMessage({
+            type: "error",
+            text: "Please verify your email before signing in. Check your inbox for the verification link.",
+          });
+          // Sign out unverified user
+          await userCredential.user.auth.signOut();
+          setLoading(false);
+          return;
+        }
       } else {
+        // Validate passwords match
+        if (password !== confirmPassword) {
+          setMessage({
+            type: "error",
+            text: "Passwords do not match!",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Validate username
+        if (!username.trim()) {
+          setMessage({
+            type: "error",
+            text: "Please enter a username",
+          });
+          setLoading(false);
+          return;
+        }
+
         // Firebase email/password sign-up
-        await signUpWithEmail(email, password);
+        const userCredential = await signUpWithEmail(email, password);
+
+        // Update user profile with username
+        await updateProfile(userCredential.user, {
+          displayName: username,
+        });
+
         setMessage({
           type: "success",
-          text: "Account created! Please check your email to verify your account.",
+          text: "Account created! Please check your email and click the verification link to sign in.",
         });
+
+        // Sign out the user so they must verify email first
+        await userCredential.user.auth.signOut();
+
+        // Switch to login view
+        setTimeout(() => {
+          setIsLogin(true);
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          setUsername("");
+          setMessage(null);
+        }, 3000);
       }
-      // onAuthStateChanged in App.tsx will handle redirect into app
     } catch (error: any) {
       setMessage({
         type: "error",
@@ -47,9 +100,7 @@ export const Auth: React.FC = () => {
     setLoading(true);
     setMessage(null);
     try {
-      // Firebase Google OAuth
       await signInWithGoogle();
-      // onAuthStateChanged in App.tsx will detect login
     } catch (error: any) {
       setMessage({
         type: "error",
@@ -61,16 +112,16 @@ export const Auth: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-      <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 animate-slide-up">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4">
+      <div className="w-full max-w-md bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 dark:border-slate-700/50 animate-slide-up">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg">
-            <span className="text-3xl">💰</span>
+          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+            <span className="text-4xl">💰</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
-            {isLogin ? "Welcome Back" : "Create Account"}
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {isLogin ? "Welcome Back!" : "Join SpendWise"}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
             {isLogin
               ? "Sign in to manage your finances"
               : "Start your journey to financial freedom"}
@@ -79,9 +130,9 @@ export const Auth: React.FC = () => {
 
         {message && (
           <div
-            className={`mb-6 p-4 rounded-xl text-sm font-medium ${message.type === "success"
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+            className={`mb-6 p-4 rounded-2xl text-sm font-medium backdrop-blur-sm ${message.type === "success"
+                ? "bg-green-100/80 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800"
+                : "bg-red-100/80 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800"
               }`}
           >
             {message.text}
@@ -89,39 +140,72 @@ export const Auth: React.FC = () => {
         )}
 
         <form onSubmit={handleAuth} className="space-y-4">
+          {!isLogin && (
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 dark:text-white outline-none transition-all"
+                placeholder="Choose a username"
+                required={!isLogin}
+              />
+            </div>
+          )}
+
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 dark:text-white outline-none transition-all"
+              className="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 dark:text-white outline-none transition-all"
               placeholder="you@example.com"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500 dark:text-white outline-none transition-all"
+              className="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 dark:text-white outline-none transition-all"
               placeholder="••••••••"
               required
               minLength={6}
             />
           </div>
 
+          {!isLogin && (
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 dark:text-white outline-none transition-all"
+                placeholder="••••••••"
+                required={!isLogin}
+                minLength={6}
+              />
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl font-bold text-white bg-blue-500 hover:bg-blue-600 active:bg-blue-700 transition-colors shadow-lg disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+            className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 active:scale-95 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed mt-2"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -150,21 +234,21 @@ export const Auth: React.FC = () => {
             ) : isLogin ? (
               "Sign In"
             ) : (
-              "Sign Up"
+              "Create Account"
             )}
           </button>
         </form>
 
         <div className="my-6 flex items-center gap-4">
-          <div className="h-px bg-slate-200 dark:bg-slate-700 flex-1" />
-          <span className="text-sm text-slate-400">Or continue with</span>
-          <div className="h-px bg-slate-200 dark:bg-slate-700 flex-1" />
+          <div className="h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-600 to-transparent flex-1" />
+          <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Or continue with</span>
+          <div className="h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-600 to-transparent flex-1" />
         </div>
 
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full py-3.5 rounded-xl font-medium bg-white dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-70 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="w-full py-4 rounded-xl font-semibold bg-white dark:bg-slate-700 text-slate-700 dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 active:scale-95"
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -215,15 +299,19 @@ export const Auth: React.FC = () => {
           )}
         </button>
 
-        <div className="mt-6 text-center">
+        <div className="mt-8 text-center">
           <p className="text-slate-600 dark:text-slate-400">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => {
                 setIsLogin(!isLogin);
                 setMessage(null);
+                setEmail("");
+                setPassword("");
+                setConfirmPassword("");
+                setUsername("");
               }}
-              className="font-semibold text-blue-500 hover:text-blue-600 transition-colors"
+              className="font-bold text-blue-600 dark:text-blue-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
             >
               {isLogin ? "Sign Up" : "Sign In"}
             </button>
@@ -233,4 +321,3 @@ export const Auth: React.FC = () => {
     </div>
   );
 };
-
