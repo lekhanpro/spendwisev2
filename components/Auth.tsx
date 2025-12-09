@@ -136,8 +136,8 @@ export const Auth: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-black p-4">
       <div className="w-full max-w-md bg-zinc-900 rounded-3xl shadow-2xl p-8 border border-zinc-800">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform bg-white">
-            <img src="/logo.png" alt="SpendWise Logo" className="w-full h-full object-cover" />
+          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform bg-white p-2">
+            <img src="/logo.png" alt="SpendWise Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">
             {isLogin ? "Welcome Back!" : "Join SpendWise"}

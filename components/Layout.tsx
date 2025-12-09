@@ -24,8 +24,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <header className="sticky top-0 z-40 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-lg bg-white">
-              <img src="/logo.png" alt="SpendWise Logo" className="w-full h-full object-cover" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-lg bg-white p-1">
+              <img src="/logo.png" alt="SpendWise Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-bold text-slate-800 dark:text-white text-lg">SpendWise</span>
           </div>
