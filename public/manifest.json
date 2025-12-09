@@ -9,6 +9,12 @@
     "background_color": "#000000",
     "theme_color": "#3b82f6",
     "orientation": "portrait",
+    "lang": "en",
+    "dir": "ltr",
+    "categories": [
+        "finance",
+        "productivity"
+    ],
     "icons": [
         {
             "src": "/logo.png",
@@ -27,12 +33,46 @@
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any"
+        },
+        {
+            "src": "/logo-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "48x48",
+            "type": "image/png",
+            "purpose": "any"
         }
     ],
-    "categories": [
-        "finance",
-        "productivity"
+    "screenshots": [
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "SpendWise Dashboard"
+        }
     ],
-    "lang": "en",
-    "dir": "ltr"
+    "prefer_related_applications": false
 }
