@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { AppContextType, Transaction, Budget, Goal, Category, ViewType, Currency } from '../types';
 import { DEFAULT_CATEGORIES, SAMPLE_TRANSACTIONS, SAMPLE_BUDGETS, SAMPLE_GOALS, SUPPORTED_CURRENCIES } from '../constants';
 import { supabase } from '../lib/supabase';
+import { auth } from '../lib/auth';
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -26,7 +27,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   // Initialize Auth with timeout safety
   useEffect(() => {
     let mounted = true;
-    
+
     const initAuth = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -126,7 +127,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         localStorage.setItem(`spendwise_darkMode_${session.user.id}`, JSON.stringify(darkMode));
         localStorage.setItem(`spendwise_currency_${session.user.id}`, JSON.stringify(currency));
       }
-      
+
       if (darkMode) {
         document.documentElement.classList.add('dark');
       } else {
@@ -160,7 +161,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await auth.signOut();
       setTransactions([]);
       setBudgets([]);
       setGoals([]);
@@ -184,7 +185,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     addTransaction, updateTransaction, deleteTransaction,
     addBudget, updateBudget, deleteBudget,
     addGoal, updateGoal, deleteGoal,
-    resetData, 
+    resetData,
     showTransactionModal, setShowTransactionModal,
     editingTransaction, setEditingTransaction,
     session, handleLogout,
@@ -195,8 +196,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
         <div className="text-center animate-pulse">
-           <div className="text-6xl mb-4">💰</div>
-           <p className="text-slate-500 dark:text-slate-400">Loading SpendWise...</p>
+          <div className="text-6xl mb-4">💰</div>
+          <p className="text-slate-500 dark:text-slate-400">Loading SpendWise...</p>
         </div>
       </div>
     );
