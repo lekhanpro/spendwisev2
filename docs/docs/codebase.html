@@ -32,9 +32,7 @@
     <nav class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="../index.html" class="flex items-center gap-3">
-                <div
-                    class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-xl">
-                    💰</div>
+                <img src="../logo.png" alt="SpendWise" class="w-10 h-10 rounded-xl">
                 <span class="text-xl font-bold">SpendWise</span>
             </a>
             <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
@@ -54,10 +52,8 @@
             <h1 class="text-4xl md:text-5xl font-bold mb-8">Codebase Guide</h1>
             <p class="text-xl text-gray-400 mb-12">Navigate the SpendWise project structure.</p>
 
-            <!-- Project Structure -->
             <section class="mb-16">
                 <h2 class="text-2xl font-bold mb-6 pb-2 border-b border-zinc-800">Project Structure</h2>
-
                 <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800">
                     <pre class="text-sm text-gray-300 overflow-x-auto"><code>spendwisev2/
 ├── components/          # React components
@@ -68,10 +64,7 @@
 │   ├── Reports.tsx      # Analytics & charts
 │   ├── Goals.tsx        # Savings goals
 │   ├── Settings.tsx     # User settings
-│   ├── Layout.tsx       # App layout
-│   ├── Modal.tsx        # Reusable modal
-│   ├── Icons.tsx        # SVG icons
-│   └── LandingPage.tsx  # Marketing page
+│   └── Layout.tsx       # App layout
 ├── context/
 │   └── AppContext.tsx   # Global state
 ├── lib/
@@ -79,78 +72,33 @@
 │   └── firebase.ts      # Firebase config
 ├── docs/                # Documentation site
 ├── App.tsx              # Root component
-├── index.tsx            # Entry point
-├── index.html           # HTML template
 └── vite.config.ts       # Vite configuration</code></pre>
                 </div>
             </section>
 
-            <!-- Key Files -->
             <section class="mb-16">
                 <h2 class="text-2xl font-bold mb-6 pb-2 border-b border-zinc-800">Key Files</h2>
-
                 <div class="space-y-6">
                     <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800">
                         <h3 class="text-lg font-bold text-blue-400 mb-2">App.tsx</h3>
-                        <p class="text-gray-400 text-sm mb-3">Main application component with routing logic and
+                        <p class="text-gray-400 text-sm">Main application component with routing logic and
                             authentication state.</p>
-                        <ul class="text-gray-500 text-sm space-y-1">
-                            <li>• Firebase auth listener</li>
-                            <li>• Email verification check</li>
-                            <li>• View routing</li>
-                        </ul>
                     </div>
-
                     <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800">
                         <h3 class="text-lg font-bold text-green-400 mb-2">context/AppContext.tsx</h3>
-                        <p class="text-gray-400 text-sm mb-3">Global state management using React Context.</p>
-                        <ul class="text-gray-500 text-sm space-y-1">
-                            <li>• Transactions state</li>
-                            <li>• Budgets state</li>
-                            <li>• Goals state</li>
-                            <li>• CRUD operations</li>
-                        </ul>
+                        <p class="text-gray-400 text-sm">Global state management using React Context for transactions,
+                            budgets, and goals.</p>
                     </div>
-
                     <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800">
                         <h3 class="text-lg font-bold text-purple-400 mb-2">lib/auth.ts</h3>
-                        <p class="text-gray-400 text-sm mb-3">Firebase authentication functions.</p>
-                        <ul class="text-gray-500 text-sm space-y-1">
-                            <li>• Email/password auth</li>
-                            <li>• Google OAuth</li>
-                            <li>• Email verification</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Conventions -->
-            <section>
-                <h2 class="text-2xl font-bold mb-6 pb-2 border-b border-zinc-800">Code Conventions</h2>
-
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800">
-                        <h3 class="font-bold text-cyan-400 mb-3">Naming</h3>
-                        <ul class="text-gray-400 text-sm space-y-2">
-                            <li>• PascalCase for components</li>
-                            <li>• camelCase for functions</li>
-                            <li>• UPPER_CASE for constants</li>
-                        </ul>
-                    </div>
-                    <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800">
-                        <h3 class="font-bold text-orange-400 mb-3">Styling</h3>
-                        <ul class="text-gray-400 text-sm space-y-2">
-                            <li>• Tailwind CSS utilities</li>
-                            <li>• Dark theme by default</li>
-                            <li>• Glass-morphism effects</li>
-                        </ul>
+                        <p class="text-gray-400 text-sm">Firebase authentication functions including email/password and
+                            Google OAuth.</p>
                     </div>
                 </div>
             </section>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="py-12 px-6 border-t border-white/5 bg-black">
         <div class="max-w-6xl mx-auto text-center text-gray-500 text-sm">
             © 2024 SpendWise. Open Source.
