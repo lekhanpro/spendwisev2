@@ -37,32 +37,17 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Install Capacitor
-        run: npm install @capacitor/core @capacitor/cli @capacitor/android
-
-      - name: Initialize Capacitor (if needed)
-        run: |
-          if [ ! -f capacitor.config.ts ]; then
-            npx cap init SpendWise com.spendwise.app --web-dir dist
-          fi
-
-      - name: Add Android platform (if needed)
-        run: |
-          if [ ! -d android ]; then
-            npx cap add android
-          fi
-
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build APK
+      - name: Build Release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
       - name: Rename APK
-        run: mv android/app/build/outputs/apk/debug/app-debug.apk SpendWise-v${{ github.ref_name || '1.0.3' }}.apk
+        run: mv android/app/build/outputs/apk/release/app-release-unsigned.apk SpendWise-${{ github.ref_name || 'v1.0.0' }}.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -76,5 +61,12 @@ jobs:
         with:
           files: SpendWise-*.apk
           generate_release_notes: true
+          name: SpendWise ${{ github.ref_name }}
+          body: |
+            ## SpendWise Android App
+            
+            Download and install the APK to use SpendWise on your Android device.
+            
+            This app loads the live website: https://spendwisev2.vercel.app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
