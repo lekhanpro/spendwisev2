@@ -29,23 +29,23 @@ export const Goals: React.FC = () => {
   const totalSaved = goals.reduce((sum, g) => sum + g.currentAmount, 0);
 
   return (
-    <div className="p-4 pb-24 space-y-4 animate-slide-up">
+    <div className="space-y-4 animate-slide-up">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Savings Goals</h1>
+        <h1 className="text-2xl font-bold text-white">Savings Goals</h1>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
-          className="px-4 py-2 bg-blue-500 text-white rounded-xl font-medium flex items-center gap-2 shadow-lg hover:bg-blue-600 transition-colors"
+          className="px-4 py-2 bg-blue-500 text-white rounded-xl font-medium flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors"
         >
           <Icons.Plus /> Add
         </button>
       </div>
 
-      {/* Summary */}
-      <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 text-white shadow-lg">
-        <p className="text-blue-100 text-sm">Total Savings Progress</p>
-        <p className="text-3xl font-bold mt-1">{formatCurrency(totalSaved)} <span className="text-lg font-normal text-blue-200">/ {formatCurrency(totalTarget)}</span></p>
-        <div className="w-full bg-white/20 rounded-full h-3 mt-4">
-          <div className="bg-white rounded-full h-3 transition-all" style={{ width: `${totalTarget > 0 ? Math.min(100, (totalSaved / totalTarget) * 100) : 0}%` }} />
+      {/* Summary - Glass Effect */}
+      <div className="bg-blue-600/20 backdrop-blur-md border border-blue-500/30 rounded-2xl p-6 text-blue-100 shadow-lg">
+        <p className="text-blue-200/70 text-sm">Total Savings Progress</p>
+        <p className="text-3xl font-bold mt-1 text-white">{formatCurrency(totalSaved)} <span className="text-lg font-normal text-blue-300/70">/ {formatCurrency(totalTarget)}</span></p>
+        <div className="w-full bg-blue-900/30 rounded-full h-3 mt-4 overflow-hidden">
+          <div className="bg-blue-400 rounded-full h-3 transition-all shadow-[0_0_10px_rgba(96,165,250,0.5)]" style={{ width: `${totalTarget > 0 ? Math.min(100, (totalSaved / totalTarget) * 100) : 0}%` }} />
         </div>
       </div>
 
@@ -57,33 +57,32 @@ export const Goals: React.FC = () => {
           const monthlyNeeded = daysLeft > 0 ? (goal.targetAmount - goal.currentAmount) / (daysLeft / 30) : 0;
 
           return (
-            <div key={goal.id} className="bg-white dark:bg-slate-800 shadow-md rounded-2xl p-4">
+            <div key={goal.id} className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4 hover:bg-white/5 transition-colors group">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-slate-800 dark:text-white">{goal.name}</h3>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      goal.priority === 'high' ? 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300' :
-                      goal.priority === 'medium' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/50 dark:text-yellow-300' :
-                      'bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-300'
-                    }`}>
+                    <h3 className="font-semibold text-white">{goal.name}</h3>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${goal.priority === 'high' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                        goal.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                          'bg-green-500/10 text-green-400 border-green-500/20'
+                      }`}>
                       {goal.priority}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-400 flex items-center gap-1 mt-1">
+                  <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                     <Icons.Calendar /> {daysLeft > 0 ? `${daysLeft} days left` : 'Deadline passed'}
                   </p>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => { setEditing(goal); setShowForm(true); }}
-                    className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400"
+                    className="p-2 rounded-lg hover:bg-zinc-700 text-gray-400 hover:text-white transition-colors"
                   >
                     <Icons.Edit />
                   </button>
                   <button
                     onClick={() => deleteGoal(goal.id)}
-                    className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 text-red-400"
+                    className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors"
                   >
                     <Icons.Trash />
                   </button>
@@ -92,29 +91,29 @@ export const Goals: React.FC = () => {
 
               <div className="flex items-end justify-between mb-2">
                 <div>
-                  <p className="text-2xl font-bold text-slate-800 dark:text-white">{formatCurrency(goal.currentAmount)}</p>
-                  <p className="text-sm text-slate-400">of {formatCurrency(goal.targetAmount)}</p>
+                  <p className="text-2xl font-bold text-white">{formatCurrency(goal.currentAmount)}</p>
+                  <p className="text-sm text-gray-500">of {formatCurrency(goal.targetAmount)}</p>
                 </div>
-                <p className={`text-2xl font-bold ${progress >= 100 ? 'text-green-500' : 'text-blue-500'}`}>
+                <p className={`text-2xl font-bold ${progress >= 100 ? 'text-green-400' : 'text-blue-400'}`}>
                   {progress.toFixed(0)}%
                 </p>
               </div>
 
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 mb-3">
+              <div className="w-full bg-zinc-800 rounded-full h-3 mb-3 overflow-hidden">
                 <div
-                  className={`h-3 rounded-full transition-all ${progress >= 100 ? 'bg-green-500' : 'bg-blue-500'}`}
+                  className={`h-3 rounded-full transition-all ${progress >= 100 ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]'}`}
                   style={{ width: `${Math.min(100, progress)}%` }}
                 />
               </div>
 
               {progress < 100 && monthlyNeeded > 0 && (
-                <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">
-                  Save {formatCurrency(monthlyNeeded)}/month to reach your goal
+                <p className="text-sm text-gray-400 mb-3">
+                  Save <span className="text-white font-medium">{formatCurrency(monthlyNeeded)}/month</span> to reach your goal
                 </p>
               )}
 
               {progress >= 100 ? (
-                <div className="flex items-center gap-2 text-green-500">
+                <div className="flex items-center gap-2 text-green-400 bg-green-500/10 p-2 rounded-xl border border-green-500/20">
                   <Icons.Check />
                   <span className="font-medium">Goal achieved! 🎉</span>
                 </div>
@@ -124,7 +123,7 @@ export const Goals: React.FC = () => {
                     <button
                       key={amount}
                       onClick={() => handleAddToGoal(goal, amount)}
-                      className="flex-1 py-2 rounded-xl text-sm font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                      className="flex-1 py-2 rounded-xl text-sm font-medium bg-zinc-800 border border-zinc-700 text-gray-300 hover:bg-blue-500/20 hover:border-blue-500/50 hover:text-blue-300 transition-all"
                     >
                       +{formatCurrency(amount)}
                     </button>
@@ -137,9 +136,11 @@ export const Goals: React.FC = () => {
 
         {goals.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-4xl mb-2">🎯</p>
-            <p className="text-slate-500 dark:text-slate-400">No savings goals yet</p>
-            <button onClick={() => setShowForm(true)} className="mt-2 text-blue-500 font-medium">Create your first goal</button>
+            <div className="w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-800">
+              <span className="text-2xl">🎯</span>
+            </div>
+            <p className="text-gray-500">No savings goals yet</p>
+            <button onClick={() => setShowForm(true)} className="mt-4 text-blue-400 font-medium hover:text-blue-300">Create your first goal</button>
           </div>
         )}
       </div>
