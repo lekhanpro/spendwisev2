@@ -9,10 +9,8 @@ export const LandingPage: React.FC = () => {
             <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 p-0.5 shadow-lg shadow-blue-500/20">
-                            <div className="w-full h-full bg-black rounded-[10px] flex items-center justify-center">
-                                <span className="text-xl">💰</span>
-                            </div>
+                        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20">
+                            <img src="/logo.png" alt="SpendWise" className="w-full h-full object-cover" />
                         </div>
                         <span className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">SpendWise</span>
                     </div>
