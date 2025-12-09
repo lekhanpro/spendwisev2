@@ -11,6 +11,7 @@ import { Settings } from "./components/Settings";
 import { Modal } from "./components/Modal";
 import { TransactionForm } from "./components/TransactionForm";
 import { Auth } from "./components/Auth";
+import { LandingPage } from "./components/LandingPage";
 
 // Firebase imports
 import { auth } from "./lib/auth";
@@ -27,36 +28,53 @@ const MainContent: React.FC = () => {
     setEditingTransaction,
   } = useContext(AppContext)!;
 
-  // Firebase user instead of Supabase session
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
+    // Check if we're on the Vercel app (simple check by hostname or just default behavior)
+    // For now, we'll show landing page initially unless user is logged in
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setFirebaseUser(user);
       setAuthLoading(false);
+      if (user) {
+        setShowLanding(false);
+      }
     });
     return () => unsubscribe();
   }, []);
 
-  // If auth is still verifying
+  // If user clicks "Launch App" from landing page, we can handle it here
+  // But since we are linking to the Vercel URL, this logic is mainly for the Vercel deployment itself
+  // or if they use the same domain.
+
   if (authLoading) {
     return (
-      <div style={{ padding: 24 }}>
-        <h2>Spendwise</h2>
-        <p>Checking login...</p>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
-  // If NO Firebase user → show login screen
+  // If on Landing Page mode and not logged in
+  if (showLanding && !firebaseUser) {
+    return (
+      <>
+        <LandingPage />
+        {/* Hidden login trigger for internal navigation if needed */}
+        {/* <button onClick={() => setShowLanding(false)} className="fixed bottom-4 right-4 opacity-0">Login</button> */}
+      </>
+    );
+  }
+
+  // If NO Firebase user → show login screen (when they click "Launch App" or navigate)
   if (!firebaseUser) {
     return <Auth />;
   }
 
   // If user exists but email is NOT verified → sign them out and show Auth
   if (!firebaseUser.emailVerified) {
-    // Sign out unverified users automatically
     auth.signOut();
     return <Auth />;
   }
