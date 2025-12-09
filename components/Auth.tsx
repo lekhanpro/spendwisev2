@@ -87,9 +87,30 @@ export const Auth: React.FC = () => {
         }, 3000);
       }
     } catch (error: any) {
+      // Handle specific Firebase errors with user-friendly messages
+      let errorMessage = "An error occurred. Please try again.";
+
+      if (error.code === "auth/invalid-credential") {
+        errorMessage = "Invalid email or password. Please check your credentials and try again.";
+      } else if (error.code === "auth/user-not-found") {
+        errorMessage = "No account found with this email address.";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "Incorrect password. Please try again.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Please enter a valid email address.";
+      } else if (error.code === "auth/email-already-in-use") {
+        errorMessage = "This email is already registered. Please sign in instead.";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "Password is too weak. Please use at least 6 characters.";
+      } else if (error.code === "auth/network-request-failed") {
+        errorMessage = "Network error. Please check your internet connection.";
+      } else if (error.code === "auth/too-many-requests") {
+        errorMessage = "Too many failed attempts. Please try again later.";
+      }
+
       setMessage({
         type: "error",
-        text: error.message || "An error occurred",
+        text: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -131,8 +152,8 @@ export const Auth: React.FC = () => {
         {message && (
           <div
             className={`mb-6 p-4 rounded-2xl text-sm font-medium backdrop-blur-sm ${message.type === "success"
-                ? "bg-green-100/80 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800"
-                : "bg-red-100/80 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800"
+              ? "bg-green-100/80 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800"
+              : "bg-red-100/80 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800"
               }`}
           >
             {message.text}
