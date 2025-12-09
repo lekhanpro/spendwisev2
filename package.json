@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "license": "Apache-2.0",
-  "homepage": "https://lekhanpro.github.io/spendwisev2",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
