@@ -3,6 +3,7 @@ import {
   signInWithGoogle,
   signInWithEmail,
   signUpWithEmail,
+  logout,
 } from "../lib/auth";
 import { updateProfile } from "firebase/auth";
 
@@ -35,7 +36,7 @@ export const Auth: React.FC = () => {
             text: "Please verify your email before signing in. Check your inbox for the verification link.",
           });
           // Sign out unverified user
-          await userCredential.user.auth.signOut();
+          await logout();
           setLoading(false);
           return;
         }
@@ -74,7 +75,7 @@ export const Auth: React.FC = () => {
         });
 
         // Sign out the user so they must verify email first
-        await userCredential.user.auth.signOut();
+        await logout();
 
         // Switch to login view
         setTimeout(() => {
