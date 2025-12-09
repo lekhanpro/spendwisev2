@@ -133,16 +133,16 @@ export const Auth: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4">
-      <div className="w-full max-w-md bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 dark:border-slate-700/50 animate-slide-up">
+    <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
+      <div className="w-full max-w-md bg-slate-800 rounded-3xl shadow-2xl p-8 border border-slate-700">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
             <span className="text-4xl">💰</span>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-white mb-2">
             {isLogin ? "Welcome Back!" : "Join SpendWise"}
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
+          <p className="text-slate-400">
             {isLogin
               ? "Sign in to manage your finances"
               : "Start your journey to financial freedom"}
@@ -151,9 +151,9 @@ export const Auth: React.FC = () => {
 
         {message && (
           <div
-            className={`mb-6 p-4 rounded-2xl text-sm font-medium backdrop-blur-sm ${message.type === "success"
-              ? "bg-green-100/80 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800"
-              : "bg-red-100/80 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800"
+            className={`mb-6 p-4 rounded-2xl text-sm font-medium ${message.type === "success"
+                ? "bg-green-900/50 text-green-300 border border-green-700"
+                : "bg-red-900/50 text-red-300 border border-red-700"
               }`}
           >
             {message.text}
@@ -163,14 +163,14 @@ export const Auth: React.FC = () => {
         <form onSubmit={handleAuth} className="space-y-4">
           {!isLogin && (
             <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-semibold text-white mb-2">
                 Username
               </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 dark:text-white outline-none transition-all"
+                className="w-full px-4 py-3.5 bg-slate-700 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder-slate-400"
                 placeholder="Choose a username"
                 required={!isLogin}
               />
@@ -178,28 +178,28 @@ export const Auth: React.FC = () => {
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-semibold text-white mb-2">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 dark:text-white outline-none transition-all"
+              className="w-full px-4 py-3.5 bg-slate-700 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder-slate-400"
               placeholder="you@example.com"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-semibold text-white mb-2">
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 dark:text-white outline-none transition-all"
+              className="w-full px-4 py-3.5 bg-slate-700 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder-slate-400"
               placeholder="••••••••"
               required
               minLength={6}
@@ -208,14 +208,14 @@ export const Auth: React.FC = () => {
 
           {!isLogin && (
             <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-semibold text-white mb-2">
                 Confirm Password
               </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 dark:text-white outline-none transition-all"
+                className="w-full px-4 py-3.5 bg-slate-700 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder-slate-400"
                 placeholder="••••••••"
                 required={!isLogin}
                 minLength={6}
@@ -261,20 +261,20 @@ export const Auth: React.FC = () => {
         </form>
 
         <div className="my-6 flex items-center gap-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-600 to-transparent flex-1" />
-          <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Or continue with</span>
-          <div className="h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-600 to-transparent flex-1" />
+          <div className="h-px bg-slate-700 flex-1" />
+          <span className="text-sm text-slate-400 font-medium">Or continue with</span>
+          <div className="h-px bg-slate-700 flex-1" />
         </div>
 
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full py-4 rounded-xl font-semibold bg-white dark:bg-slate-700 text-slate-700 dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 active:scale-95"
+          className="w-full py-4 rounded-xl font-semibold bg-slate-700 text-white border-2 border-slate-600 hover:border-slate-500 hover:bg-slate-600 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 active:scale-95"
         >
           {loading ? (
             <span className="flex items-center gap-2">
               <svg
-                className="animate-spin h-5 w-5 text-slate-500 dark:text-slate-300"
+                className="animate-spin h-5 w-5 text-slate-300"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -321,7 +321,7 @@ export const Auth: React.FC = () => {
         </button>
 
         <div className="mt-8 text-center">
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-slate-400">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => {
@@ -332,7 +332,7 @@ export const Auth: React.FC = () => {
                 setConfirmPassword("");
                 setUsername("");
               }}
-              className="font-bold text-blue-600 dark:text-blue-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              className="font-bold text-blue-400 hover:text-blue-300 transition-colors"
             >
               {isLogin ? "Sign Up" : "Sign In"}
             </button>
