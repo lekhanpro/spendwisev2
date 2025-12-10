@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Services | SpendWise</title>
+    <title>Services Documentation | SpendWise</title>
+    <meta name="description" content="Frontend services documentation with method signatures and usage examples">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,6 +24,7 @@
             --accent: #3b82f6;
             --success: #22c55e;
             --warning: #f59e0b;
+            --danger: #ef4444;
             --border: #2a2a2a;
         }
 
@@ -30,7 +32,7 @@
             font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         a {
@@ -39,7 +41,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 0 24px;
         }
@@ -67,6 +69,9 @@
             font-size: 20px;
             font-weight: 700;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .nav-links {
@@ -91,32 +96,41 @@
         }
 
         h1 {
-            font-size: 42px;
+            font-size: 48px;
             margin-bottom: 16px;
+            font-weight: 800;
         }
 
         h2 {
-            font-size: 28px;
-            margin: 48px 0 24px;
-            padding-top: 24px;
+            font-size: 32px;
+            margin: 56px 0 24px;
+            padding-top: 32px;
             border-top: 1px solid var(--border);
         }
 
         h3 {
-            font-size: 20px;
-            margin: 32px 0 16px;
+            font-size: 22px;
+            margin: 40px 0 16px;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 24px 0 12px;
+            color: var(--text-secondary);
         }
 
         p {
             color: var(--text-secondary);
             margin-bottom: 16px;
+            font-size: 15px;
         }
 
         .service-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 24px;
+            padding: 28px;
             margin-bottom: 24px;
         }
 
@@ -124,55 +138,168 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .service-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--accent)20;
-            border-radius: 12px;
+            width: 56px;
+            height: 56px;
+            background: var(--accent)15;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
         }
 
         .service-card h3 {
             margin: 0;
-            font-size: 20px;
+            font-size: 22px;
+            color: var(--text-primary);
         }
 
-        .service-card ul {
-            list-style: none;
-            margin-top: 16px;
+        .service-card>p {
+            font-size: 15px;
+            margin-bottom: 20px;
         }
 
-        .service-card li {
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .method-block {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
         }
 
-        .service-card li:last-child {
-            border-bottom: none;
-        }
-
-        .service-card li i {
+        .method-name {
+            font-family: monospace;
+            font-size: 15px;
             color: var(--success);
-            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        .config-block {
+        .method-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .method-params {
+            font-size: 12px;
+            color: var(--warning);
+        }
+
+        .code-block {
             background: #000;
-            border-radius: 8px;
-            padding: 16px;
+            border-radius: 12px;
+            padding: 20px;
             font-family: monospace;
             font-size: 13px;
             overflow-x: auto;
-            margin-top: 16px;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+        }
+
+        .code-block .comment {
+            color: #6a737d;
+        }
+
+        .code-block .keyword {
+            color: #ff7b72;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .function {
+            color: #d2a8ff;
+        }
+
+        .code-block .number {
+            color: #56d364;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: #22c55e20;
+            color: #22c55e;
+        }
+
+        .status-badge.config {
+            background: #f59e0b20;
+            color: #f59e0b;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 16px 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list li i {
+            color: var(--success);
+            margin-top: 4px;
+        }
+
+        .footer {
+            background: var(--bg-secondary);
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
@@ -180,7 +307,7 @@
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="../" class="nav-brand">💰 SpendWise</a>
+            <a href="../" class="nav-brand"><img src="../logo.png" alt="SpendWise" style="height: 28px;"> SpendWise</a>
             <ul class="nav-links">
                 <li><a href="../">Home</a></li>
                 <li><a href="API.html">API</a></li>
@@ -193,116 +320,397 @@
 
     <div class="content">
         <div class="container">
-            <h1>⚙️ Services</h1>
-            <p>Documentation for external services and integrations used in SpendWise.</p>
+            <h1>⚙️ Services Documentation</h1>
+            <p style="font-size: 18px; max-width: 700px;">Frontend services documentation with method signatures and
+                usage examples.</p>
 
-            <h2>Firebase</h2>
+            <!-- Firebase -->
+            <h2>Firebase Services</h2>
 
             <div class="service-card">
                 <div class="service-header">
                     <div class="service-icon">🔐</div>
-                    <h3>Firebase Authentication</h3>
+                    <h3>authService (lib/auth.ts)</h3>
                 </div>
-                <p>Handles user authentication with email/password. Includes email verification and password reset.</p>
-                <ul>
-                    <li><i class="fas fa-check"></i> Email/Password sign up and sign in</li>
-                    <li><i class="fas fa-check"></i> Email verification required</li>
-                    <li><i class="fas fa-check"></i> Password reset via email</li>
-                    <li><i class="fas fa-check"></i> Persistent auth state</li>
-                </ul>
+                <p>Firebase Authentication integration for user management.</p>
+
+                <div class="method-block">
+                    <div class="method-name">signUp(email: string, password: string): Promise&lt;User&gt;</div>
+                    <div class="method-desc">Create a new user account and send email verification.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">signIn(email: string, password: string): Promise&lt;User&gt;</div>
+                    <div class="method-desc">Authenticate existing user with email and password.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">logout(): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Sign out the current user and clear local state.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">resetPassword(email: string): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Send password reset email to the specified address.</div>
+                </div>
+
+                <h4>Usage Example</h4>
+                <div class="code-block">
+                    <span class="keyword">import</span> { signUp, signIn, logout } <span class="keyword">from</span>
+                    <span class="string">'../lib/auth'</span>;
+
+                    <span class="comment">// Sign up new user</span>
+                    <span class="keyword">try</span> {
+                    <span class="keyword">const</span> user = <span class="keyword">await</span> <span
+                        class="function">signUp</span>(<span class="string">'user@example.com'</span>, <span
+                        class="string">'password123'</span>);
+                    console.log(<span class="string">'User created:'</span>, user.uid);
+                    } <span class="keyword">catch</span> (error) {
+                    console.error(<span class="string">'Sign up failed:'</span>, error.message);
+                    }
+
+                    <span class="comment">// Sign in existing user</span>
+                    <span class="keyword">const</span> user = <span class="keyword">await</span> <span
+                        class="function">signIn</span>(<span class="string">'user@example.com'</span>, <span
+                        class="string">'password123'</span>);
+
+                    <span class="comment">// Logout</span>
+                    <span class="keyword">await</span> <span class="function">logout</span>();
+                </div>
             </div>
 
             <div class="service-card">
                 <div class="service-header">
-                    <div class="service-icon">☁️</div>
-                    <h3>Firebase Realtime Database</h3>
+                    <div class="service-icon">🗄️</div>
+                    <h3>databaseService (lib/database.ts)</h3>
                 </div>
-                <p>Cloud-hosted NoSQL database for real-time data sync across devices.</p>
-                <ul>
-                    <li><i class="fas fa-check"></i> Real-time sync across devices</li>
-                    <li><i class="fas fa-check"></i> Offline persistence</li>
-                    <li><i class="fas fa-check"></i> User-scoped data (by UID)</li>
-                    <li><i class="fas fa-check"></i> Automatic conflict resolution</li>
-                </ul>
+                <p>Firebase Realtime Database operations for financial data.</p>
+
+                <div class="method-block">
+                    <div class="method-name">saveTransaction(userId: string, transaction: Transaction):
+                        Promise&lt;void&gt;</div>
+                    <div class="method-desc">Save or update a transaction in the database.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">subscribeToTransactions(userId: string, callback: (t: Transaction[]) =&gt;
+                        void): Unsubscribe</div>
+                    <div class="method-desc">Subscribe to real-time transaction updates. Returns unsubscribe function.
+                    </div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">saveBudget(userId: string, budget: Budget): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Save or update a budget entry.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">saveGoal(userId: string, goal: Goal): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Save or update a savings goal.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">saveSettings(userId: string, settings: Settings): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Save user preferences (currency, dark mode).</div>
+                </div>
+
+                <h4>Usage Example</h4>
+                <div class="code-block">
+                    <span class="keyword">import</span> { saveTransaction, subscribeToTransactions } <span
+                        class="keyword">from</span> <span class="string">'../lib/database'</span>;
+
+                    <span class="comment">// Save a new transaction</span>
+                    <span class="keyword">await</span> <span class="function">saveTransaction</span>(userId, {
+                    id: <span class="string">'uuid-123'</span>,
+                    type: <span class="string">'expense'</span>,
+                    amount: <span class="number">50.00</span>,
+                    category: <span class="string">'Food'</span>,
+                    date: Date.now(),
+                    note: <span class="string">'Lunch'</span>,
+                    paymentMethod: <span class="string">'Credit Card'</span>
+                    });
+
+                    <span class="comment">// Subscribe to real-time updates</span>
+                    <span class="keyword">const</span> unsubscribe = <span
+                        class="function">subscribeToTransactions</span>(userId, (transactions) => {
+                    console.log(<span class="string">'Transactions updated:'</span>, transactions.length);
+                    });
+
+                    <span class="comment">// Later: cleanup</span>
+                    <span class="function">unsubscribe</span>();
+                </div>
             </div>
 
-            <h2>Groq AI</h2>
+            <!-- AI Service -->
+            <h2>AI Service</h2>
 
             <div class="service-card">
                 <div class="service-header">
                     <div class="service-icon">🤖</div>
-                    <h3>LLaMA 3.3 70B via Groq</h3>
+                    <h3>aiService (lib/ai.ts)</h3>
                 </div>
-                <p>AI-powered financial insights using Meta's LLaMA 3.3 model through Groq's ultra-fast inference API.
-                </p>
-                <ul>
-                    <li><i class="fas fa-check"></i> Financial health score (0-100)</li>
-                    <li><i class="fas fa-check"></i> Personalized spending insights</li>
-                    <li><i class="fas fa-check"></i> Actionable recommendations</li>
-                    <li><i class="fas fa-check"></i> Budget warnings and alerts</li>
-                    <li><i class="fas fa-check"></i> Goal tracking analysis</li>
-                </ul>
-                <div class="config-block">
-                    Model: llama-3.3-70b-versatile
-                    Temperature: 0.7
-                    Max Tokens: 1000
-                    Response: JSON (healthScore, insights, recommendations, summary)
+                <p>Groq API integration for AI-powered financial insights using LLaMA 3.3 70B.</p>
+
+                <div class="method-block">
+                    <div class="method-name">getFinancialInsights(transactions, budgets, goals, currency):
+                        Promise&lt;AIInsightResponse&gt;</div>
+                    <div class="method-desc">Analyze financial data and generate personalized insights, health score,
+                        and recommendations.</div>
+                    <div class="method-params">Returns: { healthScore, insights[], recommendations[], summary }</div>
                 </div>
+
+                <div class="method-block">
+                    <div class="method-name">getQuickTip(): string</div>
+                    <div class="method-desc">Get a random financial tip for display in the UI.</div>
+                </div>
+
+                <h4>AI Response Structure</h4>
+                <div class="code-block">
+                    <span class="keyword">interface</span> AIInsightResponse {
+                    healthScore: <span class="number">0-100</span>; <span class="comment">// Financial health
+                        percentage</span>
+                    insights: [
+                    {
+                    title: <span class="string">"Great Savings!"</span>,
+                    message: <span class="string">"You're saving 30% of income"</span>,
+                    type: <span class="string">"success"</span> | <span class="string">"warning"</span> | <span
+                        class="string">"tip"</span> | <span class="string">"info"</span>,
+                    icon: <span class="string">"🎉"</span>
+                    }
+                    ];
+                    recommendations: [
+                    <span class="string">"Build an emergency fund"</span>,
+                    <span class="string">"Review subscription costs"</span>
+                    ];
+                    summary: <span class="string">"Your finances look healthy..."</span>;
+                    }
+                </div>
+
+                <h4>Configuration</h4>
+                <table>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Model</td>
+                        <td>llama-3.3-70b-versatile</td>
+                    </tr>
+                    <tr>
+                        <td>Temperature</td>
+                        <td>0.7</td>
+                    </tr>
+                    <tr>
+                        <td>Max Tokens</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td>API Key</td>
+                        <td>EXPO_PUBLIC_GROQ_API_KEY (env)</td>
+                    </tr>
+                </table>
             </div>
 
-            <h2>Expo Notifications</h2>
+            <!-- Notification Service -->
+            <h2>Notification Service</h2>
 
             <div class="service-card">
                 <div class="service-header">
                     <div class="service-icon">🔔</div>
-                    <h3>Push Notifications</h3>
+                    <h3>notificationService (lib/notifications.ts)</h3>
                 </div>
-                <p>Native push notifications for Android using Expo Notifications SDK.</p>
-                <ul>
-                    <li><i class="fas fa-check"></i> Budget alerts (80% and 100% usage)</li>
-                    <li><i class="fas fa-check"></i> Daily expense reminder (8 PM)</li>
-                    <li><i class="fas fa-check"></i> Weekly AI summary (Monday 9 AM)</li>
-                    <li><i class="fas fa-check"></i> Custom notification channels</li>
-                </ul>
-                <div class="config-block">
-                    Channels:
-                    - default: General notifications
-                    - budget-alerts: High priority budget warnings
-                    - insights: AI-generated insights
+                <p>Expo Notifications for push alerts, reminders, and scheduled notifications.</p>
+
+                <div class="method-block">
+                    <div class="method-name">requestNotificationPermission(): Promise&lt;boolean&gt;</div>
+                    <div class="method-desc">Request push notification permission from the user.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">sendNotification(title, body, data?): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Send an immediate local notification.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">sendBudgetAlert(category, percentage): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Send a budget alert notification (at 80% or 100%).</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">scheduleDailyReminder(hour, minute): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Schedule a daily expense logging reminder.</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">scheduleWeeklySummary(): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Schedule weekly AI insight summary (Monday 9 AM).</div>
+                </div>
+
+                <div class="method-block">
+                    <div class="method-name">cancelAllNotifications(): Promise&lt;void&gt;</div>
+                    <div class="method-desc">Cancel all scheduled notifications.</div>
+                </div>
+
+                <h4>Notification Channels (Android)</h4>
+                <table>
+                    <tr>
+                        <th>Channel ID</th>
+                        <th>Name</th>
+                        <th>Priority</th>
+                        <th>Sound</th>
+                    </tr>
+                    <tr>
+                        <td>default</td>
+                        <td>General</td>
+                        <td>DEFAULT</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>budget-alerts</td>
+                        <td>Budget Alerts</td>
+                        <td>HIGH</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>insights</td>
+                        <td>AI Insights</td>
+                        <td>DEFAULT</td>
+                        <td>Yes</td>
+                    </tr>
+                </table>
+
+                <h4>Usage Example</h4>
+                <div class="code-block">
+                    <span class="keyword">import</span> {
+                    requestNotificationPermission,
+                    sendBudgetAlert,
+                    scheduleDailyReminder
+                    } <span class="keyword">from</span> <span class="string">'../lib/notifications'</span>;
+
+                    <span class="comment">// Request permission on app start</span>
+                    <span class="keyword">const</span> granted = <span class="keyword">await</span> <span
+                        class="function">requestNotificationPermission</span>();
+
+                    <span class="keyword">if</span> (granted) {
+                    <span class="comment">// Schedule daily reminder at 8 PM</span>
+                    <span class="keyword">await</span> <span class="function">scheduleDailyReminder</span>(<span
+                        class="number">20</span>, <span class="number">0</span>);
+
+                    <span class="comment">// Send budget alert</span>
+                    <span class="keyword">await</span> <span class="function">sendBudgetAlert</span>(<span
+                        class="string">'Food'</span>, <span class="number">85</span>);
+                    }
                 </div>
             </div>
 
-            <h2>Build & Deploy</h2>
+            <!-- Build & Deploy -->
+            <h2>Build & Deploy Services</h2>
 
             <div class="service-card">
                 <div class="service-header">
                     <div class="service-icon">📦</div>
                     <h3>EAS Build</h3>
                 </div>
-                <p>Expo Application Services for cloud-based Android APK/AAB builds.</p>
-                <ul>
-                    <li><i class="fas fa-check"></i> Development builds with dev client</li>
-                    <li><i class="fas fa-check"></i> Preview builds (APK for testing)</li>
-                    <li><i class="fas fa-check"></i> Production builds (AAB for Play Store)</li>
-                    <li><i class="fas fa-check"></i> Automatic keystore management</li>
+                <p>Expo Application Services for cloud-based Android builds.</p>
+
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i>
+                        <div><strong>Development Build</strong><br>Debug build with dev client for local testing</div>
+                    </li>
+                    <li><i class="fas fa-check"></i>
+                        <div><strong>Preview Build</strong><br>APK for testing (not signed for Play Store)</div>
+                    </li>
+                    <li><i class="fas fa-check"></i>
+                        <div><strong>Production Build</strong><br>AAB for Google Play Store release</div>
+                    </li>
                 </ul>
+
+                <h4>Build Commands</h4>
+                <div class="code-block">
+                    <span class="comment"># Development build</span>
+                    npx eas-cli build --platform android --profile development
+
+                    <span class="comment"># Preview APK (for testing)</span>
+                    npx eas-cli build --platform android --profile preview
+
+                    <span class="comment"># Production AAB (for Play Store)</span>
+                    npx eas-cli build --platform android --profile production
+                </div>
             </div>
 
             <div class="service-card">
                 <div class="service-header">
                     <div class="service-icon">🚀</div>
-                    <h3>GitHub Actions</h3>
+                    <h3>GitHub Actions CI/CD</h3>
                 </div>
-                <p>CI/CD pipeline for automated builds and releases.</p>
-                <ul>
-                    <li><i class="fas fa-check"></i> Auto-build on version tag push</li>
-                    <li><i class="fas fa-check"></i> APK artifact upload</li>
-                    <li><i class="fas fa-check"></i> GitHub Release creation</li>
-                    <li><i class="fas fa-check"></i> GitHub Pages deployment</li>
+                <p>Automated builds and deployments via GitHub Actions.</p>
+
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i>
+                        <div><strong>build-android.yml</strong><br>Triggers on version tag push (v*), builds APK with
+                            EAS, creates GitHub Release</div>
+                    </li>
+                    <li><i class="fas fa-check"></i>
+                        <div><strong>pages.yml</strong><br>Deploys docs/ folder to GitHub Pages on main branch push
+                        </div>
+                    </li>
                 </ul>
+
+                <h4>Trigger a Release</h4>
+                <div class="code-block">
+                    <span class="comment"># Create and push a version tag</span>
+                    git tag v2.1.0
+                    git push origin v2.1.0
+
+                    <span class="comment"># GitHub Actions will:</span>
+                    <span class="comment"># 1. Build APK using EAS</span>
+                    <span class="comment"># 2. Create GitHub Release</span>
+                    <span class="comment"># 3. Attach APK to release</span>
+                </div>
             </div>
+
+            <!-- Environment -->
+            <h2>Environment Configuration</h2>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">🔧</div>
+                    <h3>Environment Variables</h3>
+                </div>
+                <p>Required environment variables for the application.</p>
+
+                <table>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Description</th>
+                        <th>Required</th>
+                    </tr>
+                    <tr>
+                        <td>EXPO_PUBLIC_GROQ_API_KEY</td>
+                        <td>Groq API key for AI insights</td>
+                        <td><span class="status-badge active">Required</span></td>
+                    </tr>
+                </table>
+
+                <h4>Local Development</h4>
+                <div class="code-block">
+                    <span class="comment"># .env (gitignored)</span>
+                    EXPO_PUBLIC_GROQ_API_KEY=gsk_your_api_key_here
+                </div>
+
+                <h4>Production (EAS Secret)</h4>
+                <div class="code-block">
+                    <span class="comment"># Set EAS secret for production builds</span>
+                    npx eas-cli secret:create --name EXPO_PUBLIC_GROQ_API_KEY --value gsk_your_api_key
+                </div>
+            </div>
+
         </div>
     </div>
+
+    <footer class="footer">
+        <p>© 2025 SpendWise. Developed by <a href="https://github.com/lekhanpro">Lekhan</a> • Full Stack Developer</p>
+    </footer>
 </body>
 
 </html>

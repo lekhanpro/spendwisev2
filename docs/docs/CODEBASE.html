@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Codebase Guide | SpendWise</title>
+    <meta name="description" content="Navigate the SpendWise codebase with detailed explanations">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -20,6 +21,8 @@
             --text-primary: #ffffff;
             --text-secondary: #a0a0a0;
             --accent: #3b82f6;
+            --success: #22c55e;
+            --warning: #f59e0b;
             --border: #2a2a2a;
         }
 
@@ -27,7 +30,7 @@
             font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         a {
@@ -36,7 +39,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 0 24px;
         }
@@ -64,6 +67,9 @@
             font-size: 20px;
             font-weight: 700;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .nav-links {
@@ -88,54 +94,157 @@
         }
 
         h1 {
-            font-size: 42px;
+            font-size: 48px;
             margin-bottom: 16px;
+            font-weight: 800;
         }
 
         h2 {
-            font-size: 28px;
-            margin: 48px 0 24px;
-            padding-top: 24px;
+            font-size: 32px;
+            margin: 56px 0 24px;
+            padding-top: 32px;
             border-top: 1px solid var(--border);
         }
 
         h3 {
-            font-size: 20px;
-            margin: 32px 0 16px;
+            font-size: 22px;
+            margin: 40px 0 16px;
+            color: var(--accent);
         }
 
         p {
             color: var(--text-secondary);
             margin-bottom: 16px;
+            font-size: 15px;
         }
 
         .tree {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            font-family: monospace;
-            font-size: 14px;
+            border-radius: 16px;
+            padding: 28px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
             overflow-x: auto;
+            line-height: 1.6;
+            margin: 24px 0;
+        }
+
+        .tree .folder {
+            color: var(--accent);
+        }
+
+        .tree .file {
+            color: var(--text-secondary);
+        }
+
+        .tree .comment {
+            color: #6a737d;
         }
 
         .file-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
         }
 
         .file-card h4 {
             font-family: monospace;
+            font-size: 16px;
             color: var(--accent);
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-card h4 span {
+            background: var(--accent)20;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
         }
 
         .file-card p {
-            margin-bottom: 0;
             font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .file-card ul {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .file-card li {
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .file-card li:last-child {
+            border-bottom: none;
+        }
+
+        .file-card li i {
+            color: var(--success);
+            font-size: 12px;
+        }
+
+        .code-block {
+            background: #000;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 16px 0;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .footer {
+            background: var(--bg-secondary);
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
@@ -143,7 +252,7 @@
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="../" class="nav-brand">💰 SpendWise</a>
+            <a href="../" class="nav-brand"><img src="../logo.png" alt="SpendWise" style="height: 28px;"> SpendWise</a>
             <ul class="nav-links">
                 <li><a href="../">Home</a></li>
                 <li><a href="API.html">API</a></li>
@@ -157,99 +266,319 @@
     <div class="content">
         <div class="container">
             <h1>📁 Codebase Guide</h1>
-            <p>Navigate the SpendWise codebase with detailed explanations.</p>
+            <p style="font-size: 18px; max-width: 700px;">Line-by-line code analysis, directory structure, and component
+                breakdown.</p>
 
-            <h2>Directory Structure</h2>
+            <!-- Directory Structure -->
+            <h2>Complete Directory Structure</h2>
             <div class="tree">
-                spendwise-native/
-                ├── app/ # Expo Router screens
-                │ ├── (auth)/ # Authentication screens
-                │ │ ├── _layout.tsx # Auth stack layout
-                │ │ └── login.tsx # Login/Register screen
-                │ ├── (tabs)/ # Main tab screens
-                │ │ ├── _layout.tsx # Tab navigator config
-                │ │ ├── index.tsx # Dashboard
-                │ │ ├── transactions.tsx # Transaction list
-                │ │ ├── insights.tsx # AI Insights
-                │ │ ├── reports.tsx # Financial reports
-                │ │ ├── budget.tsx # Budget management
-                │ │ ├── goals.tsx # Savings goals
-                │ │ └── settings.tsx # App settings
-                │ └── _layout.tsx # Root layout with providers
-                ├── lib/ # Service modules
-                │ ├── ai.ts # Groq AI integration
-                │ ├── auth.ts # Firebase auth helpers
-                │ ├── database.ts # Firebase database helpers
-                │ ├── firebase.ts # Firebase config
-                │ └── notifications.ts # Expo notifications
-                ├── context/
-                │ └── AppContext.tsx # Global state provider
-                ├── types/
-                │ └── index.ts # TypeScript interfaces
-                ├── constants/
-                │ └── app.ts # Categories, currencies, colors
-                ├── assets/ # Images
-                ├── docs/ # GitHub Pages site
-                ├── app.json # Expo configuration
-                ├── eas.json # EAS Build config
-                └── package.json # Dependencies
+                <span class="folder">spendwise-native/</span>
+                │
+                ├── <span class="folder">app/</span> <span class="comment"># Expo Router screens (file-based
+                    routing)</span>
+                │ ├── <span class="folder">(auth)/</span> <span class="comment"># Auth route group</span>
+                │ │ ├── <span class="file">_layout.tsx</span> <span class="comment"># Auth stack navigator</span>
+                │ │ └── <span class="file">login.tsx</span> <span class="comment"># Login/Register screen (240
+                    lines)</span>
+                │ │
+                │ ├── <span class="folder">(tabs)/</span> <span class="comment"># Main tab route group</span>
+                │ │ ├── <span class="file">_layout.tsx</span> <span class="comment"># Tab navigator with 7 tabs</span>
+                │ │ ├── <span class="file">index.tsx</span> <span class="comment"># Dashboard (256 lines)</span>
+                │ │ ├── <span class="file">transactions.tsx</span> <span class="comment"># Transaction CRUD (281
+                    lines)</span>
+                │ │ ├── <span class="file">insights.tsx</span> <span class="comment"># AI financial insights (405
+                    lines)</span>
+                │ │ ├── <span class="file">reports.tsx</span> <span class="comment"># Charts & analytics (417
+                    lines)</span>
+                │ │ ├── <span class="file">budget.tsx</span> <span class="comment"># Budget management (278
+                    lines)</span>
+                │ │ ├── <span class="file">goals.tsx</span> <span class="comment"># Savings goals (297 lines)</span>
+                │ │ └── <span class="file">settings.tsx</span> <span class="comment"># App settings (239 lines)</span>
+                │ │
+                │ └── <span class="file">_layout.tsx</span> <span class="comment"># Root layout with AppProvider</span>
+                │
+                ├── <span class="folder">lib/</span> <span class="comment"># Service modules</span>
+                │ ├── <span class="file">firebase.ts</span> <span class="comment"># Firebase config &
+                    initialization</span>
+                │ ├── <span class="file">auth.ts</span> <span class="comment"># Authentication helpers</span>
+                │ ├── <span class="file">database.ts</span> <span class="comment"># Realtime Database CRUD</span>
+                │ ├── <span class="file">ai.ts</span> <span class="comment"># Groq AI integration (256 lines)</span>
+                │ └── <span class="file">notifications.ts</span> <span class="comment"># Expo Notifications (199
+                    lines)</span>
+                │
+                ├── <span class="folder">context/</span>
+                │ └── <span class="file">AppContext.tsx</span> <span class="comment"># Global state management (278
+                    lines)</span>
+                │
+                ├── <span class="folder">types/</span>
+                │ └── <span class="file">index.ts</span> <span class="comment"># TypeScript interfaces</span>
+                │
+                ├── <span class="folder">constants/</span>
+                │ └── <span class="file">app.ts</span> <span class="comment"># Categories, currencies, colors</span>
+                │
+                ├── <span class="folder">assets/</span>
+                │ └── <span class="folder">images/</span> <span class="comment"># App icons & splash</span>
+                │ ├── <span class="file">icon.png</span>
+                │ ├── <span class="file">adaptive-icon.png</span>
+                │ └── <span class="file">splash-icon.png</span>
+                │
+                ├── <span class="folder">docs/</span> <span class="comment"># GitHub Pages site</span>
+                │ ├── <span class="file">index.html</span> <span class="comment"># Landing page</span>
+                │ ├── <span class="folder">docs/</span> <span class="comment"># Documentation pages</span>
+                │ └── <span class="folder">screenshots/</span> <span class="comment"># App screenshots</span>
+                │
+                ├── <span class="folder">.github/workflows/</span>
+                │ ├── <span class="file">build-android.yml</span> <span class="comment"># EAS Build workflow</span>
+                │ └── <span class="file">pages.yml</span> <span class="comment"># GitHub Pages deploy</span>
+                │
+                ├── <span class="file">app.json</span> <span class="comment"># Expo configuration</span>
+                ├── <span class="file">eas.json</span> <span class="comment"># EAS Build profiles</span>
+                ├── <span class="file">package.json</span> <span class="comment"># Dependencies</span>
+                ├── <span class="file">tsconfig.json</span> <span class="comment"># TypeScript config</span>
+                └── <span class="file">.env</span> <span class="comment"># Environment variables (gitignored)</span>
             </div>
 
-            <h2>Key Files</h2>
+            <!-- Screen Components -->
+            <h2>Screen Components</h2>
+            <p>Detailed breakdown of each screen component.</p>
 
-            <h3>Screens</h3>
             <div class="file-card">
-                <h4>app/(tabs)/index.tsx</h4>
-                <p>Dashboard screen showing balance summary, spending chart, and recent transactions. Uses
-                    react-native-chart-kit for visualization.</p>
-            </div>
-            <div class="file-card">
-                <h4>app/(tabs)/insights.tsx</h4>
-                <p>AI-powered insights screen. Calls Groq API to generate personalized financial advice and health
-                    score.</p>
-            </div>
-            <div class="file-card">
-                <h4>app/(tabs)/reports.tsx</h4>
-                <p>Financial reports with pie charts for category breakdown, bar charts for daily spending, and time
-                    range selection.</p>
+                <h4>app/(tabs)/index.tsx <span>Dashboard</span></h4>
+                <p>Main dashboard showing financial overview with balance cards and weekly spending chart.</p>
+                <ul>
+                    <li>✓ Balance summary (income, expenses, savings)</li>
+                    <li>✓ Weekly spending line chart (react-native-chart-kit)</li>
+                    <li>✓ Recent transactions list (last 5)</li>
+                    <li>✓ Floating Action Button for quick add</li>
+                </ul>
             </div>
 
-            <h3>Services</h3>
             <div class="file-card">
-                <h4>lib/ai.ts</h4>
-                <p>Groq API integration. Sends financial data to LLaMA 3.3 and parses AI response for insights,
-                    recommendations, and health score.</p>
-            </div>
-            <div class="file-card">
-                <h4>lib/database.ts</h4>
-                <p>Firebase Realtime Database helpers. Functions for saving, retrieving, and subscribing to
-                    transactions, budgets, goals, and settings.</p>
-            </div>
-            <div class="file-card">
-                <h4>lib/notifications.ts</h4>
-                <p>Expo Notifications implementation. Budget alerts, daily reminders, weekly summaries, and notification
-                    permission handling.</p>
+                <h4>app/(tabs)/transactions.tsx <span>Transactions</span></h4>
+                <p>Full transaction list with filtering, add/edit modal, and swipe-to-delete.</p>
+                <ul>
+                    <li>✓ Filter by type (All/Income/Expense)</li>
+                    <li>✓ Transaction cards with category icons</li>
+                    <li>✓ Add/Edit modal with form validation</li>
+                    <li>✓ Delete confirmation</li>
+                </ul>
             </div>
 
-            <h3>State Management</h3>
             <div class="file-card">
-                <h4>context/AppContext.tsx</h4>
-                <p>React Context provider managing global state. Handles transactions, budgets, goals, user auth,
-                    currency, and dark mode preferences.</p>
+                <h4>app/(tabs)/insights.tsx <span>AI Insights</span></h4>
+                <p>AI-powered financial analysis using Groq's LLaMA 3.3 70B model.</p>
+                <ul>
+                    <li>✓ Financial Health Score (0-100 with gauge)</li>
+                    <li>✓ AI-generated insights cards (success/warning/tip/info)</li>
+                    <li>✓ Personalized recommendations list</li>
+                    <li>✓ Pull-to-refresh for new analysis</li>
+                    <li>✓ Loading states and error handling</li>
+                </ul>
             </div>
 
-            <h3>Configuration</h3>
             <div class="file-card">
-                <h4>app.json</h4>
-                <p>Expo configuration including app name, icons, splash screen, Android package name, and Expo project
-                    ID.</p>
+                <h4>app/(tabs)/reports.tsx <span>Reports</span></h4>
+                <p>Visual analytics with pie charts and bar graphs.</p>
+                <ul>
+                    <li>✓ Time range selector (Week/Month/Year)</li>
+                    <li>✓ Summary cards (transactions, income, expenses, savings)</li>
+                    <li>✓ Pie chart for spending by category</li>
+                    <li>✓ Bar chart for daily spending trends</li>
+                </ul>
             </div>
+
             <div class="file-card">
-                <h4>eas.json</h4>
-                <p>EAS Build profiles for development, preview (APK), and production (AAB) builds.</p>
+                <h4>app/(tabs)/budget.tsx <span>Budget</span></h4>
+                <p>Budget management with progress tracking.</p>
+                <ul>
+                    <li>✓ Budget cards with progress bars</li>
+                    <li>✓ Color-coded status (green/yellow/red)</li>
+                    <li>✓ Add/Edit budget modal</li>
+                    <li>✓ Period selection (daily/weekly/monthly/yearly)</li>
+                </ul>
             </div>
+
+            <div class="file-card">
+                <h4>app/(tabs)/goals.tsx <span>Goals</span></h4>
+                <p>Savings goals tracking with quick-add functionality.</p>
+                <ul>
+                    <li>✓ Goal cards with visual progress</li>
+                    <li>✓ Quick "Add Funds" button</li>
+                    <li>✓ Deadline tracking</li>
+                    <li>✓ Priority badges (Low/Medium/High)</li>
+                </ul>
+            </div>
+
+            <div class="file-card">
+                <h4>app/(tabs)/settings.tsx <span>Settings</span></h4>
+                <p>App configuration and user preferences.</p>
+                <ul>
+                    <li>✓ User info display</li>
+                    <li>✓ App statistics (transaction count, etc.)</li>
+                    <li>✓ Notification toggles (daily reminders, budget alerts, weekly insights)</li>
+                    <li>✓ Test notification button</li>
+                    <li>✓ Currency selection</li>
+                    <li>✓ Dark mode toggle</li>
+                    <li>✓ Logout functionality</li>
+                </ul>
+            </div>
+
+            <!-- Service Modules -->
+            <h2>Service Modules</h2>
+
+            <div class="file-card">
+                <h4>lib/ai.ts <span>Groq AI</span></h4>
+                <p>Integration with Groq's LLaMA 3.3 70B model for financial insights.</p>
+                <div class="code-block">
+                    // Key exports
+                    export async function getFinancialInsights(
+                    transactions: Transaction[],
+                    budgets: Budget[],
+                    goals: Goal[],
+                    currency: Currency
+                    ): Promise&lt;AIInsightResponse&gt;
+
+                    export function getQuickTip(): string
+                </div>
+            </div>
+
+            <div class="file-card">
+                <h4>lib/database.ts <span>Firebase Realtime DB</span></h4>
+                <p>CRUD operations and real-time subscriptions.</p>
+                <div class="code-block">
+                    // Key exports
+                    export async function saveTransaction(userId: string, transaction: Transaction)
+                    export async function saveBudget(userId: string, budget: Budget)
+                    export async function saveGoal(userId: string, goal: Goal)
+                    export async function saveSettings(userId: string, settings: Settings)
+
+                    export function subscribeToTransactions(userId: string, callback: Function)
+                    export function subscribeToBudgets(userId: string, callback: Function)
+                    export function subscribeToGoals(userId: string, callback: Function)
+                    export function subscribeToSettings(userId: string, callback: Function)
+                </div>
+            </div>
+
+            <div class="file-card">
+                <h4>lib/notifications.ts <span>Expo Notifications</span></h4>
+                <p>Push notification system for alerts and reminders.</p>
+                <div class="code-block">
+                    // Key exports
+                    export async function requestNotificationPermission(): Promise&lt;boolean&gt;
+                    export async function sendNotification(title: string, body: string, data?: object)
+                    export async function sendBudgetAlert(category: string, percentage: number)
+                    export async function scheduleDailyReminder(hour: number, minute: number)
+                    export async function scheduleWeeklySummary()
+                    export async function cancelAllNotifications()
+                </div>
+            </div>
+
+            <!-- Type Definitions -->
+            <h2>Type Definitions</h2>
+
+            <div class="file-card">
+                <h4>types/index.ts <span>TypeScript</span></h4>
+                <p>All TypeScript interfaces used throughout the app.</p>
+                <div class="code-block">
+                    export interface Transaction {
+                    id: string;
+                    type: 'income' | 'expense';
+                    amount: number;
+                    category: string;
+                    date: number;
+                    note: string;
+                    paymentMethod: string;
+                    }
+
+                    export interface Budget {
+                    id: string;
+                    category: string;
+                    limit: number;
+                    period: 'daily' | 'weekly' | 'monthly' | 'yearly';
+                    }
+
+                    export interface Goal {
+                    id: string;
+                    name: string;
+                    targetAmount: number;
+                    currentAmount: number;
+                    deadline: number;
+                    priority: 'low' | 'medium' | 'high';
+                    }
+
+                    export interface Currency {
+                    code: string;
+                    symbol: string;
+                    name: string;
+                    }
+
+                    export interface AIInsight {
+                    title: string;
+                    message: string;
+                    type: 'success' | 'warning' | 'tip' | 'info';
+                    icon: string;
+                    }
+
+                    export interface AIInsightResponse {
+                    healthScore: number;
+                    insights: AIInsight[];
+                    recommendations: string[];
+                    summary: string;
+                    }
+                </div>
+            </div>
+
+            <!-- Dependencies -->
+            <h2>Key Dependencies</h2>
+            <table>
+                <tr>
+                    <th>Package</th>
+                    <th>Version</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>expo</td>
+                    <td>~52.0.0</td>
+                    <td>Core framework</td>
+                </tr>
+                <tr>
+                    <td>react-native</td>
+                    <td>0.76.5</td>
+                    <td>UI framework</td>
+                </tr>
+                <tr>
+                    <td>expo-router</td>
+                    <td>~4.0.0</td>
+                    <td>File-based routing</td>
+                </tr>
+                <tr>
+                    <td>firebase</td>
+                    <td>^11.0.2</td>
+                    <td>Backend services</td>
+                </tr>
+                <tr>
+                    <td>react-native-chart-kit</td>
+                    <td>^6.12.0</td>
+                    <td>Charts & graphs</td>
+                </tr>
+                <tr>
+                    <td>expo-notifications</td>
+                    <td>~0.29.0</td>
+                    <td>Push notifications</td>
+                </tr>
+                <tr>
+                    <td>@expo/vector-icons</td>
+                    <td>^14.0.0</td>
+                    <td>Icon library</td>
+                </tr>
+            </table>
+
         </div>
     </div>
+
+    <footer class="footer">
+        <p>© 2025 SpendWise. Developed by <a href="https://github.com/lekhanpro">Lekhan</a> • Full Stack Developer</p>
+    </footer>
 </body>
 
 </html>

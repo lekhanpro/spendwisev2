@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Reference | SpendWise</title>
+    <title>API Documentation | SpendWise</title>
+    <meta name="description" content="Complete API reference for SpendWise backend and frontend services">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,6 +24,7 @@
             --accent: #3b82f6;
             --success: #22c55e;
             --warning: #f59e0b;
+            --danger: #ef4444;
             --border: #2a2a2a;
         }
 
@@ -39,11 +41,12 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 0 24px;
         }
 
+        /* Navbar */
         .navbar {
             position: fixed;
             top: 0;
@@ -67,6 +70,9 @@
             font-size: 20px;
             font-weight: 700;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .nav-links {
@@ -86,52 +92,65 @@
             color: var(--text-primary);
         }
 
+        /* Content */
         .content {
             padding: 120px 0 60px;
         }
 
         h1 {
-            font-size: 42px;
+            font-size: 48px;
             margin-bottom: 16px;
+            font-weight: 800;
         }
 
         h2 {
-            font-size: 28px;
-            margin: 48px 0 24px;
-            padding-top: 24px;
+            font-size: 32px;
+            margin: 56px 0 24px;
+            padding-top: 32px;
             border-top: 1px solid var(--border);
         }
 
         h3 {
-            font-size: 20px;
-            margin: 32px 0 16px;
+            font-size: 22px;
+            margin: 40px 0 16px;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 24px 0 12px;
+            color: var(--text-secondary);
         }
 
         p {
             color: var(--text-secondary);
             margin-bottom: 16px;
+            font-size: 15px;
         }
 
-        .api-card {
+        /* API Cards */
+        .api-section {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
         }
 
         .api-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
 
         .method {
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
         .method.post {
@@ -144,19 +163,40 @@
             color: #22c55e;
         }
 
-        .url {
-            font-family: monospace;
-            color: var(--text-secondary);
+        .method.put {
+            background: #f59e0b20;
+            color: #f59e0b;
         }
 
+        .method.delete {
+            background: #ef444420;
+            color: #ef4444;
+        }
+
+        .endpoint {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: var(--text-primary);
+            font-size: 14px;
+            background: var(--bg-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .api-desc {
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Code Blocks */
         .code-block {
             background: #000;
-            border-radius: 8px;
-            padding: 16px;
-            font-family: monospace;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', monospace;
             font-size: 13px;
             overflow-x: auto;
             margin: 16px 0;
+            border: 1px solid var(--border);
         }
 
         .code-block .key {
@@ -171,23 +211,34 @@
             color: #56d364;
         }
 
+        .code-block .comment {
+            color: #6a737d;
+        }
+
+        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 16px 0;
+            margin: 20px 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
         }
 
         th,
         td {
             text-align: left;
-            padding: 12px;
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border);
         }
 
         th {
+            background: var(--bg-primary);
             color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 14px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         td {
@@ -197,19 +248,20 @@
         .param-name {
             font-family: monospace;
             color: var(--accent);
+            font-weight: 500;
         }
 
         .param-type {
-            color: var(--text-secondary);
+            color: var(--warning);
             font-size: 12px;
         }
 
         .badge {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 10px;
+            border-radius: 6px;
             font-size: 11px;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .badge.required {
@@ -221,13 +273,85 @@
             background: #64748b20;
             color: #64748b;
         }
+
+        /* Sidebar TOC */
+        .toc {
+            position: fixed;
+            right: 24px;
+            top: 120px;
+            width: 220px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .toc h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .toc a {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .toc a:hover {
+            color: var(--accent);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        @media (max-width: 1400px) {
+            .toc {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .api-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="../" class="nav-brand">💰 SpendWise</a>
+            <a href="../" class="nav-brand"><img src="../logo.png" alt="SpendWise" style="height: 28px;"> SpendWise</a>
             <ul class="nav-links">
                 <li><a href="../">Home</a></li>
                 <li><a href="API.html" class="active">API</a></li>
@@ -238,148 +362,432 @@
         </div>
     </nav>
 
+    <!-- Table of Contents -->
+    <div class="toc">
+        <h4>On This Page</h4>
+        <ul>
+            <li><a href="#groq-ai">Groq AI API</a></li>
+            <li><a href="#firebase-auth">Firebase Auth</a></li>
+            <li><a href="#realtime-db">Realtime Database</a></li>
+            <li><a href="#notifications">Notifications</a></li>
+            <li><a href="#frontend">Frontend Services</a></li>
+        </ul>
+    </div>
+
     <div class="content">
         <div class="container">
-            <h1>🔌 API Reference</h1>
-            <p>Complete API documentation for SpendWise integrations.</p>
+            <h1>🔌 API Documentation</h1>
+            <p style="font-size: 18px; max-width: 700px;">Complete API reference for SpendWise backend integrations and
+                frontend services.</p>
 
-            <h2>Groq AI API</h2>
-            <p>SpendWise uses Groq's API for AI-powered financial insights.</p>
+            <!-- Groq AI API -->
+            <h2 id="groq-ai">Groq AI API</h2>
+            <p>SpendWise uses Groq's ultra-fast inference API for AI-powered financial insights and recommendations.</p>
 
-            <div class="api-card">
+            <div class="api-section">
                 <div class="api-header">
                     <span class="method post">POST</span>
-                    <span class="url">https://api.groq.com/openai/v1/chat/completions</span>
+                    <span class="endpoint">https://api.groq.com/openai/v1/chat/completions</span>
                 </div>
-                <p>Generate personalized financial insights and recommendations.</p>
+                <p class="api-desc">Generate personalized financial insights, health scores, and spending
+                    recommendations.</p>
+
+                <h4>Request Headers</h4>
+                <table>
+                    <tr>
+                        <th>Header</th>
+                        <th>Value</th>
+                        <th>Required</th>
+                    </tr>
+                    <tr>
+                        <td class="param-name">Authorization</td>
+                        <td>Bearer {GROQ_API_KEY}</td>
+                        <td><span class="badge required">Required</span></td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">Content-Type</td>
+                        <td>application/json</td>
+                        <td><span class="badge required">Required</span></td>
+                    </tr>
+                </table>
+
+                <h4>Request Body</h4>
+                <div class="code-block">
+                    {
+                    <span class="key">"model"</span>: <span class="string">"llama-3.3-70b-versatile"</span>,
+                    <span class="key">"messages"</span>: [
+                    {
+                    <span class="key">"role"</span>: <span class="string">"system"</span>,
+                    <span class="key">"content"</span>: <span class="string">"You are a helpful financial advisor.
+                        Always respond with valid JSON only."</span>
+                    },
+                    {
+                    <span class="key">"role"</span>: <span class="string">"user"</span>,
+                    <span class="key">"content"</span>: <span class="string">"Analyze this financial data: Income:
+                        $5000, Expenses: $3500..."</span>
+                    }
+                    ],
+                    <span class="key">"temperature"</span>: <span class="number">0.7</span>,
+                    <span class="key">"max_tokens"</span>: <span class="number">1000</span>
+                    }
+                </div>
+
+                <h4>Response Body</h4>
+                <div class="code-block">
+                    {
+                    <span class="key">"healthScore"</span>: <span class="number">75</span>,
+                    <span class="key">"insights"</span>: [
+                    {
+                    <span class="key">"title"</span>: <span class="string">"Great Savings!"</span>,
+                    <span class="key">"message"</span>: <span class="string">"You're saving 30% of your income. Keep it
+                        up!"</span>,
+                    <span class="key">"type"</span>: <span class="string">"success"</span>,
+                    <span class="key">"icon"</span>: <span class="string">"🎉"</span>
+                    },
+                    {
+                    <span class="key">"title"</span>: <span class="string">"Budget Warning"</span>,
+                    <span class="key">"message"</span>: <span class="string">"Food spending is at 85% of budget"</span>,
+                    <span class="key">"type"</span>: <span class="string">"warning"</span>,
+                    <span class="key">"icon"</span>: <span class="string">"⚠️"</span>
+                    }
+                    ],
+                    <span class="key">"recommendations"</span>: [
+                    <span class="string">"Continue building your emergency fund"</span>,
+                    <span class="string">"Consider automating your savings"</span>,
+                    <span class="string">"Review subscription services for unused ones"</span>
+                    ],
+                    <span class="key">"summary"</span>: <span class="string">"Your financial health is strong this month
+                        with a 30% savings rate."</span>
+                    }
+                </div>
+
+                <h4>Insight Types</h4>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Icon</th>
+                    </tr>
+                    <tr>
+                        <td class="param-name">success</td>
+                        <td>Positive achievement or milestone</td>
+                        <td>🎉 ✅ 🏆</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">warning</td>
+                        <td>Budget approaching limit or concern</td>
+                        <td>⚠️ 📊</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">tip</td>
+                        <td>Helpful suggestion or advice</td>
+                        <td>💡 📝</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">info</td>
+                        <td>Informational message</td>
+                        <td>ℹ️ 📈</td>
+                    </tr>
+                </table>
             </div>
 
-            <h3>Request Headers</h3>
-            <table>
-                <tr>
-                    <th>Header</th>
-                    <th>Value</th>
-                </tr>
-                <tr>
-                    <td class="param-name">Authorization</td>
-                    <td>Bearer {GROQ_API_KEY}</td>
-                </tr>
-                <tr>
-                    <td class="param-name">Content-Type</td>
-                    <td>application/json</td>
-                </tr>
-            </table>
+            <!-- Firebase Auth -->
+            <h2 id="firebase-auth">Firebase Authentication</h2>
+            <p>Secure email/password authentication with verification and password reset functionality.</p>
 
-            <h3>Request Body</h3>
-            <div class="code-block">
-                {
-                <span class="key">"model"</span>: <span class="string">"llama-3.3-70b-versatile"</span>,
-                <span class="key">"messages"</span>: [
-                {
-                <span class="key">"role"</span>: <span class="string">"system"</span>,
-                <span class="key">"content"</span>: <span class="string">"You are a financial advisor AI..."</span>
-                },
-                {
-                <span class="key">"role"</span>: <span class="string">"user"</span>,
-                <span class="key">"content"</span>: <span class="string">"Analyze spending data..."</span>
-                }
-                ],
-                <span class="key">"temperature"</span>: <span class="number">0.7</span>,
-                <span class="key">"max_tokens"</span>: <span class="number">1000</span>
-                }
+            <h3>Sign Up</h3>
+            <div class="api-section">
+                <div class="api-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint">createUserWithEmailAndPassword(auth, email, password)</span>
+                </div>
+                <p class="api-desc">Create a new user account with email verification.</p>
+
+                <h4>Parameters</h4>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td class="param-name">email</td>
+                        <td><span class="param-type">string</span></td>
+                        <td>User's email address</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">password</td>
+                        <td><span class="param-type">string</span></td>
+                        <td>Password (min 6 characters)</td>
+                    </tr>
+                </table>
+
+                <h4>Usage Example</h4>
+                <div class="code-block">
+                    <span class="comment">// lib/auth.ts</span>
+                    import { createUserWithEmailAndPassword, sendEmailVerification } from <span
+                        class="string">'firebase/auth'</span>;
+                    import { auth } from <span class="string">'./firebase'</span>;
+
+                    export async function signUp(email: string, password: string) {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    await sendEmailVerification(userCredential.user);
+                    return userCredential.user;
+                    }
+                </div>
             </div>
 
-            <h3>Response Structure</h3>
-            <div class="code-block">
-                {
-                <span class="key">"healthScore"</span>: <span class="number">75</span>,
-                <span class="key">"insights"</span>: [
-                {
-                <span class="key">"title"</span>: <span class="string">"Great Savings!"</span>,
-                <span class="key">"message"</span>: <span class="string">"You're saving 30% of income"</span>,
-                <span class="key">"type"</span>: <span class="string">"success"</span>,
-                <span class="key">"icon"</span>: <span class="string">"🎉"</span>
-                }
-                ],
-                <span class="key">"recommendations"</span>: [
-                <span class="string">"Continue building emergency fund"</span>,
-                <span class="string">"Consider investing surplus"</span>
-                ],
-                <span class="key">"summary"</span>: <span class="string">"Strong financial health this month."</span>
-                }
+            <h3>Sign In</h3>
+            <div class="api-section">
+                <div class="api-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint">signInWithEmailAndPassword(auth, email, password)</span>
+                </div>
+                <p class="api-desc">Authenticate an existing user.</p>
+
+                <h4>Error Codes</h4>
+                <table>
+                    <tr>
+                        <th>Code</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td class="param-name">auth/user-not-found</td>
+                        <td>No user with this email exists</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">auth/wrong-password</td>
+                        <td>Incorrect password</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">auth/too-many-requests</td>
+                        <td>Too many failed attempts, try later</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">auth/user-disabled</td>
+                        <td>Account has been disabled</td>
+                    </tr>
+                </table>
             </div>
 
-            <h2>Firebase Realtime Database</h2>
-            <p>Data structure for user financial data.</p>
+            <h3>Password Reset</h3>
+            <div class="api-section">
+                <div class="api-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint">sendPasswordResetEmail(auth, email)</span>
+                </div>
+                <p class="api-desc">Send a password reset email to the user.</p>
+            </div>
+
+            <!-- Realtime Database -->
+            <h2 id="realtime-db">Firebase Realtime Database</h2>
+            <p>Real-time NoSQL database for storing and syncing user financial data across devices.</p>
 
             <h3>Database Schema</h3>
             <div class="code-block">
                 /users/{userId}/
-                ├── transactions/
-                │ └── {transactionId}: { amount, type, category, date, note }
-                ├── budgets/
-                │ └── {budgetId}: { category, limit, period }
-                ├── goals/
-                │ └── {goalId}: { name, targetAmount, currentAmount, deadline }
+                │
+                ├── transactions/{transactionId}
+                │ ├── id: <span class="string">"uuid"</span>
+                │ ├── type: <span class="string">"income"</span> | <span class="string">"expense"</span>
+                │ ├── amount: <span class="number">1500.00</span>
+                │ ├── category: <span class="string">"Food"</span>
+                │ ├── date: <span class="number">1702234567890</span> <span class="comment">// timestamp</span>
+                │ ├── note: <span class="string">"Groceries"</span>
+                │ └── paymentMethod: <span class="string">"Credit Card"</span>
+                │
+                ├── budgets/{budgetId}
+                │ ├── id: <span class="string">"uuid"</span>
+                │ ├── category: <span class="string">"Food"</span>
+                │ ├── limit: <span class="number">500.00</span>
+                │ └── period: <span class="string">"monthly"</span>
+                │
+                ├── goals/{goalId}
+                │ ├── id: <span class="string">"uuid"</span>
+                │ ├── name: <span class="string">"Emergency Fund"</span>
+                │ ├── targetAmount: <span class="number">10000.00</span>
+                │ ├── currentAmount: <span class="number">3500.00</span>
+                │ ├── deadline: <span class="number">1735689600000</span>
+                │ └── priority: <span class="string">"high"</span>
+                │
                 └── settings/
-                └── { currency, darkMode }
+                ├── currency: { code: <span class="string">"USD"</span>, symbol: <span class="string">"$"</span>, name:
+                <span class="string">"US Dollar"</span> }
+                └── darkMode: <span class="number">true</span>
             </div>
 
-            <h2>Firebase Authentication</h2>
-            <p>Email/password authentication with verification.</p>
+            <h3>CRUD Operations</h3>
+            <div class="api-section">
+                <h4>Save Transaction</h4>
+                <div class="code-block">
+                    <span class="comment">// lib/database.ts</span>
+                    import { ref, set } from <span class="string">'firebase/database'</span>;
+                    import { db } from <span class="string">'./firebase'</span>;
 
-            <h3>Auth Methods</h3>
+                    export async function saveTransaction(userId: string, transaction: Transaction) {
+                    const transactionRef = ref(db, `users/${userId}/transactions/${transaction.id}`);
+                    await set(transactionRef, transaction);
+                    }
+                </div>
+
+                <h4>Subscribe to Transactions</h4>
+                <div class="code-block">
+                    import { ref, onValue } from <span class="string">'firebase/database'</span>;
+
+                    export function subscribeToTransactions(
+                    userId: string,
+                    callback: (transactions: Transaction[]) => void
+                    ) {
+                    const transactionsRef = ref(db, `users/${userId}/transactions`);
+
+                    return onValue(transactionsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    const transactions = data ? Object.values(data) : [];
+                    callback(transactions as Transaction[]);
+                    });
+                    }
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <h2 id="notifications">Expo Notifications</h2>
+            <p>Push notification system for budget alerts, reminders, and AI insights.</p>
+
+            <h3>Notification Channels</h3>
             <table>
                 <tr>
-                    <th>Method</th>
-                    <th>Description</th>
+                    <th>Channel ID</th>
+                    <th>Name</th>
+                    <th>Priority</th>
+                    <th>Use Case</th>
                 </tr>
                 <tr>
-                    <td class="param-name">signUp(email, password)</td>
-                    <td>Create new user account with email verification</td>
+                    <td class="param-name">default</td>
+                    <td>General</td>
+                    <td>Default</td>
+                    <td>Daily reminders, tips</td>
                 </tr>
                 <tr>
-                    <td class="param-name">signIn(email, password)</td>
-                    <td>Sign in existing user</td>
+                    <td class="param-name">budget-alerts</td>
+                    <td>Budget Alerts</td>
+                    <td>High</td>
+                    <td>80% and 100% budget warnings</td>
                 </tr>
                 <tr>
-                    <td class="param-name">logout()</td>
-                    <td>Sign out current user</td>
-                </tr>
-                <tr>
-                    <td class="param-name">resetPassword(email)</td>
-                    <td>Send password reset email</td>
+                    <td class="param-name">insights</td>
+                    <td>AI Insights</td>
+                    <td>Default</td>
+                    <td>Weekly AI summaries</td>
                 </tr>
             </table>
 
-            <h2>Expo Notifications</h2>
-            <p>Push notification system for alerts and reminders.</p>
+            <h3>Send Notification</h3>
+            <div class="api-section">
+                <div class="code-block">
+                    <span class="comment">// lib/notifications.ts</span>
+                    import * as Notifications from <span class="string">'expo-notifications'</span>;
 
-            <h3>Notification Types</h3>
-            <table>
-                <tr>
-                    <th>Type</th>
-                    <th>Trigger</th>
-                    <th>Channel</th>
-                </tr>
-                <tr>
-                    <td>Budget Alert</td>
-                    <td>80% or 100% budget used</td>
-                    <td>budget-alerts</td>
-                </tr>
-                <tr>
-                    <td>Daily Reminder</td>
-                    <td>8:00 PM daily</td>
-                    <td>default</td>
-                </tr>
-                <tr>
-                    <td>Weekly Summary</td>
-                    <td>Monday 9:00 AM</td>
-                    <td>insights</td>
-                </tr>
-            </table>
+                    export async function sendNotification(title: string, body: string, data?: object) {
+                    await Notifications.scheduleNotificationAsync({
+                    content: {
+                    title,
+                    body,
+                    data,
+                    sound: <span class="string">'default'</span>,
+                    },
+                    trigger: null, <span class="comment">// Immediate</span>
+                    });
+                    }
+
+                    <span class="comment">// Usage</span>
+                    sendNotification(
+                    <span class="string">'⚠️ Budget Alert'</span>,
+                    <span class="string">'You have used 80% of your Food budget'</span>,
+                    { type: <span class="string">'budget-alert'</span>, category: <span class="string">'Food'</span> }
+                    );
+                </div>
+            </div>
+
+            <h3>Schedule Recurring Notifications</h3>
+            <div class="api-section">
+                <div class="code-block">
+                    <span class="comment">// Daily reminder at 8 PM</span>
+                    export async function scheduleDailyReminder(hour: number, minute: number) {
+                    await Notifications.scheduleNotificationAsync({
+                    content: {
+                    title: <span class="string">'📝 Daily Reminder'</span>,
+                    body: <span class="string">'Don\'t forget to log your expenses today!'</span>,
+                    },
+                    trigger: {
+                    hour,
+                    minute,
+                    repeats: true,
+                    },
+                    });
+                    }
+
+                    <span class="comment">// Weekly summary every Monday at 9 AM</span>
+                    export async function scheduleWeeklySummary() {
+                    await Notifications.scheduleNotificationAsync({
+                    content: {
+                    title: <span class="string">'📊 Weekly Summary'</span>,
+                    body: <span class="string">'Your weekly spending report is ready!'</span>,
+                    },
+                    trigger: {
+                    weekday: <span class="number">2</span>, <span class="comment">// Monday</span>
+                    hour: <span class="number">9</span>,
+                    minute: <span class="number">0</span>,
+                    repeats: true,
+                    },
+                    });
+                    }
+                </div>
+            </div>
+
+            <!-- Frontend Services -->
+            <h2 id="frontend">Frontend Services</h2>
+            <p>TypeScript service modules for interacting with backend APIs.</p>
+
+            <h3>Service Structure</h3>
+            <div class="code-block">
+                lib/
+                ├── firebase.ts <span class="comment">// Firebase initialization</span>
+                ├── auth.ts <span class="comment">// Authentication functions</span>
+                │ ├── signUp(email, password)
+                │ ├── signIn(email, password)
+                │ ├── logout()
+                │ └── resetPassword(email)
+                │
+                ├── database.ts <span class="comment">// Realtime Database helpers</span>
+                │ ├── saveTransaction(userId, transaction)
+                │ ├── saveBudget(userId, budget)
+                │ ├── saveGoal(userId, goal)
+                │ ├── saveSettings(userId, settings)
+                │ ├── subscribeToTransactions(userId, callback)
+                │ ├── subscribeToBudgets(userId, callback)
+                │ ├── subscribeToGoals(userId, callback)
+                │ └── subscribeToSettings(userId, callback)
+                │
+                ├── ai.ts <span class="comment">// Groq AI integration</span>
+                │ ├── getFinancialInsights(transactions, budgets, goals, currency)
+                │ └── getQuickTip()
+                │
+                └── notifications.ts <span class="comment">// Expo Notifications</span>
+                ├── requestNotificationPermission()
+                ├── sendNotification(title, body, data)
+                ├── sendBudgetAlert(category, percentage)
+                ├── sendInsightNotification(insight)
+                ├── scheduleDailyReminder(hour, minute)
+                ├── scheduleWeeklySummary()
+                └── cancelAllNotifications()
+            </div>
+
         </div>
     </div>
+
+    <footer class="footer">
+        <p>© 2025 SpendWise. Developed by <a href="https://github.com/lekhanpro">Lekhan</a> • Full Stack Developer</p>
+    </footer>
 </body>
 
 </html>

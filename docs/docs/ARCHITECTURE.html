@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Architecture | SpendWise</title>
+    <title>Architecture Documentation | SpendWise</title>
+    <meta name="description" content="Technical architecture guide for SpendWise application">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -30,7 +31,7 @@
             font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         a {
@@ -39,7 +40,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 0 24px;
         }
@@ -67,6 +68,9 @@
             font-size: 20px;
             font-weight: 700;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .nav-links {
@@ -91,79 +95,213 @@
         }
 
         h1 {
-            font-size: 42px;
+            font-size: 48px;
             margin-bottom: 16px;
+            font-weight: 800;
         }
 
         h2 {
-            font-size: 28px;
-            margin: 48px 0 24px;
-            padding-top: 24px;
+            font-size: 32px;
+            margin: 56px 0 24px;
+            padding-top: 32px;
             border-top: 1px solid var(--border);
         }
 
         h3 {
-            font-size: 20px;
-            margin: 32px 0 16px;
+            font-size: 22px;
+            margin: 40px 0 16px;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 24px 0 12px;
+            color: var(--text-secondary);
         }
 
         p {
             color: var(--text-secondary);
             margin-bottom: 16px;
-        }
-
-        .arch-layer {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--accent);
-        }
-
-        .arch-layer h4 {
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
-
-        .arch-layer p {
-            margin-bottom: 8px;
-        }
-
-        .tech-badge {
-            display: inline-block;
-            background: var(--accent)20;
-            color: var(--accent);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-right: 8px;
-            margin-top: 8px;
+            font-size: 15px;
         }
 
         .diagram {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            font-family: monospace;
-            font-size: 14px;
+            border-radius: 16px;
+            padding: 28px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
             overflow-x: auto;
+            line-height: 1.5;
+            margin: 24px 0;
         }
 
-        .flow-item {
+        .layer-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .layer-card h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .layer-card p {
+            margin-bottom: 12px;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: var(--accent)15;
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #000;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+        }
+
+        .code-block .comment {
+            color: #6a737d;
+        }
+
+        .code-block .key {
+            color: #79c0ff;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .number {
+            color: #56d364;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .flow-step {
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 12px 0;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .flow-step:last-child {
+            border-bottom: none;
         }
 
         .flow-icon {
-            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent)20;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
 
         .flow-arrow {
             color: var(--accent);
+            font-size: 20px;
+        }
+
+        .toc {
+            position: fixed;
+            right: 24px;
+            top: 120px;
+            width: 220px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .toc h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .toc a {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .footer {
+            background: var(--bg-secondary);
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 1400px) {
+            .toc {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
@@ -171,7 +309,7 @@
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="../" class="nav-brand">💰 SpendWise</a>
+            <a href="../" class="nav-brand"><img src="../logo.png" alt="SpendWise" style="height: 28px;"> SpendWise</a>
             <ul class="nav-links">
                 <li><a href="../">Home</a></li>
                 <li><a href="API.html">API</a></li>
@@ -182,109 +320,430 @@
         </div>
     </nav>
 
+    <div class="toc">
+        <h4>On This Page</h4>
+        <ul>
+            <li><a href="#overview">System Overview</a></li>
+            <li><a href="#layers">Layer Architecture</a></li>
+            <li><a href="#data-flow">Data Flow</a></li>
+            <li><a href="#state">State Management</a></li>
+            <li><a href="#ai">AI Integration</a></li>
+            <li><a href="#notifications">Notifications</a></li>
+            <li><a href="#security">Security</a></li>
+        </ul>
+    </div>
+
     <div class="content">
         <div class="container">
-            <h1>🏗️ Architecture</h1>
-            <p>System architecture overview for SpendWise.</p>
+            <h1>🏗️ Architecture Documentation</h1>
+            <p style="font-size: 18px; max-width: 700px;">Technical architecture guide for SpendWise application.</p>
 
-            <h2>System Overview</h2>
-            <p>SpendWise follows a modern mobile architecture with React Native for the frontend and Firebase for
-                backend services.</p>
+            <!-- System Overview -->
+            <h2 id="overview">System Architecture Overview</h2>
+            <p>SpendWise follows a modern mobile-first architecture with React Native (Expo) for the frontend and
+                Firebase + Groq AI for backend services.</p>
 
             <div class="diagram">
-                ┌──────────────────────────────────────────────────────────┐
-                │ PRESENTATION LAYER │
-                │ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ │
-                │ │Dashboard│ │ Trans. │ │ Insights│ │ Reports │ ... │
-                │ └─────────┘ └─────────┘ └─────────┘ └─────────┘ │
-                │ Expo Router │
-                └──────────────────────────────────────────────────────────┘
+                ┌─────────────────────────────────────────────────────────────────────────┐
+                │ SPENDWISE ARCHITECTURE │
+                └─────────────────────────────────────────────────────────────────────────┘
+
+                ┌─────────────────────────────────────────────────────────────────────────┐
+                │ 📱 PRESENTATION LAYER │
+                │ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ │
+                │ │ Dashboard │ │Transactions│ │ AI Insights│ │ Reports │ │
+                │ └────────────┘ └────────────┘ └────────────┘ └────────────┘ │
+                │ ┌────────────┐ ┌────────────┐ ┌────────────┐ │
+                │ │ Budget │ │ Goals │ │ Settings │ │
+                │ └────────────┘ └────────────┘ └────────────┘ │
+                │ │
+                │ Expo Router (File-based) │
+                └─────────────────────────────────────────────────────────────────────────┘
                 │
                 ▼
-                ┌──────────────────────────────────────────────────────────┐
-                │ STATE MANAGEMENT │
-                │ AppContext (React Context) │
+                ┌─────────────────────────────────────────────────────────────────────────┐
+                │ 🧠 STATE MANAGEMENT LAYER │
+                │ │
+                │ AppContext (React Context API) │
+                │ ┌──────────────┬──────────────┬──────────────┬──────────────┐ │
+                │ │ Transactions │ Budgets │ Goals │ Settings │ │
+                │ └──────────────┴──────────────┴──────────────┴──────────────┘ │
                 │ ┌──────────────┬──────────────┬──────────────┐ │
-                │ │ Transactions │ Budgets │ Goals │ │
+                │ │ User │ Categories │ Currency │ │
                 │ └──────────────┴──────────────┴──────────────┘ │
-                └──────────────────────────────────────────────────────────┘
+                └─────────────────────────────────────────────────────────────────────────┘
                 │
                 ▼
-                ┌──────────────────────────────────────────────────────────┐
-                │ SERVICE LAYER │
-                │ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ │
-                │ │ Firebase │ │ Groq │ │ Expo │ │ Charts │ │
-                │ │ Auth │ │ AI │ │ Notif. │ │ Kit │ │
-                │ └──────────┘ └──────────┘ └──────────┘ └──────────┘ │
-                └──────────────────────────────────────────────────────────┘
+                ┌─────────────────────────────────────────────────────────────────────────┐
+                │ ⚙️ SERVICE LAYER │
+                │ │
+                │ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ │
+                │ │ lib/ │ │ lib/ │ │ lib/ │ │ lib/ │ │
+                │ │ auth.ts │ │ database.ts │ │ ai.ts │ │notifications │ │
+                │ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ │
+                └─────────────────────────────────────────────────────────────────────────┘
                 │
                 ▼
-                ┌──────────────────────────────────────────────────────────┐
-                │ EXTERNAL SERVICES │
-                │ ┌────────────────────┐ ┌────────────────────┐ │
-                │ │ Firebase Realtime │ │ Groq API │ │
-                │ │ Database │ │ (LLaMA 3.3) │ │
-                │ └────────────────────┘ └────────────────────┘ │
-                └──────────────────────────────────────────────────────────┘
+                ┌─────────────────────────────────────────────────────────────────────────┐
+                │ ☁️ EXTERNAL SERVICES │
+                │ │
+                │ ┌────────────────────────────┐ ┌────────────────────────────┐ │
+                │ │ 🔐 Firebase Auth │ │ 🗄️ Firebase Realtime DB │ │
+                │ │ Email/Password │ │ Real-time sync │ │
+                │ │ Email verification │ │ Offline persistence │ │
+                │ └────────────────────────────┘ └────────────────────────────┘ │
+                │ │
+                │ ┌────────────────────────────┐ ┌────────────────────────────┐ │
+                │ │ 🤖 Groq API │ │ 🔔 Expo Notifications │ │
+                │ │ LLaMA 3.3 70B │ │ Push notifications │ │
+                │ │ Financial insights │ │ Scheduled reminders │ │
+                │ └────────────────────────────┘ └────────────────────────────┘ │
+                └─────────────────────────────────────────────────────────────────────────┘
             </div>
 
-            <h2>Layer Details</h2>
+            <!-- Layer Architecture -->
+            <h2 id="layers">Layer Architecture</h2>
+            <p>Detailed breakdown of each application layer.</p>
 
-            <div class="arch-layer" style="border-left-color: #3b82f6;">
-                <h4>📱 Presentation Layer</h4>
-                <p>React Native components with Expo Router for navigation. 7 main screens with modals for data entry.
-                </p>
+            <div class="layer-card" style="border-left-color: #3b82f6;">
+                <h4><span>📱</span> 1. Presentation Layer</h4>
+                <p>React Native components with Expo Router for file-based navigation. Each screen is a self-contained
+                    module handling its own UI state and user interactions.</p>
                 <span class="tech-badge">React Native</span>
                 <span class="tech-badge">Expo</span>
                 <span class="tech-badge">TypeScript</span>
+                <span class="tech-badge">react-native-chart-kit</span>
+
+                <div class="code-block">
+                    app/
+                    ├── (auth)/
+                    │ ├── _layout.tsx <span class="comment">// Auth stack layout</span>
+                    │ └── login.tsx <span class="comment">// Login/Register screen</span>
+                    │
+                    ├── (tabs)/
+                    │ ├── _layout.tsx <span class="comment">// Tab navigator (7 tabs)</span>
+                    │ ├── index.tsx <span class="comment">// Dashboard</span>
+                    │ ├── transactions.tsx <span class="comment">// Transaction list + CRUD</span>
+                    │ ├── insights.tsx <span class="comment">// AI financial insights</span>
+                    │ ├── reports.tsx <span class="comment">// Charts & analytics</span>
+                    │ ├── budget.tsx <span class="comment">// Budget management</span>
+                    │ ├── goals.tsx <span class="comment">// Savings goals</span>
+                    │ └── settings.tsx <span class="comment">// App settings</span>
+                    │
+                    └── _layout.tsx <span class="comment">// Root layout with providers</span>
+                </div>
             </div>
 
-            <div class="arch-layer" style="border-left-color: #22c55e;">
-                <h4>🧠 State Management</h4>
-                <p>Global state managed via React Context. Handles transactions, budgets, goals, settings, and user auth
-                    state.</p>
+            <div class="layer-card" style="border-left-color: #22c55e;">
+                <h4><span>🧠</span> 2. State Management Layer</h4>
+                <p>Global state managed via React Context API. The AppContext wraps the entire application and provides
+                    centralized state access and update functions.</p>
                 <span class="tech-badge">React Context</span>
                 <span class="tech-badge">Custom Hooks</span>
+                <span class="tech-badge">useReducer</span>
+
+                <div class="code-block">
+                    <span class="comment">// context/AppContext.tsx</span>
+                    interface AppContextType {
+                    <span class="comment">// State</span>
+                    user: User | null;
+                    transactions: Transaction[];
+                    budgets: Budget[];
+                    goals: Goal[];
+                    categories: Category[];
+                    currency: Currency;
+                    darkMode: boolean;
+
+                    <span class="comment">// Actions</span>
+                    addTransaction: (t: Transaction) => Promise<void>;
+                        updateTransaction: (t: Transaction) => Promise<void>;
+                            deleteTransaction: (id: string) => Promise<void>;
+                                addBudget: (b: Budget) => Promise<void>;
+                                    addGoal: (g: Goal) => Promise<void>;
+                                        updateGoal: (g: Goal) => Promise<void>;
+                                            setCurrency: (c: Currency) => Promise<void>;
+                                                setDarkMode: (d: boolean) => Promise<void>;
+                                                    logout: () => Promise<void>;
+                                                        }
+                </div>
             </div>
 
-            <div class="arch-layer" style="border-left-color: #f59e0b;">
-                <h4>⚙️ Service Layer</h4>
-                <p>Abstraction layer for external service communication. Handles API calls, data transformations, and
-                    error handling.</p>
-                <span class="tech-badge">lib/ai.ts</span>
-                <span class="tech-badge">lib/database.ts</span>
+            <div class="layer-card" style="border-left-color: #f59e0b;">
+                <h4><span>⚙️</span> 3. Service Layer</h4>
+                <p>Abstraction layer for external service communication. Each service module handles a specific domain
+                    with proper error handling and type safety.</p>
                 <span class="tech-badge">lib/auth.ts</span>
+                <span class="tech-badge">lib/database.ts</span>
+                <span class="tech-badge">lib/ai.ts</span>
                 <span class="tech-badge">lib/notifications.ts</span>
+
+                <div class="code-block">
+                    <span class="comment">// Service responsibilities</span>
+                    auth.ts → signUp, signIn, logout, resetPassword
+                    database.ts → CRUD for transactions, budgets, goals, settings
+                    → Real-time subscriptions with onValue()
+                    ai.ts → Groq API calls for financial insights
+                    → Response parsing and error handling
+                    notifications.ts → Permission requests, channel setup
+                    → Immediate and scheduled notifications
+                </div>
             </div>
 
-            <div class="arch-layer" style="border-left-color: #8b5cf6;">
-                <h4>☁️ External Services</h4>
-                <p>Firebase for authentication and data storage. Groq API for AI-powered insights.</p>
+            <div class="layer-card" style="border-left-color: #8b5cf6;">
+                <h4><span>☁️</span> 4. Data Layer - Firebase Schema</h4>
+                <p>Firebase Realtime Database stores all user data with real-time synchronization across devices.</p>
                 <span class="tech-badge">Firebase Auth</span>
                 <span class="tech-badge">Realtime Database</span>
                 <span class="tech-badge">Groq API</span>
+
+                <div class="code-block">
+                    Firebase Realtime Database
+                    │
+                    ├── users/{userId}/
+                    │ │
+                    │ ├── transactions/{transactionId}
+                    │ │ ├── id: string
+                    │ │ ├── type: "income" | "expense"
+                    │ │ ├── amount: number
+                    │ │ ├── category: string
+                    │ │ ├── date: timestamp
+                    │ │ ├── note: string
+                    │ │ └── paymentMethod: string
+                    │ │
+                    │ ├── budgets/{budgetId}
+                    │ │ ├── id: string
+                    │ │ ├── category: string
+                    │ │ ├── limit: number
+                    │ │ └── period: "daily" | "weekly" | "monthly" | "yearly"
+                    │ │
+                    │ ├── goals/{goalId}
+                    │ │ ├── id: string
+                    │ │ ├── name: string
+                    │ │ ├── targetAmount: number
+                    │ │ ├── currentAmount: number
+                    │ │ ├── deadline: timestamp
+                    │ │ └── priority: "low" | "medium" | "high"
+                    │ │
+                    │ └── settings/
+                    │ ├── currency: { code, symbol, name }
+                    │ └── darkMode: boolean
+                </div>
             </div>
 
-            <h2>Data Flow</h2>
-            <div class="flow-item"><span class="flow-icon">👤</span> User Action <span class="flow-arrow">→</span>
-                Screen Component</div>
-            <div class="flow-item"><span class="flow-icon">📱</span> Screen Component <span class="flow-arrow">→</span>
-                AppContext (dispatch)</div>
-            <div class="flow-item"><span class="flow-icon">🧠</span> AppContext <span class="flow-arrow">→</span>
-                Service Layer</div>
-            <div class="flow-item"><span class="flow-icon">⚙️</span> Service Layer <span class="flow-arrow">→</span>
-                Firebase / Groq API</div>
-            <div class="flow-item"><span class="flow-icon">☁️</span> Response <span class="flow-arrow">→</span> State
-                Update</div>
-            <div class="flow-item"><span class="flow-icon">🔄</span> State Update <span class="flow-arrow">→</span> UI
-                Re-render</div>
+            <!-- Data Flow -->
+            <h2 id="data-flow">Data Flow</h2>
+            <p>How data moves through the application layers.</p>
 
-            <h2>Design Patterns</h2>
-            <p><strong>Provider Pattern:</strong> AppContext wraps the entire app, providing global state access.</p>
-            <p><strong>Container/Presentational:</strong> Screens handle logic, components handle display.</p>
-            <p><strong>Service Abstraction:</strong> External APIs are wrapped in service modules for testability.</p>
+            <div class="flow-step">
+                <div class="flow-icon">👤</div>
+                <div>
+                    <strong>User Action</strong>
+                    <p style="margin: 4px 0 0; font-size: 13px;">User taps "Add Transaction" button</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon">📱</div>
+                <div>
+                    <strong>Presentation Layer</strong>
+                    <p style="margin: 4px 0 0; font-size: 13px;">Screen component calls addTransaction from AppContext
+                    </p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon">🧠</div>
+                <div>
+                    <strong>State Management</strong>
+                    <p style="margin: 4px 0 0; font-size: 13px;">AppContext dispatches to service layer and updates
+                        local state</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon">⚙️</div>
+                <div>
+                    <strong>Service Layer</strong>
+                    <p style="margin: 4px 0 0; font-size: 13px;">database.ts writes to Firebase, checks budgets for
+                        alerts</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon">☁️</div>
+                <div>
+                    <strong>Firebase</strong>
+                    <p style="margin: 4px 0 0; font-size: 13px;">Data persisted to Realtime Database, synced to other
+                        devices</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon">🔄</div>
+                <div>
+                    <strong>Real-time Update</strong>
+                    <p style="margin: 4px 0 0; font-size: 13px;">onValue listener triggers, state updates, UI re-renders
+                    </p>
+                </div>
+            </div>
+
+            <!-- AI Integration -->
+            <h2 id="ai">AI Integration Architecture</h2>
+            <p>How Groq AI provides financial insights.</p>
+
+            <div class="diagram">
+                ┌─────────────────────────────────────────────────────────────────────────┐
+                │ AI INSIGHTS FLOW │
+                └─────────────────────────────────────────────────────────────────────────┘
+
+                ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
+                │ Transactions │ │ Budgets │ │ Goals │
+                └───────┬────────┘ └───────┬────────┘ └───────┬────────┘
+                │ │ │
+                └──────────────────────┼──────────────────────┘
+                │
+                ▼
+                ┌──────────────────┐
+                │ Prepare Data │
+                │ - Filter 30d │
+                │ - Calculate │
+                │ summaries │
+                └────────┬─────────┘
+                │
+                ▼
+                ┌──────────────────┐
+                │ Build Prompt │
+                │ - System role │
+                │ - User data │
+                │ - JSON format │
+                └────────┬─────────┘
+                │
+                ▼
+                ┌──────────────────┐
+                │ Groq API │
+                │ LLaMA 3.3 70B │
+                │ POST /chat/ │
+                │ completions │
+                └────────┬─────────┘
+                │
+                ▼
+                ┌──────────────────┐
+                │ Parse Response │
+                │ - Extract JSON │
+                │ - Validate │
+                │ - fallbacks │
+                └────────┬─────────┘
+                │
+                ▼
+                ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
+                │ Health Score │ │ Insights │ │Recommendations │
+                │ 0-100 │ │ (4 types) │ │ (actions) │
+                └────────────────┘ └────────────────┘ └────────────────┘
+            </div>
+
+            <!-- Notification Flow -->
+            <h2 id="notifications">Push Notification Architecture</h2>
+
+            <h3>Notification Triggers</h3>
+            <table>
+                <tr>
+                    <th>Trigger</th>
+                    <th>Condition</th>
+                    <th>Notification</th>
+                </tr>
+                <tr>
+                    <td>Budget 80%</td>
+                    <td>Category spending ≥ 80% of limit</td>
+                    <td>⚠️ Warning alert</td>
+                </tr>
+                <tr>
+                    <td>Budget 100%</td>
+                    <td>Category spending ≥ 100% of limit</td>
+                    <td>🚨 Over budget alert</td>
+                </tr>
+                <tr>
+                    <td>Daily Reminder</td>
+                    <td>8:00 PM daily (if enabled)</td>
+                    <td>📝 Log expenses reminder</td>
+                </tr>
+                <tr>
+                    <td>Weekly Summary</td>
+                    <td>Monday 9:00 AM (if enabled)</td>
+                    <td>📊 Weekly insights ready</td>
+                </tr>
+            </table>
+
+            <!-- Security -->
+            <h2 id="security">Security Architecture</h2>
+
+            <h3>Authentication Flow</h3>
+            <div class="diagram">
+                ┌─────────┐ ┌─────────────┐ ┌──────────────┐ ┌──────────────┐
+                │ User │────▶│ Login/ │────▶│ Firebase │────▶│ Verified │
+                │ │ │ Register │ │ Auth │ │ User │
+                └─────────┘ └─────────────┘ └──────────────┘ └──────────────┘
+                │ │
+                │ ▼
+                │ ┌──────────────┐
+                │ │ Email │
+                └─────────────▶│ Verification │
+                └──────────────┘
+            </div>
+
+            <h3>Data Security</h3>
+            <table>
+                <tr>
+                    <th>Layer</th>
+                    <th>Security Measure</th>
+                </tr>
+                <tr>
+                    <td>API Keys</td>
+                    <td>Environment variables (EXPO_PUBLIC_GROQ_API_KEY)</td>
+                </tr>
+                <tr>
+                    <td>Firebase</td>
+                    <td>User-scoped data (users/{userId}/...)</td>
+                </tr>
+                <tr>
+                    <td>Auth</td>
+                    <td>Email verification required before full access</td>
+                </tr>
+                <tr>
+                    <td>Transport</td>
+                    <td>HTTPS for all API calls</td>
+                </tr>
+            </table>
+
+            <!-- Version Info -->
+            <h2>Version Information</h2>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Version</th>
+                </tr>
+                <tr>
+                    <td>SpendWise App</td>
+                    <td>v2.1.0</td>
+                </tr>
+                <tr>
+                    <td>React Native</td>
+                    <td>0.76.5</td>
+                </tr>
+                <tr>
+                    <td>Expo SDK</td>
+                    <td>52</td>
+                </tr>
+                <tr>
+                    <td>Firebase</td>
+                    <td>11.0.2</td>
+                </tr>
+                <tr>
+                    <td>Groq Model</td>
+                    <td>llama-3.3-70b-versatile</td>
+                </tr>
+            </table>
+
         </div>
     </div>
+
+    <footer class="footer">
+        <p>© 2025 SpendWise. Developed by <a href="https://github.com/lekhanpro">Lekhan</a> • Full Stack Developer</p>
+    </footer>
 </body>
 
 </html>
