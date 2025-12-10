@@ -1,8 +1,15 @@
-// Settings Screen
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, useColorScheme, TouchableOpacity, Switch, Alert, Modal } from 'react-native';
+// Settings Screen with Notification Controls
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, ScrollView, useColorScheme, TouchableOpacity, Switch, Alert, Modal, Linking } from 'react-native';
 import { useApp } from '../../context/AppContext';
 import { Colors, SUPPORTED_CURRENCIES } from '../../constants/app';
+import {
+    requestNotificationPermission,
+    scheduleDailyReminder,
+    scheduleWeeklySummary,
+    cancelAllNotifications,
+    sendNotification,
+} from '../../lib/notifications';
 
 export default function SettingsScreen() {
     const colorScheme = useColorScheme();
@@ -10,6 +17,53 @@ export default function SettingsScreen() {
     const { user, darkMode, setDarkMode, currency, setCurrency, handleLogout, resetData, transactions, budgets, goals } = useApp();
 
     const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
+    const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+    const [dailyReminder, setDailyReminder] = useState(false);
+    const [budgetAlerts, setBudgetAlerts] = useState(true);
+    const [weeklyInsights, setWeeklyInsights] = useState(false);
+
+    useEffect(() => {
+        checkNotificationPermission();
+    }, []);
+
+    const checkNotificationPermission = async () => {
+        const granted = await requestNotificationPermission();
+        setNotificationsEnabled(granted);
+    };
+
+    const toggleNotifications = async (value: boolean) => {
+        if (value) {
+            const granted = await requestNotificationPermission();
+            setNotificationsEnabled(granted);
+            if (granted) {
+                await sendNotification('🔔 Notifications Enabled', 'You will now receive spending alerts and insights!');
+            }
+        } else {
+            await cancelAllNotifications();
+            setNotificationsEnabled(false);
+            setDailyReminder(false);
+            setWeeklyInsights(false);
+        }
+    };
+
+    const toggleDailyReminder = async (value: boolean) => {
+        setDailyReminder(value);
+        if (value) {
+            await scheduleDailyReminder(20, 0); // 8 PM
+            Alert.alert('✅ Daily Reminder Set', 'You will be reminded at 8:00 PM daily to log your expenses.');
+        } else {
+            await cancelAllNotifications();
+            if (weeklyInsights) await scheduleWeeklySummary();
+        }
+    };
+
+    const toggleWeeklyInsights = async (value: boolean) => {
+        setWeeklyInsights(value);
+        if (value) {
+            await scheduleWeeklySummary();
+            Alert.alert('✅ Weekly Summary Set', 'You will receive a spending summary every Monday at 9:00 AM.');
+        }
+    };
 
     const handleResetData = () => {
         Alert.alert(
@@ -30,6 +84,13 @@ export default function SettingsScreen() {
                 { text: 'Cancel', style: 'cancel' },
                 { text: 'Logout', onPress: handleLogout },
             ]
+        );
+    };
+
+    const testNotification = async () => {
+        await sendNotification(
+            '💡 Test Notification',
+            'Notifications are working! You will receive budget alerts and AI insights.'
         );
     };
 
@@ -74,6 +135,74 @@ export default function SettingsScreen() {
                             <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Goals</Text>
                         </View>
                     </View>
+                </View>
+
+                {/* Notifications */}
+                <View style={[styles.section, { backgroundColor: theme.card }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.text }]}>🔔 Notifications</Text>
+
+                    <View style={styles.settingRow}>
+                        <View>
+                            <Text style={[styles.settingLabel, { color: theme.text }]}>Enable Notifications</Text>
+                            <Text style={[styles.settingDesc, { color: theme.textSecondary }]}>Receive alerts and insights</Text>
+                        </View>
+                        <Switch
+                            value={notificationsEnabled}
+                            onValueChange={toggleNotifications}
+                            trackColor={{ false: theme.border, true: theme.primary }}
+                            thumbColor="#fff"
+                        />
+                    </View>
+
+                    {notificationsEnabled && (
+                        <>
+                            <View style={styles.settingRow}>
+                                <View>
+                                    <Text style={[styles.settingLabel, { color: theme.text }]}>Daily Reminder</Text>
+                                    <Text style={[styles.settingDesc, { color: theme.textSecondary }]}>8:00 PM - Log expenses</Text>
+                                </View>
+                                <Switch
+                                    value={dailyReminder}
+                                    onValueChange={toggleDailyReminder}
+                                    trackColor={{ false: theme.border, true: theme.primary }}
+                                    thumbColor="#fff"
+                                />
+                            </View>
+
+                            <View style={styles.settingRow}>
+                                <View>
+                                    <Text style={[styles.settingLabel, { color: theme.text }]}>Budget Alerts</Text>
+                                    <Text style={[styles.settingDesc, { color: theme.textSecondary }]}>Warn when 80% spent</Text>
+                                </View>
+                                <Switch
+                                    value={budgetAlerts}
+                                    onValueChange={setBudgetAlerts}
+                                    trackColor={{ false: theme.border, true: theme.primary }}
+                                    thumbColor="#fff"
+                                />
+                            </View>
+
+                            <View style={styles.settingRow}>
+                                <View>
+                                    <Text style={[styles.settingLabel, { color: theme.text }]}>Weekly Insights</Text>
+                                    <Text style={[styles.settingDesc, { color: theme.textSecondary }]}>AI summary on Mondays</Text>
+                                </View>
+                                <Switch
+                                    value={weeklyInsights}
+                                    onValueChange={toggleWeeklyInsights}
+                                    trackColor={{ false: theme.border, true: theme.primary }}
+                                    thumbColor="#fff"
+                                />
+                            </View>
+
+                            <TouchableOpacity
+                                style={[styles.testButton, { backgroundColor: theme.primary + '20' }]}
+                                onPress={testNotification}
+                            >
+                                <Text style={[styles.testButtonText, { color: theme.primary }]}>🧪 Test Notification</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
 
                 {/* Preferences */}
@@ -121,7 +250,8 @@ export default function SettingsScreen() {
                 {/* App Info */}
                 <View style={styles.appInfo}>
                     <Text style={[styles.appName, { color: theme.text }]}>💰 SpendWise</Text>
-                    <Text style={[styles.appVersion, { color: theme.textSecondary }]}>Version 2.0.0</Text>
+                    <Text style={[styles.appVersion, { color: theme.textSecondary }]}>Version 2.1.0 - AI Edition</Text>
+                    <Text style={[styles.appFeatures, { color: theme.primary }]}>🤖 Powered by Groq AI</Text>
                     <Text style={[styles.appCopyright, { color: theme.textSecondary }]}>© 2024 SpendWise</Text>
                 </View>
             </ScrollView>
@@ -180,6 +310,8 @@ const styles = StyleSheet.create({
     settingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: '#64748b20' },
     settingLabel: { fontSize: 15, fontWeight: '500' },
     settingDesc: { fontSize: 12, marginTop: 2 },
+    testButton: { marginTop: 12, padding: 12, borderRadius: 8, alignItems: 'center' },
+    testButtonText: { fontWeight: '600' },
     currencyPreview: { flexDirection: 'row', alignItems: 'center', gap: 4 },
     currencySymbol: { fontSize: 18, fontWeight: '600' },
     currencyCode: { fontSize: 12 },
@@ -190,6 +322,7 @@ const styles = StyleSheet.create({
     appInfo: { alignItems: 'center', paddingVertical: 24 },
     appName: { fontSize: 20, fontWeight: '600' },
     appVersion: { fontSize: 12, marginTop: 4 },
+    appFeatures: { fontSize: 12, marginTop: 4, fontWeight: '500' },
     appCopyright: { fontSize: 12, marginTop: 2 },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
     modalContent: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24 },
