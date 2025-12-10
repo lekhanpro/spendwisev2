@@ -1,8 +1,7 @@
 // Service Worker for SpendWise PWA
-const CACHE_NAME = 'spendwise-v1.0.3';
+// Using network-first strategy for fresh content
+const CACHE_NAME = 'spendwise-v1.0.4';
 const urlsToCache = [
-    '/',
-    '/index.html',
     '/logo.png'
 ];
 
@@ -15,13 +14,22 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+    // Network-first strategy: try network, fall back to cache
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then((response) => {
-                if (response) {
-                    return response;
+                // Clone the response and cache it
+                if (response && response.status === 200) {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseClone);
+                    });
                 }
-                return fetch(event.request);
+                return response;
+            })
+            .catch(() => {
+                // Network failed, try cache
+                return caches.match(event.request);
             })
     );
 });
@@ -33,6 +41,9 @@ self.addEventListener('activate', (event) => {
                 cacheNames.filter((cacheName) => cacheName !== CACHE_NAME)
                     .map((cacheName) => caches.delete(cacheName))
             );
+        }).then(() => {
+            // Take control of all clients immediately
+            return self.clients.claim();
         })
     );
 });
