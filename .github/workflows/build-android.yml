@@ -1,0 +1,78 @@
+name: Build and Release Android APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Setup Expo CLI
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Android APK
+        run: eas build --platform android --profile preview --non-interactive --local
+
+      - name: Find APK file
+        id: find-apk
+        run: |
+          APK_PATH=$(find . -name "*.apk" -type f | head -n 1)
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+
+      - name: Rename APK
+        run: mv "${{ steps.find-apk.outputs.apk_path }}" SpendWise-${{ github.ref_name }}.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SpendWise-APK
+          path: SpendWise-*.apk
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: SpendWise-*.apk
+          generate_release_notes: true
+          name: SpendWise ${{ github.ref_name }}
+          body: |
+            ## 📱 SpendWise Native Android App
+            
+            **A fully native React Native app for smart money management.**
+            
+            ### Features:
+            - 💰 Track income & expenses
+            - 📊 Budget management with progress tracking
+            - 🎯 Savings goals
+            - 📈 Financial reports & charts
+            - 🔐 Secure Firebase authentication
+            - ☁️ Cloud sync across devices
+            
+            ### Installation:
+            1. Download the APK file
+            2. Enable "Install from unknown sources" in Settings
+            3. Open the APK file to install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
