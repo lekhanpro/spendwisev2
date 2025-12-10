@@ -9,6 +9,7 @@ import { getAnalytics } from "firebase/analytics";
 const firebaseConfig = {
   apiKey: "AIzaSyCtQkTfAaPNNHoc4vdn0DDYg9or7QiUTgM",
   authDomain: "spendwise-be25a.firebaseapp.com",
+  databaseURL: "https://spendwise-be25a-default-rtdb.firebaseio.com",
   projectId: "spendwise-be25a",
   storageBucket: "spendwise-be25a.firebasestorage.app",
   messagingSenderId: "587962306992",

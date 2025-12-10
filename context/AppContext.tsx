@@ -259,7 +259,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     resetData,
     showTransactionModal, setShowTransactionModal,
     editingTransaction, setEditingTransaction,
-    session: firebaseUser ? { user: { id: firebaseUser.uid } } : null,
+    session: firebaseUser ? { user: { id: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, photoURL: firebaseUser.photoURL } } : null,
     handleLogout,
     currency, setCurrency: handleSetCurrency, formatCurrency
   };

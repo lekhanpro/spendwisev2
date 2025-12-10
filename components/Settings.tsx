@@ -47,9 +47,22 @@ export const Settings: React.FC = () => {
 
       {/* Account Card - Glass Effect */}
       <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4 flex items-center justify-between">
-        <div>
-          <p className="font-medium text-white">Account</p>
-          <p className="text-sm text-gray-400">{session?.user?.email}</p>
+        <div className="flex items-center gap-3">
+          {session?.user?.photoURL ? (
+            <img
+              src={session.user.photoURL}
+              alt="Profile"
+              className="w-12 h-12 rounded-full border-2 border-zinc-700"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-xl">
+              👤
+            </div>
+          )}
+          <div>
+            <p className="font-medium text-white">{session?.user?.displayName || 'User'}</p>
+            <p className="text-sm text-gray-400">{session?.user?.email || 'No email'}</p>
+          </div>
         </div>
         <button
           onClick={handleLogout}
@@ -110,8 +123,8 @@ export const Settings: React.FC = () => {
           <button
             onClick={handleEnableNotifications}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${notificationsEnabled
-                ? 'bg-green-500/20 border border-green-500/50 text-green-400'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
+              ? 'bg-green-500/20 border border-green-500/50 text-green-400'
+              : 'bg-blue-500 text-white hover:bg-blue-600'
               }`}
           >
             {notificationsEnabled ? 'Enabled ✓' : 'Enable'}
