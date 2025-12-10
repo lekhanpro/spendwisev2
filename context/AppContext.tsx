@@ -1,9 +1,19 @@
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { AppContextType, Transaction, Budget, Goal, Category, ViewType, Currency } from '../types';
 import { DEFAULT_CATEGORIES, SAMPLE_TRANSACTIONS, SAMPLE_BUDGETS, SAMPLE_GOALS, SUPPORTED_CURRENCIES } from '../constants';
-import { supabase } from '../lib/supabase';
 import { auth } from '../lib/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import {
+  saveTransactions,
+  saveBudgets,
+  saveGoals,
+  saveSettings,
+  subscribeToTransactions,
+  subscribeToBudgets,
+  subscribeToGoals,
+  subscribeToSettings
+} from '../lib/database';
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -21,141 +31,191 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [session, setSession] = useState<any>(null);
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [currency, setCurrency] = useState<Currency>(SUPPORTED_CURRENCIES[0]);
+  const [isSyncing, setIsSyncing] = useState(false);
 
-  // Initialize Auth with timeout safety
+  // Firebase Auth listener
   useEffect(() => {
-    let mounted = true;
-
-    const initAuth = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (mounted) setSession(session);
-      } catch (err) {
-        console.error("Supabase auth error:", err);
-      } finally {
-        if (mounted) setIsLoading(false);
-      }
-    };
-
-    initAuth();
-
-    const timeout = setTimeout(() => {
-      if (mounted && isLoading) {
-        console.warn("Auth initialization timed out, forcing render");
-        setIsLoading(false);
-      }
-    }, 3000);
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (mounted) {
-        setSession(session);
-        setIsLoading(false);
-      }
-    });
-
-    return () => {
-      mounted = false;
-      clearTimeout(timeout);
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  // Load data
-  useEffect(() => {
-    if (!session?.user) {
-      if (!isLoading) {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setFirebaseUser(user);
+      if (!user) {
+        // Clear data on logout
         setTransactions([]);
         setBudgets([]);
         setGoals([]);
+        setIsLoading(false);
       }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Subscribe to realtime data when user is logged in
+  useEffect(() => {
+    if (!firebaseUser) {
+      setIsLoading(false);
       return;
     }
 
-    const loadData = () => {
-      try {
-        const userId = session.user.id;
-        const storedTransactions = localStorage.getItem(`spendwise_transactions_${userId}`);
-        const storedBudgets = localStorage.getItem(`spendwise_budgets_${userId}`);
-        const storedGoals = localStorage.getItem(`spendwise_goals_${userId}`);
-        const storedDarkMode = localStorage.getItem(`spendwise_darkMode_${userId}`);
-        const storedCurrency = localStorage.getItem(`spendwise_currency_${userId}`);
+    const userId = firebaseUser.uid;
+    setIsLoading(true);
 
-        setTransactions(storedTransactions ? JSON.parse(storedTransactions) : SAMPLE_TRANSACTIONS);
-        setBudgets(storedBudgets ? JSON.parse(storedBudgets) : SAMPLE_BUDGETS);
-        setGoals(storedGoals ? JSON.parse(storedGoals) : SAMPLE_GOALS);
-        setDarkMode(storedDarkMode ? JSON.parse(storedDarkMode) : false);
-        if (storedCurrency) {
-          setCurrency(JSON.parse(storedCurrency));
-        }
-      } catch (e) {
-        console.error("Failed to load data", e);
-        setTransactions(SAMPLE_TRANSACTIONS);
-        setBudgets(SAMPLE_BUDGETS);
-        setGoals(SAMPLE_GOALS);
+    // Subscribe to transactions
+    const unsubTransactions = subscribeToTransactions(userId, (data) => {
+      setTransactions(Array.isArray(data) ? data : []);
+    });
+
+    // Subscribe to budgets
+    const unsubBudgets = subscribeToBudgets(userId, (data) => {
+      setBudgets(Array.isArray(data) ? data : []);
+    });
+
+    // Subscribe to goals
+    const unsubGoals = subscribeToGoals(userId, (data) => {
+      setGoals(Array.isArray(data) ? data : []);
+    });
+
+    // Subscribe to settings
+    const unsubSettings = subscribeToSettings(userId, (settings) => {
+      if (settings) {
+        setDarkMode(settings.darkMode ?? false);
+        setCurrency(settings.currency ?? SUPPORTED_CURRENCIES[0]);
       }
+      setIsLoading(false);
+    });
+
+    // Set a timeout for loading state
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+
+    return () => {
+      unsubTransactions();
+      unsubBudgets();
+      unsubGoals();
+      unsubSettings();
+      clearTimeout(timeout);
     };
-    loadData();
-  }, [session, isLoading]);
+  }, [firebaseUser]);
 
-  // Sync to storage
+  // Apply dark mode
   useEffect(() => {
-    if (!isLoading && session?.user) {
-      localStorage.setItem(`spendwise_transactions_${session.user.id}`, JSON.stringify(transactions));
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  }, [transactions, isLoading, session]);
+  }, [darkMode]);
 
-  useEffect(() => {
-    if (!isLoading && session?.user) {
-      localStorage.setItem(`spendwise_budgets_${session.user.id}`, JSON.stringify(budgets));
-    }
-  }, [budgets, isLoading, session]);
-
-  useEffect(() => {
-    if (!isLoading && session?.user) {
-      localStorage.setItem(`spendwise_goals_${session.user.id}`, JSON.stringify(goals));
-    }
-  }, [goals, isLoading, session]);
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (session?.user) {
-        localStorage.setItem(`spendwise_darkMode_${session.user.id}`, JSON.stringify(darkMode));
-        localStorage.setItem(`spendwise_currency_${session.user.id}`, JSON.stringify(currency));
-      }
-
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
+  // Save transactions to Firebase
+  const syncTransactions = useCallback(async (newTransactions: Transaction[]) => {
+    if (firebaseUser && !isSyncing) {
+      try {
+        await saveTransactions(firebaseUser.uid, newTransactions);
+      } catch (error) {
+        console.error('Failed to sync transactions:', error);
       }
     }
-  }, [darkMode, currency, isLoading, session]);
+  }, [firebaseUser, isSyncing]);
 
-  const addTransaction = (transaction: Transaction) => setTransactions(prev => [transaction, ...prev]);
-  const updateTransaction = (transaction: Transaction) => setTransactions(prev => prev.map(t => t.id === transaction.id ? transaction : t));
-  const deleteTransaction = (id: string) => setTransactions(prev => prev.filter(t => t.id !== id));
+  // Save budgets to Firebase
+  const syncBudgets = useCallback(async (newBudgets: Budget[]) => {
+    if (firebaseUser && !isSyncing) {
+      try {
+        await saveBudgets(firebaseUser.uid, newBudgets);
+      } catch (error) {
+        console.error('Failed to sync budgets:', error);
+      }
+    }
+  }, [firebaseUser, isSyncing]);
 
-  const addBudget = (budget: Budget) => setBudgets(prev => [...prev.filter(b => b.category !== budget.category), budget]);
-  const updateBudget = (budget: Budget) => setBudgets(prev => prev.map(b => b.id === budget.id ? budget : b));
-  const deleteBudget = (id: string) => setBudgets(prev => prev.filter(b => b.id !== id));
+  // Save goals to Firebase
+  const syncGoals = useCallback(async (newGoals: Goal[]) => {
+    if (firebaseUser && !isSyncing) {
+      try {
+        await saveGoals(firebaseUser.uid, newGoals);
+      } catch (error) {
+        console.error('Failed to sync goals:', error);
+      }
+    }
+  }, [firebaseUser, isSyncing]);
 
-  const addGoal = (goal: Goal) => setGoals(prev => [...prev, goal]);
-  const updateGoal = (goal: Goal) => setGoals(prev => prev.map(g => g.id === goal.id ? goal : g));
-  const deleteGoal = (id: string) => setGoals(prev => prev.filter(g => g.id !== id));
+  // Save settings to Firebase
+  const syncSettings = useCallback(async (newDarkMode: boolean, newCurrency: Currency) => {
+    if (firebaseUser) {
+      try {
+        await saveSettings(firebaseUser.uid, { darkMode: newDarkMode, currency: newCurrency });
+      } catch (error) {
+        console.error('Failed to sync settings:', error);
+      }
+    }
+  }, [firebaseUser]);
+
+  // Transaction operations
+  const addTransaction = (transaction: Transaction) => {
+    const newTransactions = [transaction, ...transactions];
+    setTransactions(newTransactions);
+    syncTransactions(newTransactions);
+  };
+
+  const updateTransaction = (transaction: Transaction) => {
+    const newTransactions = transactions.map(t => t.id === transaction.id ? transaction : t);
+    setTransactions(newTransactions);
+    syncTransactions(newTransactions);
+  };
+
+  const deleteTransaction = (id: string) => {
+    const newTransactions = transactions.filter(t => t.id !== id);
+    setTransactions(newTransactions);
+    syncTransactions(newTransactions);
+  };
+
+  // Budget operations
+  const addBudget = (budget: Budget) => {
+    const newBudgets = [...budgets.filter(b => b.category !== budget.category), budget];
+    setBudgets(newBudgets);
+    syncBudgets(newBudgets);
+  };
+
+  const updateBudget = (budget: Budget) => {
+    const newBudgets = budgets.map(b => b.id === budget.id ? budget : b);
+    setBudgets(newBudgets);
+    syncBudgets(newBudgets);
+  };
+
+  const deleteBudget = (id: string) => {
+    const newBudgets = budgets.filter(b => b.id !== id);
+    setBudgets(newBudgets);
+    syncBudgets(newBudgets);
+  };
+
+  // Goal operations
+  const addGoal = (goal: Goal) => {
+    const newGoals = [...goals, goal];
+    setGoals(newGoals);
+    syncGoals(newGoals);
+  };
+
+  const updateGoal = (goal: Goal) => {
+    const newGoals = goals.map(g => g.id === goal.id ? goal : g);
+    setGoals(newGoals);
+    syncGoals(newGoals);
+  };
+
+  const deleteGoal = (id: string) => {
+    const newGoals = goals.filter(g => g.id !== id);
+    setGoals(newGoals);
+    syncGoals(newGoals);
+  };
 
   const resetData = () => {
-    if (session?.user) {
+    if (firebaseUser) {
       setTransactions([]);
       setBudgets([]);
       setGoals([]);
-      localStorage.removeItem(`spendwise_transactions_${session.user.id}`);
-      localStorage.removeItem(`spendwise_budgets_${session.user.id}`);
-      localStorage.removeItem(`spendwise_goals_${session.user.id}`);
+      syncTransactions([]);
+      syncBudgets([]);
+      syncGoals([]);
     }
   };
 
@@ -165,11 +225,22 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setTransactions([]);
       setBudgets([]);
       setGoals([]);
-      setSession(null);
+      setFirebaseUser(null);
       setActiveView('dashboard');
     } catch (error) {
       console.error("Error logging out:", error);
     }
+  };
+
+  // Settings update with sync
+  const handleSetDarkMode = (mode: boolean) => {
+    setDarkMode(mode);
+    syncSettings(mode, currency);
+  };
+
+  const handleSetCurrency = (newCurrency: Currency) => {
+    setCurrency(newCurrency);
+    syncSettings(darkMode, newCurrency);
   };
 
   const formatCurrency = (amount: number) => {
@@ -181,15 +252,16 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   const contextValue: AppContextType = {
     transactions, budgets, goals, categories, darkMode, activeView,
-    setDarkMode, setActiveView,
+    setDarkMode: handleSetDarkMode, setActiveView,
     addTransaction, updateTransaction, deleteTransaction,
     addBudget, updateBudget, deleteBudget,
     addGoal, updateGoal, deleteGoal,
     resetData,
     showTransactionModal, setShowTransactionModal,
     editingTransaction, setEditingTransaction,
-    session, handleLogout,
-    currency, setCurrency, formatCurrency
+    session: firebaseUser ? { user: { id: firebaseUser.uid } } : null,
+    handleLogout,
+    currency, setCurrency: handleSetCurrency, formatCurrency
   };
 
   if (isLoading) {
