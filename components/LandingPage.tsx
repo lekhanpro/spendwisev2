@@ -2,7 +2,11 @@
 import React from 'react';
 import { Icons } from './Icons';
 
-export const LandingPage: React.FC = () => {
+interface LandingPageProps {
+    onLaunchApp: () => void;
+}
+
+export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchApp }) => {
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 font-sans">
             {/* Navbar */}
@@ -19,12 +23,12 @@ export const LandingPage: React.FC = () => {
                         <a href="#about" className="hover:text-white transition-colors">About</a>
                         <a href="https://github.com/lekhanpro/spendwisev2" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
                     </div>
-                    <a
-                        href="https://spendwisev2.vercel.app"
+                    <button
+                        onClick={onLaunchApp}
                         className="px-6 py-2.5 bg-white text-black rounded-full font-bold hover:bg-gray-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
                     >
                         Launch App
-                    </a>
+                    </button>
                 </div>
             </nav>
 
@@ -57,12 +61,12 @@ export const LandingPage: React.FC = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-                            <a
-                                href="https://spendwisev2.vercel.app"
+                            <button
+                                onClick={onLaunchApp}
                                 className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-2xl font-bold transition-all hover:scale-105 shadow-[0_10px_40px_-10px_rgba(37,99,235,0.5)] flex items-center justify-center gap-2"
                             >
                                 <Icons.Layout /> Open Web App
-                            </a>
+                            </button>
                             <a
                                 href="https://github.com/lekhanpro/spendwisev2"
                                 target="_blank"

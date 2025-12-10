@@ -33,14 +33,11 @@ const MainContent: React.FC = () => {
   const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
-    // Check if we're on GitHub Pages
-    const isGitHubPages = window.location.hostname.includes('github.io');
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setFirebaseUser(user);
       setAuthLoading(false);
-      // Only auto-switch to app if user is logged in AND we are NOT on GitHub Pages
-      if (user && !isGitHubPages) {
+      // Auto-switch to app if user is logged in
+      if (user) {
         setShowLanding(false);
       }
     });
@@ -56,21 +53,18 @@ const MainContent: React.FC = () => {
     );
   }
 
-  const isGitHubPages = window.location.hostname.includes('github.io');
-
-  // Always show Landing Page if on GitHub Pages OR if explicitly showing landing (and not logged in)
-  if (isGitHubPages || (showLanding && !firebaseUser)) {
+  // Show Landing Page if not logged in and user wants to see it
+  if (showLanding && !firebaseUser) {
     return (
-      <>
-        <LandingPage />
-      </>
+      <LandingPage onLaunchApp={() => setShowLanding(false)} />
     );
   }
 
-  // If NO Firebase user → show login screen (when they click "Launch App" or navigate)
+  // If NO Firebase user → show login screen
   if (!firebaseUser) {
     return <Auth />;
   }
+
 
   // If user exists but email is NOT verified → sign them out and show Auth
   if (!firebaseUser.emailVerified) {
