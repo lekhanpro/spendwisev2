@@ -11,7 +11,7 @@ import { Settings } from "./components/Settings";
 import { Modal } from "./components/Modal";
 import { TransactionForm } from "./components/TransactionForm";
 import { Auth } from "./components/Auth";
-import { LandingPage } from "./components/LandingPage";
+
 
 // Firebase imports
 import { auth } from "./lib/auth";
@@ -30,16 +30,11 @@ const MainContent: React.FC = () => {
 
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setFirebaseUser(user);
       setAuthLoading(false);
-      // Auto-switch to app if user is logged in
-      if (user) {
-        setShowLanding(false);
-      }
     });
     return () => unsubscribe();
   }, []);
@@ -53,17 +48,11 @@ const MainContent: React.FC = () => {
     );
   }
 
-  // Show Landing Page if not logged in and user wants to see it
-  if (showLanding && !firebaseUser) {
-    return (
-      <LandingPage onLaunchApp={() => setShowLanding(false)} />
-    );
-  }
-
   // If NO Firebase user → show login screen
   if (!firebaseUser) {
     return <Auth />;
   }
+
 
 
   // If user exists but email is NOT verified → sign them out and show Auth
