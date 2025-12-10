@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codebase Guide | SpendWise</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #3b82f6;
+            --border: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 16px 0;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .content {
+            padding: 120px 0 60px;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin: 48px 0 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 20px;
+            margin: 32px 0 16px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .tree {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        .file-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .file-card h4 {
+            font-family: monospace;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .file-card p {
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="nav-brand">💰 SpendWise</a>
+            <ul class="nav-links">
+                <li><a href="../">Home</a></li>
+                <li><a href="API.html">API</a></li>
+                <li><a href="ARCHITECTURE.html">Architecture</a></li>
+                <li><a href="CODEBASE.html" class="active">Codebase</a></li>
+                <li><a href="SERVICES.html">Services</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="container">
+            <h1>📁 Codebase Guide</h1>
+            <p>Navigate the SpendWise codebase with detailed explanations.</p>
+
+            <h2>Directory Structure</h2>
+            <div class="tree">
+                spendwise-native/
+                ├── app/ # Expo Router screens
+                │ ├── (auth)/ # Authentication screens
+                │ │ ├── _layout.tsx # Auth stack layout
+                │ │ └── login.tsx # Login/Register screen
+                │ ├── (tabs)/ # Main tab screens
+                │ │ ├── _layout.tsx # Tab navigator config
+                │ │ ├── index.tsx # Dashboard
+                │ │ ├── transactions.tsx # Transaction list
+                │ │ ├── insights.tsx # AI Insights
+                │ │ ├── reports.tsx # Financial reports
+                │ │ ├── budget.tsx # Budget management
+                │ │ ├── goals.tsx # Savings goals
+                │ │ └── settings.tsx # App settings
+                │ └── _layout.tsx # Root layout with providers
+                ├── lib/ # Service modules
+                │ ├── ai.ts # Groq AI integration
+                │ ├── auth.ts # Firebase auth helpers
+                │ ├── database.ts # Firebase database helpers
+                │ ├── firebase.ts # Firebase config
+                │ └── notifications.ts # Expo notifications
+                ├── context/
+                │ └── AppContext.tsx # Global state provider
+                ├── types/
+                │ └── index.ts # TypeScript interfaces
+                ├── constants/
+                │ └── app.ts # Categories, currencies, colors
+                ├── assets/ # Images
+                ├── docs/ # GitHub Pages site
+                ├── app.json # Expo configuration
+                ├── eas.json # EAS Build config
+                └── package.json # Dependencies
+            </div>
+
+            <h2>Key Files</h2>
+
+            <h3>Screens</h3>
+            <div class="file-card">
+                <h4>app/(tabs)/index.tsx</h4>
+                <p>Dashboard screen showing balance summary, spending chart, and recent transactions. Uses
+                    react-native-chart-kit for visualization.</p>
+            </div>
+            <div class="file-card">
+                <h4>app/(tabs)/insights.tsx</h4>
+                <p>AI-powered insights screen. Calls Groq API to generate personalized financial advice and health
+                    score.</p>
+            </div>
+            <div class="file-card">
+                <h4>app/(tabs)/reports.tsx</h4>
+                <p>Financial reports with pie charts for category breakdown, bar charts for daily spending, and time
+                    range selection.</p>
+            </div>
+
+            <h3>Services</h3>
+            <div class="file-card">
+                <h4>lib/ai.ts</h4>
+                <p>Groq API integration. Sends financial data to LLaMA 3.3 and parses AI response for insights,
+                    recommendations, and health score.</p>
+            </div>
+            <div class="file-card">
+                <h4>lib/database.ts</h4>
+                <p>Firebase Realtime Database helpers. Functions for saving, retrieving, and subscribing to
+                    transactions, budgets, goals, and settings.</p>
+            </div>
+            <div class="file-card">
+                <h4>lib/notifications.ts</h4>
+                <p>Expo Notifications implementation. Budget alerts, daily reminders, weekly summaries, and notification
+                    permission handling.</p>
+            </div>
+
+            <h3>State Management</h3>
+            <div class="file-card">
+                <h4>context/AppContext.tsx</h4>
+                <p>React Context provider managing global state. Handles transactions, budgets, goals, user auth,
+                    currency, and dark mode preferences.</p>
+            </div>
+
+            <h3>Configuration</h3>
+            <div class="file-card">
+                <h4>app.json</h4>
+                <p>Expo configuration including app name, icons, splash screen, Android package name, and Expo project
+                    ID.</p>
+            </div>
+            <div class="file-card">
+                <h4>eas.json</h4>
+                <p>EAS Build profiles for development, preview (APK), and production (AAB) builds.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

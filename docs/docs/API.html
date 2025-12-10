@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference | SpendWise</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #3b82f6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --border: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 16px 0;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .content {
+            padding: 120px 0 60px;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin: 48px 0 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 20px;
+            margin: 32px 0 16px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .api-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .api-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .method {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .method.post {
+            background: #3b82f620;
+            color: #3b82f6;
+        }
+
+        .method.get {
+            background: #22c55e20;
+            color: #22c55e;
+        }
+
+        .url {
+            font-family: monospace;
+            color: var(--text-secondary);
+        }
+
+        .code-block {
+            background: #000;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        .code-block .key {
+            color: #79c0ff;
+        }
+
+        .code-block .string {
+            color: #a5d6ff;
+        }
+
+        .code-block .number {
+            color: #56d364;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .param-name {
+            font-family: monospace;
+            color: var(--accent);
+        }
+
+        .param-type {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge.required {
+            background: #ef444420;
+            color: #ef4444;
+        }
+
+        .badge.optional {
+            background: #64748b20;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="nav-brand">💰 SpendWise</a>
+            <ul class="nav-links">
+                <li><a href="../">Home</a></li>
+                <li><a href="API.html" class="active">API</a></li>
+                <li><a href="ARCHITECTURE.html">Architecture</a></li>
+                <li><a href="CODEBASE.html">Codebase</a></li>
+                <li><a href="SERVICES.html">Services</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="container">
+            <h1>🔌 API Reference</h1>
+            <p>Complete API documentation for SpendWise integrations.</p>
+
+            <h2>Groq AI API</h2>
+            <p>SpendWise uses Groq's API for AI-powered financial insights.</p>
+
+            <div class="api-card">
+                <div class="api-header">
+                    <span class="method post">POST</span>
+                    <span class="url">https://api.groq.com/openai/v1/chat/completions</span>
+                </div>
+                <p>Generate personalized financial insights and recommendations.</p>
+            </div>
+
+            <h3>Request Headers</h3>
+            <table>
+                <tr>
+                    <th>Header</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td class="param-name">Authorization</td>
+                    <td>Bearer {GROQ_API_KEY}</td>
+                </tr>
+                <tr>
+                    <td class="param-name">Content-Type</td>
+                    <td>application/json</td>
+                </tr>
+            </table>
+
+            <h3>Request Body</h3>
+            <div class="code-block">
+                {
+                <span class="key">"model"</span>: <span class="string">"llama-3.3-70b-versatile"</span>,
+                <span class="key">"messages"</span>: [
+                {
+                <span class="key">"role"</span>: <span class="string">"system"</span>,
+                <span class="key">"content"</span>: <span class="string">"You are a financial advisor AI..."</span>
+                },
+                {
+                <span class="key">"role"</span>: <span class="string">"user"</span>,
+                <span class="key">"content"</span>: <span class="string">"Analyze spending data..."</span>
+                }
+                ],
+                <span class="key">"temperature"</span>: <span class="number">0.7</span>,
+                <span class="key">"max_tokens"</span>: <span class="number">1000</span>
+                }
+            </div>
+
+            <h3>Response Structure</h3>
+            <div class="code-block">
+                {
+                <span class="key">"healthScore"</span>: <span class="number">75</span>,
+                <span class="key">"insights"</span>: [
+                {
+                <span class="key">"title"</span>: <span class="string">"Great Savings!"</span>,
+                <span class="key">"message"</span>: <span class="string">"You're saving 30% of income"</span>,
+                <span class="key">"type"</span>: <span class="string">"success"</span>,
+                <span class="key">"icon"</span>: <span class="string">"🎉"</span>
+                }
+                ],
+                <span class="key">"recommendations"</span>: [
+                <span class="string">"Continue building emergency fund"</span>,
+                <span class="string">"Consider investing surplus"</span>
+                ],
+                <span class="key">"summary"</span>: <span class="string">"Strong financial health this month."</span>
+                }
+            </div>
+
+            <h2>Firebase Realtime Database</h2>
+            <p>Data structure for user financial data.</p>
+
+            <h3>Database Schema</h3>
+            <div class="code-block">
+                /users/{userId}/
+                ├── transactions/
+                │ └── {transactionId}: { amount, type, category, date, note }
+                ├── budgets/
+                │ └── {budgetId}: { category, limit, period }
+                ├── goals/
+                │ └── {goalId}: { name, targetAmount, currentAmount, deadline }
+                └── settings/
+                └── { currency, darkMode }
+            </div>
+
+            <h2>Firebase Authentication</h2>
+            <p>Email/password authentication with verification.</p>
+
+            <h3>Auth Methods</h3>
+            <table>
+                <tr>
+                    <th>Method</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td class="param-name">signUp(email, password)</td>
+                    <td>Create new user account with email verification</td>
+                </tr>
+                <tr>
+                    <td class="param-name">signIn(email, password)</td>
+                    <td>Sign in existing user</td>
+                </tr>
+                <tr>
+                    <td class="param-name">logout()</td>
+                    <td>Sign out current user</td>
+                </tr>
+                <tr>
+                    <td class="param-name">resetPassword(email)</td>
+                    <td>Send password reset email</td>
+                </tr>
+            </table>
+
+            <h2>Expo Notifications</h2>
+            <p>Push notification system for alerts and reminders.</p>
+
+            <h3>Notification Types</h3>
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Trigger</th>
+                    <th>Channel</th>
+                </tr>
+                <tr>
+                    <td>Budget Alert</td>
+                    <td>80% or 100% budget used</td>
+                    <td>budget-alerts</td>
+                </tr>
+                <tr>
+                    <td>Daily Reminder</td>
+                    <td>8:00 PM daily</td>
+                    <td>default</td>
+                </tr>
+                <tr>
+                    <td>Weekly Summary</td>
+                    <td>Monday 9:00 AM</td>
+                    <td>insights</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

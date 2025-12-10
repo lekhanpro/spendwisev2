@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | SpendWise</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #3b82f6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --border: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 16px 0;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .content {
+            padding: 120px 0 60px;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin: 48px 0 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 20px;
+            margin: 32px 0 16px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent)20;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .service-card h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .service-card ul {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .service-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .service-card li:last-child {
+            border-bottom: none;
+        }
+
+        .service-card li i {
+            color: var(--success);
+            font-size: 14px;
+        }
+
+        .config-block {
+            background: #000;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="nav-brand">💰 SpendWise</a>
+            <ul class="nav-links">
+                <li><a href="../">Home</a></li>
+                <li><a href="API.html">API</a></li>
+                <li><a href="ARCHITECTURE.html">Architecture</a></li>
+                <li><a href="CODEBASE.html">Codebase</a></li>
+                <li><a href="SERVICES.html" class="active">Services</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="container">
+            <h1>⚙️ Services</h1>
+            <p>Documentation for external services and integrations used in SpendWise.</p>
+
+            <h2>Firebase</h2>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">🔐</div>
+                    <h3>Firebase Authentication</h3>
+                </div>
+                <p>Handles user authentication with email/password. Includes email verification and password reset.</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Email/Password sign up and sign in</li>
+                    <li><i class="fas fa-check"></i> Email verification required</li>
+                    <li><i class="fas fa-check"></i> Password reset via email</li>
+                    <li><i class="fas fa-check"></i> Persistent auth state</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">☁️</div>
+                    <h3>Firebase Realtime Database</h3>
+                </div>
+                <p>Cloud-hosted NoSQL database for real-time data sync across devices.</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Real-time sync across devices</li>
+                    <li><i class="fas fa-check"></i> Offline persistence</li>
+                    <li><i class="fas fa-check"></i> User-scoped data (by UID)</li>
+                    <li><i class="fas fa-check"></i> Automatic conflict resolution</li>
+                </ul>
+            </div>
+
+            <h2>Groq AI</h2>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">🤖</div>
+                    <h3>LLaMA 3.3 70B via Groq</h3>
+                </div>
+                <p>AI-powered financial insights using Meta's LLaMA 3.3 model through Groq's ultra-fast inference API.
+                </p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Financial health score (0-100)</li>
+                    <li><i class="fas fa-check"></i> Personalized spending insights</li>
+                    <li><i class="fas fa-check"></i> Actionable recommendations</li>
+                    <li><i class="fas fa-check"></i> Budget warnings and alerts</li>
+                    <li><i class="fas fa-check"></i> Goal tracking analysis</li>
+                </ul>
+                <div class="config-block">
+                    Model: llama-3.3-70b-versatile
+                    Temperature: 0.7
+                    Max Tokens: 1000
+                    Response: JSON (healthScore, insights, recommendations, summary)
+                </div>
+            </div>
+
+            <h2>Expo Notifications</h2>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">🔔</div>
+                    <h3>Push Notifications</h3>
+                </div>
+                <p>Native push notifications for Android using Expo Notifications SDK.</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Budget alerts (80% and 100% usage)</li>
+                    <li><i class="fas fa-check"></i> Daily expense reminder (8 PM)</li>
+                    <li><i class="fas fa-check"></i> Weekly AI summary (Monday 9 AM)</li>
+                    <li><i class="fas fa-check"></i> Custom notification channels</li>
+                </ul>
+                <div class="config-block">
+                    Channels:
+                    - default: General notifications
+                    - budget-alerts: High priority budget warnings
+                    - insights: AI-generated insights
+                </div>
+            </div>
+
+            <h2>Build & Deploy</h2>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">📦</div>
+                    <h3>EAS Build</h3>
+                </div>
+                <p>Expo Application Services for cloud-based Android APK/AAB builds.</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Development builds with dev client</li>
+                    <li><i class="fas fa-check"></i> Preview builds (APK for testing)</li>
+                    <li><i class="fas fa-check"></i> Production builds (AAB for Play Store)</li>
+                    <li><i class="fas fa-check"></i> Automatic keystore management</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">🚀</div>
+                    <h3>GitHub Actions</h3>
+                </div>
+                <p>CI/CD pipeline for automated builds and releases.</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Auto-build on version tag push</li>
+                    <li><i class="fas fa-check"></i> APK artifact upload</li>
+                    <li><i class="fas fa-check"></i> GitHub Release creation</li>
+                    <li><i class="fas fa-check"></i> GitHub Pages deployment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
