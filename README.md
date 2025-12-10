@@ -16,12 +16,6 @@ A comprehensive money management platform built with React Native (Expo) and Fir
 
 ---
 
-## 🎬 Demo Video
-
-![SpendWise Demo](docs/demo.webp)
-
----
-
 ## 📖 Overview
 
 SpendWise helps you take control of your finances by tracking income and expenses, managing budgets, setting savings goals, and getting AI-powered insights. The app features personalized recommendations powered by Groq's LLaMA 3.3 70B model.
