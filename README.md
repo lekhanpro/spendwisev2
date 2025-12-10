@@ -3,7 +3,7 @@
 A comprehensive money management platform built with React Native (Expo) and Firebase.
 
 [![GitHub release](https://img.shields.io/github/v/release/lekhanpro/spendwisev2?style=flat-square)](https://github.com/lekhanpro/spendwisev2/releases)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Web-green.svg?style=flat-square)]()
 
 ## 📥 Download
@@ -309,7 +309,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
