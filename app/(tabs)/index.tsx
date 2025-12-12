@@ -1,16 +1,31 @@
-// Dashboard Screen
+// Dashboard Screen - Updated to match web app design
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, useColorScheme, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { useApp } from '../../context/AppContext';
 import { Colors, DEFAULT_CATEGORIES } from '../../constants/app';
 import { LineChart } from 'react-native-chart-kit';
+import { GlassCard } from '../../components/GlassCard';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function DashboardScreen() {
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
+  const theme = Colors.dark;
   const { transactions, budgets, goals, formatCurrency, setShowTransactionModal } = useApp();
+
+  // Get greeting based on time
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   // Calculate summary
   const currentMonth = new Date().getMonth();
@@ -30,9 +45,20 @@ export default function DashboardScreen() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = totalIncome - totalExpenses;
+  const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
 
   // Get recent transactions (last 5)
   const recentTransactions = transactions.slice(0, 5);
+
+  // Budget alerts (80%+ usage)
+  const budgetAlerts = budgets.map(budget => {
+    const spent = monthTransactions
+      .filter(t => t.type === 'expense' && t.category === budget.category)
+      .reduce((sum, t) => sum + t.amount, 0);
+    const percentage = (spent / budget.limit) * 100;
+    const cat = DEFAULT_CATEGORIES.find(c => c.id === budget.category);
+    return { ...budget, spent, percentage, category: cat };
+  }).filter(b => b.percentage >= 80);
 
   // Chart data for last 7 days
   const last7Days = Array.from({ length: 7 }, (_, i) => {
@@ -62,71 +88,173 @@ export default function DashboardScreen() {
     return category?.icon || '📦';
   };
 
+  const getCategoryColor = (categoryId: string) => {
+    const category = DEFAULT_CATEGORIES.find(c => c.id === categoryId);
+    return category?.color || '#64748b';
+  };
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Summary Cards */}
-      <View style={styles.summaryContainer}>
-        <View style={[styles.summaryCard, { backgroundColor: theme.card }]}>
-          <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Balance</Text>
-          <Text style={[styles.summaryValue, { color: balance >= 0 ? theme.success : theme.danger }]}>
-            {formatCurrency(balance)}
-          </Text>
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.greeting}>{getGreeting()}!</Text>
+          <Text style={styles.title}>Your Finances</Text>
         </View>
-        <View style={styles.summaryRow}>
-          <View style={[styles.smallCard, { backgroundColor: '#10b98120' }]}>
-            <Text style={[styles.smallLabel, { color: theme.success }]}>Income</Text>
-            <Text style={[styles.smallValue, { color: theme.success }]}>
-              {formatCurrency(totalIncome)}
-            </Text>
+        <Text style={styles.date}>
+          {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+        </Text>
+      </View>
+
+      {/* Balance Card - Glass Effect */}
+      <GlassCard style={styles.balanceCard}>
+        <Text style={styles.balanceLabel}>Current Balance</Text>
+        <Text style={[styles.balanceValue, { color: balance >= 0 ? '#fff' : theme.danger }]}>
+          {formatCurrency(balance)}
+        </Text>
+
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}>
+            <View style={styles.statIconContainer}>
+              <Text style={styles.statIcon}>↑</Text>
+            </View>
+            <View>
+              <Text style={styles.statLabel}>Income</Text>
+              <Text style={styles.statValue}>{formatCurrency(totalIncome)}</Text>
+            </View>
           </View>
-          <View style={[styles.smallCard, { backgroundColor: '#ef444420' }]}>
-            <Text style={[styles.smallLabel, { color: theme.danger }]}>Expenses</Text>
-            <Text style={[styles.smallValue, { color: theme.danger }]}>
-              {formatCurrency(totalExpenses)}
-            </Text>
+          <View style={styles.statItem}>
+            <View style={[styles.statIconContainer, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
+              <Text style={[styles.statIcon, { color: '#ef4444' }]}>↓</Text>
+            </View>
+            <View>
+              <Text style={styles.statLabel}>Expenses</Text>
+              <Text style={styles.statValue}>{formatCurrency(totalExpenses)}</Text>
+            </View>
           </View>
         </View>
+
+        {/* Savings Rate */}
+        <View style={styles.savingsContainer}>
+          <View style={styles.savingsHeader}>
+            <Text style={styles.savingsLabel}>Savings Rate</Text>
+            <Text style={styles.savingsValue}>{savingsRate.toFixed(1)}%</Text>
+          </View>
+          <View style={styles.progressBarBg}>
+            <View
+              style={[
+                styles.progressBar,
+                { width: `${Math.max(0, Math.min(100, savingsRate))}%` }
+              ]}
+            />
+          </View>
+        </View>
+      </GlassCard>
+
+      {/* Budget Alerts */}
+      {budgetAlerts.length > 0 && (
+        <View style={styles.alertsContainer}>
+          {budgetAlerts.map(alert => (
+            <GlassCard
+              key={alert.id}
+              variant={alert.percentage >= 100 ? 'danger' : 'highlight'}
+              style={styles.alertCard}
+            >
+              <View style={styles.alertContent}>
+                <View style={[
+                  styles.alertIcon,
+                  { backgroundColor: alert.percentage >= 100 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(251, 191, 36, 0.2)' }
+                ]}>
+                  <Text>⚠️</Text>
+                </View>
+                <View style={styles.alertText}>
+                  <Text style={[
+                    styles.alertTitle,
+                    { color: alert.percentage >= 100 ? '#f87171' : '#fbbf24' }
+                  ]}>
+                    {alert.category?.name} budget {alert.percentage >= 100 ? 'exceeded!' : 'warning'}
+                  </Text>
+                  <Text style={styles.alertSubtitle}>
+                    {formatCurrency(alert.spent)} of {formatCurrency(alert.limit)} ({alert.percentage.toFixed(0)}%)
+                  </Text>
+                </View>
+              </View>
+            </GlassCard>
+          ))}
+        </View>
+      )}
+
+      {/* Quick Stats Grid */}
+      <View style={styles.statsGrid}>
+        <GlassCard style={styles.quickStatCard}>
+          <Text style={styles.quickStatLabel}>Transactions</Text>
+          <Text style={styles.quickStatValue}>{monthTransactions.length}</Text>
+          <Text style={styles.quickStatSub}>This month</Text>
+        </GlassCard>
+        <GlassCard style={styles.quickStatCard}>
+          <Text style={styles.quickStatLabel}>Active Budgets</Text>
+          <Text style={styles.quickStatValue}>{budgets.length}</Text>
+          <Text style={styles.quickStatSub}>Categories tracked</Text>
+        </GlassCard>
       </View>
 
       {/* Spending Chart */}
-      <View style={[styles.section, { backgroundColor: theme.card }]}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>Weekly Spending</Text>
+      <GlassCard style={styles.chartCard}>
+        <Text style={styles.sectionTitle}>7-Day Spending Trend</Text>
         <LineChart
           data={chartData}
-          width={screenWidth - 48}
+          width={screenWidth - 64}
           height={180}
           chartConfig={{
-            backgroundColor: theme.card,
-            backgroundGradientFrom: theme.card,
-            backgroundGradientTo: theme.card,
+            backgroundColor: 'transparent',
+            backgroundGradientFrom: 'transparent',
+            backgroundGradientTo: 'transparent',
             decimalPlaces: 0,
             color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-            labelColor: () => theme.textSecondary,
+            labelColor: () => '#9ca3af',
             style: { borderRadius: 16 },
             propsForDots: { r: '4', strokeWidth: '2', stroke: '#3b82f6' },
+            propsForBackgroundLines: { stroke: '#27272a' },
           }}
           bezier
           style={styles.chart}
+          withVerticalLines={false}
         />
-      </View>
+      </GlassCard>
 
       {/* Recent Transactions */}
-      <View style={[styles.section, { backgroundColor: theme.card }]}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>Recent Transactions</Text>
+      <GlassCard style={styles.transactionsCard}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Recent Transactions</Text>
+          <TouchableOpacity>
+            <Text style={styles.seeAllText}>See all</Text>
+          </TouchableOpacity>
+        </View>
+
         {recentTransactions.length === 0 ? (
-          <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-            No transactions yet
-          </Text>
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>No transactions yet</Text>
+            <TouchableOpacity onPress={() => setShowTransactionModal(true)}>
+              <Text style={styles.addFirstText}>Add your first</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           recentTransactions.map((transaction) => (
-            <View key={transaction.id} style={[styles.transactionItem, { borderBottomColor: theme.border }]}>
+            <View key={transaction.id} style={styles.transactionItem}>
               <View style={styles.transactionLeft}>
-                <Text style={styles.transactionIcon}>{getCategoryIcon(transaction.category)}</Text>
+                <View style={[
+                  styles.transactionIconContainer,
+                  { backgroundColor: getCategoryColor(transaction.category) + '20' }
+                ]}>
+                  <Text style={styles.transactionIcon}>
+                    {getCategoryIcon(transaction.category)}
+                  </Text>
+                </View>
                 <View>
-                  <Text style={[styles.transactionDesc, { color: theme.text }]}>
+                  <Text style={styles.transactionDesc}>
                     {transaction.description || DEFAULT_CATEGORIES.find(c => c.id === transaction.category)?.name}
                   </Text>
-                  <Text style={[styles.transactionDate, { color: theme.textSecondary }]}>
+                  <Text style={styles.transactionDate}>
                     {new Date(transaction.date).toLocaleDateString()}
                   </Text>
                 </View>
@@ -140,15 +268,10 @@ export default function DashboardScreen() {
             </View>
           ))
         )}
-      </View>
+      </GlassCard>
 
-      {/* Add Transaction FAB */}
-      <TouchableOpacity
-        style={[styles.fab, { backgroundColor: theme.primary }]}
-        onPress={() => setShowTransactionModal(true)}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+      {/* Bottom padding */}
+      <View style={{ height: 100 }} />
     </ScrollView>
   );
 }
@@ -158,47 +281,159 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  summaryContainer: {
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 16,
   },
-  summaryCard: {
-    padding: 20,
-    borderRadius: 16,
-    alignItems: 'center',
-    marginBottom: 12,
+  greeting: {
+    color: '#9ca3af',
+    fontSize: 14,
   },
-  summaryLabel: {
+  title: {
+    color: '#f8fafc',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  date: {
+    color: '#9ca3af',
+    fontSize: 14,
+  },
+  balanceCard: {
+    marginBottom: 16,
+  },
+  balanceLabel: {
+    color: '#9ca3af',
     fontSize: 14,
     marginBottom: 4,
   },
-  summaryValue: {
-    fontSize: 32,
+  balanceValue: {
+    color: '#f8fafc',
+    fontSize: 36,
     fontWeight: 'bold',
   },
-  summaryRow: {
+  statsRow: {
     flexDirection: 'row',
-    gap: 12,
+    marginTop: 16,
+    gap: 16,
   },
-  smallCard: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 12,
+  statItem: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
-  smallLabel: {
+  statIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  statIcon: {
+    color: '#10b981',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  statLabel: {
+    color: '#9ca3af',
     fontSize: 12,
-    marginBottom: 4,
   },
-  smallValue: {
-    fontSize: 18,
+  statValue: {
+    color: '#f8fafc',
+    fontSize: 14,
     fontWeight: '600',
   },
-  section: {
-    padding: 16,
-    borderRadius: 16,
+  savingsContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  savingsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  savingsLabel: {
+    color: '#9ca3af',
+    fontSize: 14,
+  },
+  savingsValue: {
+    color: '#f8fafc',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  progressBarBg: {
+    height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 4,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: '#f8fafc',
+    borderRadius: 4,
+  },
+  alertsContainer: {
+    gap: 8,
+    marginBottom: 16,
+  },
+  alertCard: {
+    padding: 12,
+  },
+  alertContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  alertIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  alertText: {
+    flex: 1,
+  },
+  alertTitle: {
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  alertSubtitle: {
+    color: '#9ca3af',
+    fontSize: 13,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  quickStatCard: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  quickStatLabel: {
+    color: '#9ca3af',
+    fontSize: 13,
+  },
+  quickStatValue: {
+    color: '#f8fafc',
+    fontSize: 28,
+    fontWeight: 'bold',
+  },
+  quickStatSub: {
+    color: '#6b7280',
+    fontSize: 11,
+  },
+  chartCard: {
     marginBottom: 16,
   },
   sectionTitle: {
+    color: '#f8fafc',
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
@@ -206,10 +441,35 @@ const styles = StyleSheet.create({
   chart: {
     marginVertical: 8,
     borderRadius: 16,
+    marginLeft: -16,
+  },
+  transactionsCard: {
+    marginBottom: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  seeAllText: {
+    color: '#3b82f6',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 32,
   },
   emptyText: {
-    textAlign: 'center',
-    paddingVertical: 20,
+    color: '#6b7280',
+    fontSize: 14,
+  },
+  addFirstText: {
+    color: '#3b82f6',
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 8,
   },
   transactionItem: {
     flexDirection: 'row',
@@ -217,45 +477,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
+    borderBottomColor: '#27272a',
   },
   transactionLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
+  transactionIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#27272a',
+  },
   transactionIcon: {
-    fontSize: 24,
+    fontSize: 20,
   },
   transactionDesc: {
+    color: '#f8fafc',
     fontSize: 14,
     fontWeight: '500',
   },
   transactionDate: {
+    color: '#6b7280',
     fontSize: 12,
     marginTop: 2,
   },
   transactionAmount: {
     fontSize: 14,
     fontWeight: '600',
-  },
-  fab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  fabText: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: '300',
   },
 });

@@ -1,12 +1,13 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { useColorScheme } from 'react-native';
+import { View, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { AppProvider, useApp } from '../context/AppContext';
+import { AIChatbot } from '../components/AIChatbot';
 
 export {
   ErrorBoundary,
@@ -18,8 +19,20 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
+// Custom dark theme matching web app
+const SpendWiseDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: '#000000',
+    card: '#18181b',
+    text: '#f8fafc',
+    border: '#27272a',
+    primary: '#3b82f6',
+  },
+};
+
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
   const { user, isLoading } = useApp();
   const segments = useSegments();
   const router = useRouter();
@@ -37,12 +50,22 @@ function RootLayoutNav() {
   }, [user, isLoading, segments]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+    <ThemeProvider value={SpendWiseDarkTheme}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <View style={{ flex: 1, backgroundColor: '#000000' }}>
+          <Stack>
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          </Stack>
+          {/* AI Chatbot FAB - shows on all screens */}
+          <AIChatbot />
+        </View>
+      </KeyboardAvoidingView>
     </ThemeProvider>
   );
 }
@@ -73,3 +96,4 @@ export default function RootLayout() {
     </AppProvider>
   );
 }
+

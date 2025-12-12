@@ -37,28 +37,31 @@ export const SUPPORTED_CURRENCIES: Currency[] = [
 
 export const generateId = (): string => Math.random().toString(36).substr(2, 9);
 
-// Theme colors for React Native
+// Theme colors for React Native - matching web app design
 export const Colors = {
     light: {
-        background: '#f8fafc',
-        card: '#ffffff',
-        text: '#0f172a',
-        textSecondary: '#64748b',
-        border: '#e2e8f0',
+        background: '#000000',
+        card: 'rgba(24, 24, 27, 0.5)',
+        cardSolid: '#18181b',
+        text: '#f8fafc',
+        textSecondary: '#9ca3af',
+        border: '#27272a',
         primary: '#3b82f6',
         success: '#10b981',
         danger: '#ef4444',
         warning: '#f59e0b',
     },
     dark: {
-        background: '#0f172a',
-        card: '#1e293b',
+        background: '#000000',
+        card: 'rgba(24, 24, 27, 0.5)',
+        cardSolid: '#18181b',
         text: '#f8fafc',
-        textSecondary: '#94a3b8',
-        border: '#334155',
-        primary: '#60a5fa',
-        success: '#34d399',
-        danger: '#f87171',
-        warning: '#fbbf24',
+        textSecondary: '#9ca3af',
+        border: '#27272a',
+        primary: '#3b82f6',
+        success: '#10b981',
+        danger: '#ef4444',
+        warning: '#f59e0b',
     },
 };
+

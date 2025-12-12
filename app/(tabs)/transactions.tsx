@@ -1,13 +1,12 @@
-// Transactions Screen
+// Transactions Screen - Glass card styling matching web
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, useColorScheme, TouchableOpacity, FlatList, Modal, TextInput, Alert } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, FlatList, Modal, TextInput, Alert } from 'react-native';
 import { useApp } from '../../context/AppContext';
 import { Colors, DEFAULT_CATEGORIES, PAYMENT_METHODS, generateId } from '../../constants/app';
 import { Transaction } from '../../types';
 
 export default function TransactionsScreen() {
-    const colorScheme = useColorScheme();
-    const theme = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
+    const theme = Colors.dark;
     const { transactions, addTransaction, updateTransaction, deleteTransaction, formatCurrency, categories } = useApp();
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -86,15 +85,15 @@ export default function TransactionsScreen() {
     };
 
     const getCategoryInfo = (categoryId: string) => {
-        return DEFAULT_CATEGORIES.find(c => c.id === categoryId) || { icon: '📦', name: categoryId };
+        return DEFAULT_CATEGORIES.find(c => c.id === categoryId) || { icon: '📦', name: categoryId, color: '#64748b' };
     };
 
     const filteredCategories = DEFAULT_CATEGORIES.filter(c => c.type === type);
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            {/* Filter Tabs */}
-            <View style={[styles.filterContainer, { backgroundColor: theme.card }]}>
+        <View style={[styles.container, { backgroundColor: '#000000' }]}>
+            {/* Filter Tabs - Glass Style */}
+            <View style={styles.filterContainer}>
                 {(['all', 'income', 'expense'] as const).map((f) => (
                     <TouchableOpacity
                         key={f}
@@ -229,35 +228,61 @@ export default function TransactionsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    filterContainer: { flexDirection: 'row', margin: 16, borderRadius: 12, padding: 4 },
-    filterTab: { flex: 1, paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
+    container: { flex: 1, paddingBottom: 100 },
+    filterContainer: {
+        flexDirection: 'row',
+        margin: 16,
+        borderRadius: 16,
+        padding: 4,
+        backgroundColor: 'rgba(24, 24, 27, 0.5)',
+        borderWidth: 1,
+        borderColor: '#27272a',
+    },
+    filterTab: { flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center' },
     filterText: { fontSize: 14, fontWeight: '500' },
     listContainer: { padding: 16, paddingTop: 0 },
-    emptyText: { textAlign: 'center', paddingVertical: 40 },
-    transactionCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderRadius: 12, marginBottom: 8 },
+    emptyText: { textAlign: 'center', paddingVertical: 40, color: '#6b7280' },
+    transactionCard: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 16,
+        borderRadius: 16,
+        marginBottom: 8,
+        backgroundColor: 'rgba(24, 24, 27, 0.5)',
+        borderWidth: 1,
+        borderColor: '#27272a',
+    },
     transactionLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     transactionIcon: { fontSize: 28 },
-    transactionDesc: { fontSize: 14, fontWeight: '500' },
-    transactionDate: { fontSize: 12, marginTop: 2 },
+    transactionDesc: { fontSize: 14, fontWeight: '500', color: '#f8fafc' },
+    transactionDate: { fontSize: 12, marginTop: 2, color: '#6b7280' },
     transactionAmount: { fontSize: 16, fontWeight: '600' },
-    fab: { position: 'absolute', right: 20, bottom: 20, width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', elevation: 4 },
+    fab: { position: 'absolute', right: 20, bottom: 90, width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', elevation: 8 },
     fabText: { color: '#fff', fontSize: 28, fontWeight: '300' },
-    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-    modalContent: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, maxHeight: '80%' },
-    modalTitle: { fontSize: 20, fontWeight: '600', marginBottom: 20, textAlign: 'center' },
+    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' },
+    modalContent: {
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        padding: 24,
+        maxHeight: '85%',
+        backgroundColor: '#18181b',
+        borderTopWidth: 1,
+        borderColor: '#27272a',
+    },
+    modalTitle: { fontSize: 20, fontWeight: '600', marginBottom: 20, textAlign: 'center', color: '#f8fafc' },
     typeToggle: { flexDirection: 'row', gap: 12, marginBottom: 16 },
-    typeButton: { flex: 1, paddingVertical: 12, borderRadius: 8, alignItems: 'center', backgroundColor: '#64748b20' },
+    typeButton: { flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center', backgroundColor: 'rgba(39, 39, 42, 0.8)', borderWidth: 1, borderColor: '#27272a' },
     typeButtonText: { fontWeight: '500' },
-    input: { borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 16 },
-    label: { fontSize: 14, fontWeight: '500', marginBottom: 8 },
+    input: { borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 16, backgroundColor: 'rgba(24, 24, 27, 0.8)', color: '#f8fafc', borderColor: '#27272a' },
+    label: { fontSize: 14, fontWeight: '500', marginBottom: 8, color: '#f8fafc' },
     categoryScroll: { marginBottom: 16 },
-    categoryChip: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 8, backgroundColor: '#64748b20' },
+    categoryChip: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 8, backgroundColor: 'rgba(39, 39, 42, 0.8)', borderWidth: 1, borderColor: '#27272a' },
     categoryIcon: { fontSize: 16, marginRight: 6 },
     categoryName: { fontSize: 12 },
     modalButtons: { flexDirection: 'row', gap: 12, marginTop: 8 },
-    cancelButton: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1 },
-    cancelButtonText: { fontWeight: '500' },
-    saveButton: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
+    cancelButton: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1, backgroundColor: 'rgba(39, 39, 42, 0.8)', borderColor: '#27272a' },
+    cancelButtonText: { fontWeight: '500', color: '#f8fafc' },
+    saveButton: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#3b82f6' },
     saveButtonText: { color: '#fff', fontWeight: '600' },
 });
