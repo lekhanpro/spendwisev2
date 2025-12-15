@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { View, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider, useApp } from '../context/AppContext';
 import { AIChatbot } from '../components/AIChatbot';
 
@@ -91,9 +92,11 @@ export default function RootLayout() {
   }
 
   return (
-    <AppProvider>
-      <RootLayoutNav />
-    </AppProvider>
+    <SafeAreaProvider>
+      <AppProvider>
+        <RootLayoutNav />
+      </AppProvider>
+    </SafeAreaProvider>
   );
 }
 

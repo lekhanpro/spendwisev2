@@ -12,6 +12,7 @@ import {
     Platform,
     ActivityIndicator,
 } from 'react-native';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useApp } from '../context/AppContext';
 import { Colors } from '../constants/app';
 
@@ -128,7 +129,7 @@ ${getFinancialContext()}`
                 onPress={() => setVisible(true)}
                 activeOpacity={0.8}
             >
-                <Text style={styles.fabIcon}>🤖</Text>
+                <FontAwesome name="comments" size={28} color="#fff" />
             </TouchableOpacity>
 
             {/* Chat Modal */}
@@ -146,7 +147,7 @@ ${getFinancialContext()}`
                         {/* Header */}
                         <View style={styles.header}>
                             <View style={styles.headerLeft}>
-                                <Text style={styles.headerIcon}>🤖</Text>
+                                <FontAwesome name="comments" size={28} color="#3b82f6" />
                                 <View>
                                     <Text style={styles.headerTitle}>AI Assistant</Text>
                                     <Text style={styles.headerSubtitle}>Powered by Groq</Text>

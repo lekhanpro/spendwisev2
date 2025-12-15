@@ -1,7 +1,7 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, useRouter } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/app';
 
@@ -17,26 +17,17 @@ export default function TabLayout() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  // Calculate dynamic tab bar height based on safe area bottom inset
-  // If bottom inset is 0, device has navigation buttons (add more padding)
-  // If bottom inset > 0, device has gesture navigation (less padding needed)
-  const tabBarHeight = 60 + insets.bottom;
-  const tabBarPaddingBottom = insets.bottom > 0 ? insets.bottom : 16;
-
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textSecondary,
         tabBarStyle: {
-          backgroundColor: 'rgba(24, 24, 27, 0.95)',
+          backgroundColor: '#18181b',
           borderTopColor: '#27272a',
           borderTopWidth: 1,
-          height: tabBarHeight,
-          paddingBottom: tabBarPaddingBottom,
-          paddingTop: 10,
-          position: 'absolute',
-          elevation: 0,
+          paddingBottom: Platform.OS === 'android' ? insets.bottom + 8 : insets.bottom,
+          height: Platform.OS === 'android' ? 60 + insets.bottom : 70 + insets.bottom,
         },
         tabBarLabelStyle: {
           fontSize: 10,
@@ -101,18 +92,17 @@ export default function TabLayout() {
       <Tabs.Screen
         name="insights"
         options={{
-          href: null, // Hide from tab bar
+          href: null,
           title: 'AI Insights',
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          href: null, // Hide from tab bar
+          href: null,
           title: 'Settings',
         }}
       />
     </Tabs>
   );
 }
-
