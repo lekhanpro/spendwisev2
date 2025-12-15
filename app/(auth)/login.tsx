@@ -11,9 +11,11 @@ import {
     Platform,
     Alert,
     ActivityIndicator,
+    Image,
 } from 'react-native';
 import { Colors } from '../../constants/app';
 import { signIn, signUp, resetPassword } from '../../lib/auth';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function LoginScreen() {
     const colorScheme = useColorScheme();
@@ -55,6 +57,8 @@ export default function LoginScreen() {
         }
     };
 
+
+
     const handleForgotPassword = async () => {
         if (!email) {
             Alert.alert('Error', 'Please enter your email address');
@@ -89,6 +93,8 @@ export default function LoginScreen() {
                     <Text style={[styles.formTitle, { color: theme.text }]}>
                         {isLogin ? 'Welcome Back' : 'Create Account'}
                     </Text>
+
+
 
                     <TextInput
                         style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
@@ -193,6 +199,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 24,
     },
+
     input: {
         borderWidth: 1,
         borderRadius: 12,

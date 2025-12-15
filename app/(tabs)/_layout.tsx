@@ -1,6 +1,8 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/app';
 
 function TabBarIcon(props: {
@@ -12,6 +14,14 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const theme = Colors.dark;
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+
+  // Calculate dynamic tab bar height based on safe area bottom inset
+  // If bottom inset is 0, device has navigation buttons (add more padding)
+  // If bottom inset > 0, device has gesture navigation (less padding needed)
+  const tabBarHeight = 60 + insets.bottom;
+  const tabBarPaddingBottom = insets.bottom > 0 ? insets.bottom : 16;
 
   return (
     <Tabs
@@ -22,8 +32,8 @@ export default function TabLayout() {
           backgroundColor: 'rgba(24, 24, 27, 0.95)',
           borderTopColor: '#27272a',
           borderTopWidth: 1,
-          height: 70,
-          paddingBottom: 16,
+          height: tabBarHeight,
+          paddingBottom: tabBarPaddingBottom,
           paddingTop: 10,
           position: 'absolute',
           elevation: 0,
@@ -43,6 +53,14 @@ export default function TabLayout() {
         headerTitleStyle: {
           fontWeight: '600',
         },
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/settings')}
+            style={{ marginRight: 16 }}
+          >
+            <FontAwesome name="cog" size={22} color={theme.textSecondary} />
+          </TouchableOpacity>
+        ),
       }}>
       <Tabs.Screen
         name="index"
@@ -59,10 +77,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="insights"
+        name="budget"
         options={{
-          title: 'AI Insights',
-          tabBarIcon: ({ color }) => <TabBarIcon name="magic" color={color} />,
+          title: 'Budget',
+          tabBarIcon: ({ color }) => <TabBarIcon name="pie-chart" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -73,24 +91,25 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="budget"
-        options={{
-          title: 'Budget',
-          tabBarIcon: ({ color }) => <TabBarIcon name="pie-chart" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="goals"
         options={{
           title: 'Goals',
           tabBarIcon: ({ color }) => <TabBarIcon name="bullseye" color={color} />,
         }}
       />
+      {/* Hidden tabs - accessible from Settings */}
+      <Tabs.Screen
+        name="insights"
+        options={{
+          href: null, // Hide from tab bar
+          title: 'AI Insights',
+        }}
+      />
       <Tabs.Screen
         name="settings"
         options={{
+          href: null, // Hide from tab bar
           title: 'Settings',
-          tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,
         }}
       />
     </Tabs>

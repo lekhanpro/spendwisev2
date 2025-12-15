@@ -1,8 +1,10 @@
 // Settings Screen with Notification Controls
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, useColorScheme, TouchableOpacity, Switch, Alert, Modal, Linking } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useApp } from '../../context/AppContext';
 import { Colors, SUPPORTED_CURRENCIES } from '../../constants/app';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {
     requestNotificationPermission,
     scheduleDailyReminder,
@@ -14,6 +16,7 @@ import {
 export default function SettingsScreen() {
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
+    const router = useRouter();
     const { user, darkMode, setDarkMode, currency, setCurrency, handleLogout, resetData, transactions, budgets, goals } = useApp();
 
     const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
@@ -135,6 +138,25 @@ export default function SettingsScreen() {
                             <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Goals</Text>
                         </View>
                     </View>
+                </View>
+
+                {/* Quick Access */}
+                <View style={[styles.section, { backgroundColor: theme.card }]}>
+                    <Text style={[styles.sectionTitle, { color: theme.text }]}>🚀 Quick Access</Text>
+
+                    <TouchableOpacity
+                        style={[styles.quickAccessButton, { backgroundColor: theme.primary + '15' }]}
+                        onPress={() => router.push('/(tabs)/insights')}
+                    >
+                        <View style={[styles.quickAccessIcon, { backgroundColor: theme.primary + '20' }]}>
+                            <FontAwesome name="magic" size={20} color={theme.primary} />
+                        </View>
+                        <View style={styles.quickAccessContent}>
+                            <Text style={[styles.quickAccessTitle, { color: theme.text }]}>AI Insights</Text>
+                            <Text style={[styles.quickAccessDesc, { color: theme.textSecondary }]}>Get personalized financial advice</Text>
+                        </View>
+                        <FontAwesome name="chevron-right" size={16} color={theme.textSecondary} />
+                    </TouchableOpacity>
                 </View>
 
                 {/* Notifications */}
@@ -335,4 +357,9 @@ const styles = StyleSheet.create({
     checkmark: { fontSize: 18, color: '#10b981' },
     closeButton: { borderWidth: 1, borderRadius: 12, padding: 14, alignItems: 'center', marginTop: 12 },
     closeButtonText: { fontWeight: '500' },
+    quickAccessButton: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 12, gap: 12 },
+    quickAccessIcon: { width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+    quickAccessContent: { flex: 1 },
+    quickAccessTitle: { fontSize: 16, fontWeight: '600' },
+    quickAccessDesc: { fontSize: 12, marginTop: 2 },
 });
