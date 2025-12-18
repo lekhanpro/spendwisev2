@@ -17,6 +17,12 @@ export default function TabLayout() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
+  // Ensure the tab bar respects gesture and button navigation modes on Android
+  const androidBottomPadding = Math.max(insets.bottom, 8);
+  const bottomPadding = Platform.OS === 'android' ? androidBottomPadding : insets.bottom;
+  const baseHeight = Platform.OS === 'android' ? 60 : 70;
+  const tabBarHeight = baseHeight + bottomPadding;
+
   return (
     <Tabs
       screenOptions={{
@@ -26,8 +32,8 @@ export default function TabLayout() {
           backgroundColor: '#18181b',
           borderTopColor: '#27272a',
           borderTopWidth: 1,
-          paddingBottom: Platform.OS === 'android' ? insets.bottom + 8 : insets.bottom,
-          height: Platform.OS === 'android' ? 60 + insets.bottom : 70 + insets.bottom,
+          paddingBottom: bottomPadding,
+          height: tabBarHeight,
         },
         tabBarLabelStyle: {
           fontSize: 10,
