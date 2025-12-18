@@ -16,11 +16,12 @@ export default function TabLayout() {
   const theme = Colors.dark;
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const bottomInset = typeof insets.bottom === 'number' ? insets.bottom : 0;
 
   // Ensure the tab bar respects gesture and button navigation modes on Android
-  const androidBottomPadding = Math.max(insets.bottom, 8);
-  const bottomPadding = Platform.OS === 'android' ? androidBottomPadding : insets.bottom;
-  const baseHeight = Platform.OS === 'android' ? 60 : 70;
+  const androidBottomPadding = Math.max(bottomInset, 8);
+  const bottomPadding = Platform.OS === 'android' ? androidBottomPadding : bottomInset;
+  const baseHeight = Platform.select({ android: 60, default: 70 });
   const tabBarHeight = baseHeight + bottomPadding;
 
   return (
