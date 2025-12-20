@@ -79,6 +79,16 @@ Active Goals: ${goals.length}
         setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
         setLoading(true);
 
+        // Check if API key is configured
+        if (!GROQ_API_KEY) {
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: '⚠️ AI Assistant is not configured.\n\nTo enable AI features:\n1. Get a free API key from https://console.groq.com\n2. Add EXPO_PUBLIC_GROQ_API_KEY=your_key to your .env file\n3. Restart the app'
+            }]);
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await fetch(GROQ_API_URL, {
                 method: 'POST',
@@ -103,14 +113,26 @@ ${getFinancialContext()}`
                 }),
             });
 
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API Error:', response.status, errorText);
+                throw new Error(`API error: ${response.status}`);
+            }
+
             const data = await response.json();
-            const assistantMessage = data.choices?.[0]?.message?.content || 'Sorry, I couldn\'t process your request.';
+            const assistantMessage = data.choices?.[0]?.message?.content;
+
+            if (!assistantMessage) {
+                console.error('Empty response from API:', data);
+                throw new Error('Empty response from API');
+            }
 
             setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
         } catch (error) {
+            console.error('AI Chat error:', error);
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: 'Sorry, I\'m having trouble connecting. Please try again later.'
+                content: 'Sorry, I\'m having trouble connecting. Please check your internet connection and API key, then try again.'
             }]);
         } finally {
             setLoading(false);
