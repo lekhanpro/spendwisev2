@@ -11,6 +11,7 @@ import { Settings } from "./components/Settings";
 import { Modal } from "./components/Modal";
 import { TransactionForm } from "./components/TransactionForm";
 import { Auth } from "./components/Auth";
+import { AIChatbot } from "./components/AIChatbot";
 
 
 // Firebase imports
@@ -98,6 +99,9 @@ const MainContent: React.FC = () => {
           }}
         />
       </Modal>
+
+      {/* AI Chatbot FAB */}
+      <AIChatbot />
     </Layout>
   );
 };
