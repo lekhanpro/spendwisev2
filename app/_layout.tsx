@@ -9,6 +9,7 @@ import { View, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider, useApp } from '../context/AppContext';
 import { AIChatbot } from '../components/AIChatbot';
+import { TransactionModal } from '../components/TransactionModal';
 
 export {
   ErrorBoundary,
@@ -63,8 +64,10 @@ function RootLayoutNav() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
           </Stack>
+          {/* Global Transaction Modal - shows on all screens when triggered */}
+          <TransactionModal />
           {/* AI Chatbot FAB - shows on all screens */}
-          <AIChatbot />
+          {user && <AIChatbot />}
         </View>
       </KeyboardAvoidingView>
     </ThemeProvider>

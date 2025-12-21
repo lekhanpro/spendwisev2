@@ -15,8 +15,11 @@ import {
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useApp } from '../context/AppContext';
 import { Colors } from '../constants/app';
+import Constants from 'expo-constants';
 
-const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY || '';
+// Get API key from expo-constants (properly reads .env in Expo)
+const GROQ_API_KEY = Constants.expoConfig?.extra?.groqApiKey ||
+    process.env.EXPO_PUBLIC_GROQ_API_KEY || '';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 interface Message {

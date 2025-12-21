@@ -94,207 +94,185 @@ export default function DashboardScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>{getGreeting()}!</Text>
-            <Text style={styles.title}>Your Finances</Text>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.greeting}>{getGreeting()}!</Text>
+          <Text style={styles.title}>Your Finances</Text>
+        </View>
+        <Text style={styles.date}>
+          {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+        </Text>
+      </View>
+
+      {/* Balance Card - Glass Effect */}
+      <GlassCard style={styles.balanceCard}>
+        <Text style={styles.balanceLabel}>Current Balance</Text>
+        <Text style={[styles.balanceValue, { color: balance >= 0 ? '#fff' : theme.danger }]}>
+          {formatCurrency(balance)}
+        </Text>
+
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}>
+            <View style={styles.statIconContainer}>
+              <Text style={styles.statIcon}>↑</Text>
+            </View>
+            <View>
+              <Text style={styles.statLabel}>Income</Text>
+              <Text style={styles.statValue}>{formatCurrency(totalIncome)}</Text>
+            </View>
           </View>
-          <Text style={styles.date}>
-            {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-          </Text>
+          <View style={styles.statItem}>
+            <View style={[styles.statIconContainer, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
+              <Text style={[styles.statIcon, { color: '#ef4444' }]}>↓</Text>
+            </View>
+            <View>
+              <Text style={styles.statLabel}>Expenses</Text>
+              <Text style={styles.statValue}>{formatCurrency(totalExpenses)}</Text>
+            </View>
+          </View>
         </View>
 
-        {/* Balance Card - Glass Effect */}
-        <GlassCard style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>Current Balance</Text>
-          <Text style={[styles.balanceValue, { color: balance >= 0 ? '#fff' : theme.danger }]}>
-            {formatCurrency(balance)}
-          </Text>
-
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <View style={styles.statIconContainer}>
-                <Text style={styles.statIcon}>↑</Text>
-              </View>
-              <View>
-                <Text style={styles.statLabel}>Income</Text>
-                <Text style={styles.statValue}>{formatCurrency(totalIncome)}</Text>
-              </View>
-            </View>
-            <View style={styles.statItem}>
-              <View style={[styles.statIconContainer, { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-                <Text style={[styles.statIcon, { color: '#ef4444' }]}>↓</Text>
-              </View>
-              <View>
-                <Text style={styles.statLabel}>Expenses</Text>
-                <Text style={styles.statValue}>{formatCurrency(totalExpenses)}</Text>
-              </View>
-            </View>
+        {/* Savings Rate */}
+        <View style={styles.savingsContainer}>
+          <View style={styles.savingsHeader}>
+            <Text style={styles.savingsLabel}>Savings Rate</Text>
+            <Text style={styles.savingsValue}>{savingsRate.toFixed(1)}%</Text>
           </View>
-
-          {/* Savings Rate */}
-          <View style={styles.savingsContainer}>
-            <View style={styles.savingsHeader}>
-              <Text style={styles.savingsLabel}>Savings Rate</Text>
-              <Text style={styles.savingsValue}>{savingsRate.toFixed(1)}%</Text>
-            </View>
-            <View style={styles.progressBarBg}>
-              <View
-                style={[
-                  styles.progressBar,
-                  { width: `${Math.max(0, Math.min(100, savingsRate))}%` }
-                ]}
-              />
-            </View>
+          <View style={styles.progressBarBg}>
+            <View
+              style={[
+                styles.progressBar,
+                { width: `${Math.max(0, Math.min(100, savingsRate))}%` }
+              ]}
+            />
           </View>
-        </GlassCard>
+        </View>
+      </GlassCard>
 
-        {/* Budget Alerts */}
-        {budgetAlerts.length > 0 && (
-          <View style={styles.alertsContainer}>
-            {budgetAlerts.map(alert => (
-              <GlassCard
-                key={alert.id}
-                variant={alert.percentage >= 100 ? 'danger' : 'highlight'}
-                style={styles.alertCard}
-              >
-                <View style={styles.alertContent}>
-                  <View style={[
-                    styles.alertIcon,
-                    { backgroundColor: alert.percentage >= 100 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(251, 191, 36, 0.2)' }
-                  ]}>
-                    <Text>⚠️</Text>
-                  </View>
-                  <View style={styles.alertText}>
-                    <Text style={[
-                      styles.alertTitle,
-                      { color: alert.percentage >= 100 ? '#f87171' : '#fbbf24' }
-                    ]}>
-                      {alert.category?.name} budget {alert.percentage >= 100 ? 'exceeded!' : 'warning'}
-                    </Text>
-                    <Text style={styles.alertSubtitle}>
-                      {formatCurrency(alert.spent)} of {formatCurrency(alert.limit)} ({alert.percentage.toFixed(0)}%)
-                    </Text>
-                  </View>
+      {/* Budget Alerts */}
+      {budgetAlerts.length > 0 && (
+        <View style={styles.alertsContainer}>
+          {budgetAlerts.map(alert => (
+            <GlassCard
+              key={alert.id}
+              variant={alert.percentage >= 100 ? 'danger' : 'highlight'}
+              style={styles.alertCard}
+            >
+              <View style={styles.alertContent}>
+                <View style={[
+                  styles.alertIcon,
+                  { backgroundColor: alert.percentage >= 100 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(251, 191, 36, 0.2)' }
+                ]}>
+                  <Text>⚠️</Text>
                 </View>
-              </GlassCard>
-            ))}
-          </View>
-        )}
+                <View style={styles.alertText}>
+                  <Text style={[
+                    styles.alertTitle,
+                    { color: alert.percentage >= 100 ? '#f87171' : '#fbbf24' }
+                  ]}>
+                    {alert.category?.name} budget {alert.percentage >= 100 ? 'exceeded!' : 'warning'}
+                  </Text>
+                  <Text style={styles.alertSubtitle}>
+                    {formatCurrency(alert.spent)} of {formatCurrency(alert.limit)} ({alert.percentage.toFixed(0)}%)
+                  </Text>
+                </View>
+              </View>
+            </GlassCard>
+          ))}
+        </View>
+      )}
 
-        {/* Quick Stats Grid */}
-        <View style={styles.statsGrid}>
-          <GlassCard style={styles.quickStatCard}>
-            <Text style={styles.quickStatLabel}>Transactions</Text>
-            <Text style={styles.quickStatValue}>{monthTransactions.length}</Text>
-            <Text style={styles.quickStatSub}>This month</Text>
-          </GlassCard>
-          <GlassCard style={styles.quickStatCard}>
-            <Text style={styles.quickStatLabel}>Active Budgets</Text>
-            <Text style={styles.quickStatValue}>{budgets.length}</Text>
-            <Text style={styles.quickStatSub}>Categories tracked</Text>
-          </GlassCard>
+      {/* Quick Stats Grid */}
+      <View style={styles.statsGrid}>
+        <GlassCard style={styles.quickStatCard}>
+          <Text style={styles.quickStatLabel}>Transactions</Text>
+          <Text style={styles.quickStatValue}>{monthTransactions.length}</Text>
+          <Text style={styles.quickStatSub}>This month</Text>
+        </GlassCard>
+        <GlassCard style={styles.quickStatCard}>
+          <Text style={styles.quickStatLabel}>Active Budgets</Text>
+          <Text style={styles.quickStatValue}>{budgets.length}</Text>
+          <Text style={styles.quickStatSub}>Categories tracked</Text>
+        </GlassCard>
+      </View>
+
+      {/* Spending Chart */}
+      <GlassCard style={styles.chartCard}>
+        <Text style={styles.sectionTitle}>7-Day Spending Trend</Text>
+        <LineChart
+          data={chartData}
+          width={screenWidth - 64}
+          height={180}
+          chartConfig={{
+            backgroundColor: 'transparent',
+            backgroundGradientFrom: 'transparent',
+            backgroundGradientTo: 'transparent',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
+            labelColor: () => '#9ca3af',
+            style: { borderRadius: 16 },
+            propsForDots: { r: '4', strokeWidth: '2', stroke: '#3b82f6' },
+            propsForBackgroundLines: { stroke: '#27272a' },
+          }}
+          bezier
+          style={styles.chart}
+          withVerticalLines={false}
+        />
+      </GlassCard>
+
+      {/* Recent Transactions */}
+      <GlassCard style={styles.transactionsCard}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Recent Transactions</Text>
+          <TouchableOpacity>
+            <Text style={styles.seeAllText}>See all</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Spending Chart */}
-        <GlassCard style={styles.chartCard}>
-          <Text style={styles.sectionTitle}>7-Day Spending Trend</Text>
-          <LineChart
-            data={chartData}
-            width={screenWidth - 64}
-            height={180}
-            chartConfig={{
-              backgroundColor: 'transparent',
-              backgroundGradientFrom: 'transparent',
-              backgroundGradientTo: 'transparent',
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-              labelColor: () => '#9ca3af',
-              style: { borderRadius: 16 },
-              propsForDots: { r: '4', strokeWidth: '2', stroke: '#3b82f6' },
-              propsForBackgroundLines: { stroke: '#27272a' },
-            }}
-            bezier
-            style={styles.chart}
-            withVerticalLines={false}
-          />
-        </GlassCard>
-
-        {/* Recent Transactions */}
-        <GlassCard style={styles.transactionsCard}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Transactions</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See all</Text>
+        {recentTransactions.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>No transactions yet</Text>
+            <TouchableOpacity onPress={() => setShowTransactionModal(true)}>
+              <Text style={styles.addFirstText}>Add your first</Text>
             </TouchableOpacity>
           </View>
-
-          {recentTransactions.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>No transactions yet</Text>
-              <TouchableOpacity onPress={() => setShowTransactionModal(true)}>
-                <Text style={styles.addFirstText}>Add your first</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            recentTransactions.map((transaction) => (
-              <View key={transaction.id} style={styles.transactionItem}>
-                <View style={styles.transactionLeft}>
-                  <View style={[
-                    styles.transactionIconContainer,
-                    { backgroundColor: getCategoryColor(transaction.category) + '20' }
-                  ]}>
-                    <Text style={styles.transactionIcon}>
-                      {getCategoryIcon(transaction.category)}
-                    </Text>
-                  </View>
-                  <View>
-                    <Text style={styles.transactionDesc}>
-                      {transaction.description || DEFAULT_CATEGORIES.find(c => c.id === transaction.category)?.name}
-                    </Text>
-                    <Text style={styles.transactionDate}>
-                      {new Date(transaction.date).toLocaleDateString()}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={[
-                  styles.transactionAmount,
-                  { color: transaction.type === 'income' ? theme.success : theme.danger }
+        ) : (
+          recentTransactions.map((transaction) => (
+            <View key={transaction.id} style={styles.transactionItem}>
+              <View style={styles.transactionLeft}>
+                <View style={[
+                  styles.transactionIconContainer,
+                  { backgroundColor: getCategoryColor(transaction.category) + '20' }
                 ]}>
-                  {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                </Text>
+                  <Text style={styles.transactionIcon}>
+                    {getCategoryIcon(transaction.category)}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={styles.transactionDesc}>
+                    {transaction.description || DEFAULT_CATEGORIES.find(c => c.id === transaction.category)?.name}
+                  </Text>
+                  <Text style={styles.transactionDate}>
+                    {new Date(transaction.date).toLocaleDateString()}
+                  </Text>
+                </View>
               </View>
-            ))
-          )}
-        </GlassCard>
+              <Text style={[
+                styles.transactionAmount,
+                { color: transaction.type === 'income' ? theme.success : theme.danger }
+              ]}>
+                {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+              </Text>
+            </View>
+          ))
+        )}
+      </GlassCard>
 
-        {/* Bottom padding for navigation bar + FAB buttons */}
-        <View style={{ height: 160 }} />
-      </ScrollView>
-
-      {/* Fixed Position Quick Action Buttons */}
-      <View style={styles.fabContainer}>
-        <TouchableOpacity
-          style={[styles.fab, styles.expenseFab]}
-          onPress={() => setShowTransactionModal(true)}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.fabIcon}>−</Text>
-          <Text style={styles.fabText}>Expense</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.fab, styles.incomeFab]}
-          onPress={() => setShowTransactionModal(true)}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.fabIcon}>+</Text>
-          <Text style={styles.fabText}>Income</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      {/* Bottom padding for navigation bar + FAB buttons */}
+      <View style={{ height: 160 }} />
+    </ScrollView>
   );
 }
 
