@@ -12,6 +12,10 @@ jobs:
     permissions:
       contents: write
     
+    defaults:
+      run:
+        working-directory: web
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,6 +25,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: web/package-lock.json
 
       - name: Setup Java
         uses: actions/setup-java@v4

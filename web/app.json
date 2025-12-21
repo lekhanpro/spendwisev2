@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "SpendWise",
+    "slug": "spendwise-native",
+    "version": "1.0.3",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "spendwise",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.spendwise.app"
+    },
+    "android": {
+      "package": "com.spendwise.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0f172a"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.INTERNET"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a37697cb-6cd9-4624-8f69-d8d904f996c6"
+      }
+    },
+    "owner": "lekhanpro"
+  }
+}

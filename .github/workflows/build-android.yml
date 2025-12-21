@@ -12,6 +12,10 @@ jobs:
     permissions:
       contents: write
     
+    defaults:
+      run:
+        working-directory: mobile
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,6 +25,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: mobile/package-lock.json
 
       - name: Setup Expo CLI
         uses: expo/expo-github-action@v8

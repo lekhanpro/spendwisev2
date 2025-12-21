@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise | A comprehensive money management platform built with React Native (Expo) and Firebase.</title>
+    <meta name="description"
+        content="A comprehensive money management platform built with React Native (Expo) and Firebase.">
+    <meta property="og:title" content="SpendWise | Smart Money Management">
+    <meta property="og:description"
+        content="A comprehensive money management platform built with React Native (Expo) and Firebase.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --border: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 16px 0;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-github {
+            background: var(--bg-card);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .nav-github:hover {
+            background: var(--border);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 160px 0 80px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* Section */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-header h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        /* Demo Video */
+        .demo-section {
+            background: var(--bg-secondary);
+        }
+
+        .video-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .video-placeholder {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 12px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .video-placeholder i {
+            font-size: 64px;
+            opacity: 0.9;
+        }
+
+        .video-placeholder span {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* Documentation Cards */
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .doc-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+
+        .doc-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .doc-card-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .doc-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .doc-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Tech Stack */
+        .tech-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .tech-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .tech-item:hover {
+            border-color: var(--accent);
+        }
+
+        .tech-item i {
+            font-size: 24px;
+            color: var(--accent);
+        }
+
+        .tech-item span {
+            font-weight: 500;
+        }
+
+        /* Quick Start */
+        .quickstart-section {
+            background: var(--bg-secondary);
+        }
+
+        .quickstart-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .step-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: #000;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            color: #e0e0e0;
+        }
+
+        .code-block .comment {
+            color: #6a737d;
+        }
+
+        .code-block .command {
+            color: #79c0ff;
+        }
+
+        /* API Section */
+        .api-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .api-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .api-method {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .api-method.get {
+            background: #22c55e20;
+            color: #22c55e;
+        }
+
+        .api-method.post {
+            background: #3b82f620;
+            color: #3b82f6;
+        }
+
+        .api-url {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .api-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Team */
+        .team-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .team-card h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .team-card .role {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .team-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .team-links a {
+            width: 36px;
+            height: 36px;
+            background: var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .team-links a:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            padding: 48px 0 24px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-brand {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="nav-brand"><img src="logo.png" alt="SpendWise" style="height: 32px; margin-right: 8px;">
+                SpendWise</a>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="docs/API.html">API</a></li>
+                <li><a href="docs/ARCHITECTURE.html">Architecture</a></li>
+                <li><a href="docs/CODEBASE.html">Codebase</a></li>
+                <li><a href="docs/SERVICES.html">Services</a></li>
+            </ul>
+            <a href="https://github.com/lekhanpro/spendwisev2" class="nav-github" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">🤖 Powered by Groq AI</div>
+            <h1>SpendWise</h1>
+            <p>A comprehensive money management platform built with React Native & Firebase</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/lekhanpro/spendwisev2/releases/latest" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download APK
+                </a>
+                <a href="https://spendwisev2.vercel.app/" class="btn btn-secondary" target="_blank">
+                    <i class="fas fa-globe"></i> Try Web App
+                </a>
+                <a href="https://github.com/lekhanpro/spendwisev2" class="btn btn-secondary" target="_blank">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+                <a href="docs/API.html" class="btn btn-secondary">
+                    <i class="fas fa-book"></i> API Docs
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Video -->
+    <section class="section demo-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Demo Video</h2>
+                <p>Watch a quick overview of SpendWise</p>
+            </div>
+            <div class="video-container">
+                <!-- Main Video Player -->
+                <video controls style="width: 100%; border-radius: 12px; background: #000;">
+                    <source src="spendwise_overview.mp4" type="video/mp4">
+                    <source src="spendwise_overview.webm" type="video/webm">
+                    <source src="spendwise_overview.wav" type="audio/wav">
+                    <!-- Fallback to animated WebP if video not available -->
+                    <img src="demo.webp" alt="SpendWise Demo" style="width: 100%; border-radius: 12px;">
+                </video>
+            </div>
+
+            <!-- Audio Only Option (for podcast-style overview) -->
+            <div
+                style="margin-top: 24px; background: var(--bg-card); border-radius: 12px; padding: 16px; border: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                    <span style="font-size: 24px;">🎙️</span>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">Or listen to the AI Audio
+                        Overview (Generated by NotebookLM)</p>
+                </div>
+                <audio controls style="width: 100%;">
+                    <source src="spendwise_overview.wav" type="audio/wav">
+                    <source src="spendwise_overview.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>App Screenshots</h2>
+                <p>See SpendWise in action</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <div
+                    style="background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border);">
+                    <img src="screenshots/dashboard.png" alt="Dashboard" style="width: 100%;">
+                    <div style="padding: 16px; text-align: center;">
+                        <h3 style="font-size: 16px;">Dashboard</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px;">Your financial overview at a glance
+                        </p>
+                    </div>
+                </div>
+                <div
+                    style="background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border);">
+                    <img src="screenshots/transactions.png" alt="Transactions" style="width: 100%;">
+                    <div style="padding: 16px; text-align: center;">
+                        <h3 style="font-size: 16px;">Transactions</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px;">Track all income and expenses</p>
+                    </div>
+                </div>
+                <div
+                    style="background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border);">
+                    <img src="screenshots/budget.png" alt="Budget" style="width: 100%;">
+                    <div style="padding: 16px; text-align: center;">
+                        <h3 style="font-size: 16px;">Budget</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px;">Set and track spending limits</p>
+                    </div>
+                </div>
+                <div
+                    style="background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border);">
+                    <img src="screenshots/reports.png" alt="Reports" style="width: 100%;">
+                    <div style="padding: 16px; text-align: center;">
+                        <h3 style="font-size: 16px;">Reports</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px;">Visual spending analytics</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Documentation</h2>
+                <p>Comprehensive guides for developers and contributors</p>
+            </div>
+            <div class="docs-grid">
+                <a href="docs/API.html" class="doc-card">
+                    <div class="doc-card-icon">🔌</div>
+                    <h3>API Reference</h3>
+                    <p>Complete backend API documentation with endpoints, request/response formats, and error handling.
+                    </p>
+                </a>
+                <a href="docs/ARCHITECTURE.html" class="doc-card">
+                    <div class="doc-card-icon">🏗️</div>
+                    <h3>Architecture</h3>
+                    <p>System architecture overview including component diagrams, data flow, and design patterns.</p>
+                </a>
+                <a href="docs/CODEBASE.html" class="doc-card">
+                    <div class="doc-card-icon">📁</div>
+                    <h3>Codebase Guide</h3>
+                    <p>Navigate the codebase with detailed explanations of directory structure and key modules.</p>
+                </a>
+                <a href="docs/SERVICES.html" class="doc-card">
+                    <div class="doc-card-icon">⚙️</div>
+                    <h3>Services</h3>
+                    <p>Documentation for Firebase services, Groq AI integration, and notification systems.</p>
+                </a>
+                <a href="SpendWise_IEEE_Paper.pdf" class="doc-card" style="border-color: var(--accent);">
+                    <div class="doc-card-icon">📄</div>
+                    <h3>IEEE Research Paper</h3>
+                    <p>Empirical evaluation of SpendWise with real-world data analysis, graphs, and AI insights study.
+                    </p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <h2>Features</h2>
+                <p>Everything you need to manage your money and achieve financial goals</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Smart Dashboard</h3>
+                    <p>Get a complete overview of your finances with interactive charts and real-time balance tracking.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3>Transaction Tracking</h3>
+                    <p>Easily log income and expenses with categories, payment methods, and notes for every transaction.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Insights</h3>
+                    <p>Get personalized financial advice and spending analysis powered by Groq's LLaMA 3.3 70B model.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Visual Reports</h3>
+                    <p>Understand your spending with beautiful pie charts, bar graphs, and trend analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Budget Management</h3>
+                    <p>Set spending limits by category and track your progress with visual progress indicators.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Smart Notifications</h3>
+                    <p>Receive budget alerts, daily reminders, and weekly AI-generated spending summaries.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Tech Stack</h2>
+                <p>Built with modern technologies for the best experience</p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <i class="fab fa-react"></i>
+                    <span>React Native</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Expo</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-js-square"></i>
+                    <span>TypeScript</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-fire"></i>
+                    <span>Firebase</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Groq AI</span>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Chart Kit</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section class="section quickstart-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Quick Start</h2>
+                <p>Get up and running in minutes</p>
+            </div>
+            <div class="quickstart-steps">
+                <div class="step-card">
+                    <h3><span class="step-number">1</span> Prerequisites</h3>
+                    <div class="code-block">
+                        <span class="comment"># Required software</span><br>
+                        Node.js 18+<br>
+                        npm or yarn<br>
+                        Expo CLI
+                    </div>
+                </div>
+                <div class="step-card">
+                    <h3><span class="step-number">2</span> Installation</h3>
+                    <div class="code-block">
+                        <span class="command">git clone</span> https://github.com/lekhanpro/spendwisev2.git<br>
+                        <span class="command">cd</span> spendwisev2<br>
+                        <span class="command">npm install</span><br>
+                        <span class="command">npm start</span>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <h3><span class="step-number">3</span> Build for Production</h3>
+                    <div class="code-block">
+                        <span class="comment"># Build APK with EAS</span><br>
+                        <span class="command">npx eas-cli build</span> --platform android --profile preview
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Endpoints -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>API Endpoints</h2>
+                <p>Key API integrations powering SpendWise</p>
+            </div>
+            <div class="api-card">
+                <div class="api-header">
+                    <span class="api-method post">POST</span>
+                    <span class="api-url">api.groq.com/openai/v1/chat/completions</span>
+                </div>
+                <p class="api-desc">Generate AI-powered financial insights and personalized recommendations using LLaMA
+                    3.3</p>
+            </div>
+            <div class="api-card">
+                <div class="api-header">
+                    <span class="api-method get">GET</span>
+                    <span class="api-url">Firebase Realtime Database</span>
+                </div>
+                <p class="api-desc">Real-time sync of transactions, budgets, goals, and user settings across all devices
+                </p>
+            </div>
+            <div class="api-card">
+                <div class="api-header">
+                    <span class="api-method post">POST</span>
+                    <span class="api-url">Firebase Authentication</span>
+                </div>
+                <p class="api-desc">Secure email/password authentication with email verification and password reset</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Development Team -->
+    <section class="section" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <h2>Development Team</h2>
+                <p>The people behind SpendWise</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">L</div>
+                    <h3>Lekhan</h3>
+                    <p class="role">Full Stack Developer</p>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">Building modern web &
+                        mobile applications with React, React Native, and Firebase</p>
+                    <div class="team-links">
+                        <a href="https://github.com/lekhanpro" target="_blank" title="GitHub"><i
+                                class="fab fa-github"></i></a>
+                        <a href="https://linkedin.com/in/lekhanpro" target="_blank" title="LinkedIn"><i
+                                class="fab fa-linkedin"></i></a>
+                        <a href="https://dev.to/lekhanpro" target="_blank" title="Dev.to"><i class="fab fa-dev"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-brand"><img src="logo.png" alt="SpendWise"
+                    style="height: 40px; margin-bottom: 8px;"><br>SpendWise</div>
+            <div class="footer-links">
+                <a href="https://github.com/lekhanpro/spendwisev2" target="_blank">GitHub</a>
+                <a href="https://spendwisev2.vercel.app/" target="_blank">Web App</a>
+                <a href="docs/API.html">API Docs</a>
+                <a href="docs/ARCHITECTURE.html">Architecture</a>
+            </div>
+            <p class="footer-copy">© 2025 SpendWise. Developed by <a href="https://github.com/lekhanpro"
+                    style="color: var(--accent);">Lekhan</a> • Full Stack Developer. Open source under Apache 2.0
+                License.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
