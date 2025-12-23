@@ -1,849 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpendWise | AI-Powered Personal Finance Manager</title>
-    <meta name="description"
-        content="A comprehensive personal finance platform with AI insights, built with React Native, TypeScript & Firebase. Track expenses, set budgets, achieve financial goals.">
-    <meta name="keywords"
-        content="SpendWise, personal finance, budgeting app, expense tracker, AI finance, React Native, Firebase">
-    <meta name="author" content="Lekhan HR">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="SpendWise | AI-Powered Personal Finance Manager">
-    <meta property="og:description" content="Track expenses, manage budgets, and get AI-powered financial insights.">
+    <title>SpendWise | Smart Personal Finance Manager</title>
+    <meta name="description" content="A comprehensive personal finance tracking app built with React, TypeScript & Firebase. Track expenses, set budgets, and achieve your financial goals.">
+    <meta property="og:title" content="SpendWise | Smart Personal Finance Manager">
+    <meta property="og:description" content="A comprehensive personal finance tracking app built with React, TypeScript & Firebase.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://lekhanpro.github.io/spendwisev2/">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary: #3b82f6;
-            --secondary: #8b5cf6;
-            --accent: #06b6d4;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --bg-dark: #0a0a0a;
-            --bg-card: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #ffffff;
-            --text-muted: #a1a1aa;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: var(--bg-dark);
-            color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Animated Background */
-        .bg-gradient {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .bg-gradient::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 60%);
-            animation: bgMove 20s ease-in-out infinite;
-        }
-
-        @keyframes bgMove {
-
-            0%,
-            100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            50% {
-                transform: translate(-5%, -5%) rotate(5deg);
-            }
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .nav-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-            height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: var(--text);
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .logo-text {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-        }
-
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: var(--text);
-        }
-
-        .nav-cta {
-            padding: 10px 24px;
-            background: var(--text);
-            color: var(--bg-dark);
-            border-radius: 100px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .nav-cta:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 120px 24px 80px;
-            text-align: center;
-        }
-
-        .hero-content {
-            max-width: 900px;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            font-size: 14px;
-            color: var(--accent);
-            margin-bottom: 32px;
-        }
-
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.5;
-                transform: scale(1.2);
-            }
-        }
-
-        .hero h1 {
-            font-size: clamp(48px, 8vw, 80px);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: clamp(18px, 2.5vw, 22px);
-            color: var(--text-muted);
-            max-width: 700px;
-            margin: 0 auto 48px;
-            line-height: 1.7;
-        }
-
-        .hero p span {
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .cta-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            justify-content: center;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 16px 32px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), #2563eb);
-            color: var(--text);
-            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 120px 24px;
-            background: rgba(24, 24, 27, 0.3);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 64px;
-        }
-
-        .section-header h2 {
-            font-size: clamp(32px, 5vw, 48px);
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        .section-header p {
-            color: var(--text-muted);
-            font-size: 18px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-        }
-
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 32px;
-            transition: all 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .feature-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .feature-icon.blue {
-            background: rgba(59, 130, 246, 0.15);
-        }
-
-        .feature-icon.green {
-            background: rgba(34, 197, 94, 0.15);
-        }
-
-        .feature-icon.purple {
-            background: rgba(139, 92, 246, 0.15);
-        }
-
-        .feature-icon.orange {
-            background: rgba(245, 158, 11, 0.15);
-        }
-
-        .feature-icon.cyan {
-            background: rgba(6, 182, 212, 0.15);
-        }
-
-        .feature-icon.pink {
-            background: rgba(236, 72, 153, 0.15);
-        }
-
-        .feature-card h3 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .feature-card p {
-            color: var(--text-muted);
-            font-size: 15px;
-        }
-
-        /* Tech Stack Section */
-        .tech-stack {
-            padding: 120px 24px;
-        }
-
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-        }
-
-        .tech-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 28px;
-        }
-
-        .tech-card h3 {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-
-        .tech-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .tech-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .tech-item:last-child {
-            border-bottom: none;
-        }
-
-        .tech-item span:first-child {
-            font-weight: 500;
-        }
-
-        .tech-item span:last-child {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        /* AI Section */
-        .ai-section {
-            padding: 120px 24px;
-            background: linear-gradient(180deg, transparent 0%, rgba(139, 92, 246, 0.05) 50%, transparent 100%);
-        }
-
-        .ai-content {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .ai-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 20px;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 100px;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 24px;
-        }
-
-        .ai-content h2 {
-            font-size: clamp(32px, 5vw, 48px);
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .ai-content p {
-            color: var(--text-muted);
-            font-size: 18px;
-            margin-bottom: 32px;
-        }
-
-        .ai-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 48px;
-        }
-
-        .ai-feature {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: left;
-        }
-
-        .ai-feature h4 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .ai-feature p {
-            font-size: 14px;
-            margin: 0;
-        }
-
-        /* Developer Section */
-        .developer {
-            padding: 120px 24px;
-        }
-
-        .developer-content {
-            text-align: center;
-        }
-
-        .developer-card {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 48px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 32px;
-        }
-
-        .developer-avatar {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin-bottom: 20px;
-        }
-
-        .developer-card h3 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .developer-card .role {
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
-
-        .developer-card a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .developer-card a:hover {
-            color: var(--accent);
-        }
-
-        /* Footer */
-        footer {
-            padding: 48px 24px;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 24px;
-        }
-
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: var(--text);
-        }
-
-        .footer-copy {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .hero {
-                padding: 100px 20px 60px;
-            }
-
-            .cta-group {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-            }
-        }
+        * { font-family: 'Inter', sans-serif; }
+        html { scroll-behavior: smooth; }
+        .gradient-text { background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .glow { box-shadow: 0 0 60px rgba(59, 130, 246, 0.3); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .float { animation: float 6s ease-in-out infinite; }
     </style>
 </head>
-
-<body>
-    <div class="bg-gradient"></div>
-
+<body class="bg-black text-white">
     <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <div class="logo-icon">💰</div>
-                <span class="logo-text">SpendWise</span>
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-xl">💰</div>
+                <span class="text-xl font-bold">SpendWise</span>
             </a>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#tech">Tech Stack</a>
-                <a href="#ai">AI Insights</a>
-                <a href="WIKI.md" target="_blank">📚 Wiki</a>
-                <a href="https://codewiki.google/github.com/lekhanpro/spendwisev2" target="_blank">🤖 CodeWiki</a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="index.html" class="text-white">Home</a>
+                <a href="docs/api.html" class="hover:text-white transition-colors">API</a>
+                <a href="docs/architecture.html" class="hover:text-white transition-colors">Architecture</a>
+                <a href="docs/codebase.html" class="hover:text-white transition-colors">Codebase</a>
+                <a href="docs/services.html" class="hover:text-white transition-colors">Services</a>
+                <a href="https://github.com/lekhanpro/spendwisev2" target="_blank" class="hover:text-white transition-colors">GitHub</a>
             </div>
-            <a href="https://spendwisev2.vercel.app" class="nav-cta">Launch App</a>
+            <a href="https://spendwisev2.vercel.app" class="px-6 py-2.5 bg-white text-black rounded-full font-bold hover:bg-gray-200 transition-all">
+                Launch App
+            </a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="badge">
-                <span class="badge-dot"></span>
-                v4.0 • AI-Powered Finance
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-blue-600/20 rounded-full blur-[150px]"></div>
+        <div class="absolute bottom-0 right-0 w-[600px] h-[400px] bg-purple-600/15 rounded-full blur-[120px]"></div>
+        
+        <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-blue-300 mb-8">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                v1.0.3 • Open Source
             </div>
-            <h1>SpendWise</h1>
-            <p>
-                A high-performance personal finance platform built with
-                <span>React Native</span>, <span>TypeScript</span> & <span>AI</span>.
-                Track expenses, manage budgets, and get intelligent financial insights powered by LLaMA 3.3.
+            
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-8 leading-tight">
+                <span class="gradient-text">SpendWise</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+                A comprehensive personal finance tracking app built with <span class="text-white">React</span>, <span class="text-white">TypeScript</span> & <span class="text-white">Firebase</span>. Track expenses, set budgets, and achieve your financial goals.
             </p>
-            <div class="cta-group">
-                <a href="https://spendwisev2.vercel.app" class="btn btn-primary">
-                    🚀 Launch Web App
+            
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                <a href="https://spendwisev2.vercel.app" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-2xl font-bold hover:scale-105 transition-all shadow-lg shadow-blue-500/25 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    Try Web App
                 </a>
-                <a href="https://github.com/lekhanpro/spendwisev2/releases/latest" class="btn btn-secondary">
-                    📱 Download APK
+                <a href="https://github.com/lekhanpro/spendwisev2" target="_blank" class="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-semibold hover:bg-white/10 transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    View on GitHub
                 </a>
-                <a href="https://codewiki.google/github.com/lekhanpro/spendwisev2" class="btn btn-secondary"
-                    target="_blank">
-                    🤖 CodeWiki
+                <a href="docs/api.html" class="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-semibold hover:bg-white/10 transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    API Docs
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section class="py-24 px-6 border-t border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Documentation</h2>
+                <p class="text-gray-400 text-lg">Explore our comprehensive documentation</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <a href="docs/api.html" class="card-hover p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:border-blue-500/50">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">API Reference</h3>
+                    <p class="text-gray-400 text-sm">Complete API documentation with examples</p>
+                </a>
+                
+                <a href="docs/architecture.html" class="card-hover p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:border-purple-500/50">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Architecture</h3>
+                    <p class="text-gray-400 text-sm">System design and component structure</p>
+                </a>
+                
+                <a href="docs/codebase.html" class="card-hover p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:border-green-500/50">
+                    <div class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Codebase Guide</h3>
+                    <p class="text-gray-400 text-sm">Navigate the project structure</p>
+                </a>
+                
+                <a href="docs/services.html" class="card-hover p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 hover:border-orange-500/50">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Services</h3>
+                    <p class="text-gray-400 text-sm">Backend services and integrations</p>
                 </a>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header">
-                <h2>Powerful Features</h2>
-                <p>Everything you need to take control of your finances</p>
+    <section id="features" class="py-24 px-6 bg-zinc-900/30">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Features</h2>
+                <p class="text-gray-400 text-lg">Everything you need to manage your personal finances</p>
             </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon blue">📊</div>
-                    <h3>Smart Dashboard</h3>
-                    <p>View your balance, weekly spending charts, and recent transactions at a glance with real-time
-                        updates.</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card-hover p-8 rounded-3xl bg-black border border-zinc-800">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Expense Tracking</h3>
+                    <p class="text-gray-400">Track all your expenses with detailed categorization and real-time updates.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon green">💰</div>
-                    <h3>Budget Management</h3>
-                    <p>Set spending limits by category with visual progress tracking and get alerts when approaching
-                        limits.</p>
+                
+                <div class="card-hover p-8 rounded-3xl bg-black border border-zinc-800">
+                    <div class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Budget Management</h3>
+                    <p class="text-gray-400">Set monthly budgets for categories and get alerts when approaching limits.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon purple">🎯</div>
-                    <h3>Savings Goals</h3>
-                    <p>Create financial goals with deadlines and priority levels. Track progress with visual milestones.
-                    </p>
+                
+                <div class="card-hover p-8 rounded-3xl bg-black border border-zinc-800">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Goal Setting</h3>
+                    <p class="text-gray-400">Create savings goals and track your progress with visual milestones.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon orange">📈</div>
-                    <h3>Analytics & Reports</h3>
-                    <p>Visualize spending patterns with interactive pie charts, bar graphs, and detailed financial
-                        reports.</p>
+                
+                <div class="card-hover p-8 rounded-3xl bg-black border border-zinc-800">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Analytics & Reports</h3>
+                    <p class="text-gray-400">Visualize spending patterns with interactive charts and detailed reports.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon cyan">🔐</div>
-                    <h3>Secure Authentication</h3>
-                    <p>Firebase-powered authentication with email verification and Google OAuth for maximum security.
-                    </p>
+                
+                <div class="card-hover p-8 rounded-3xl bg-black border border-zinc-800">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Secure Authentication</h3>
+                    <p class="text-gray-400">Firebase-powered authentication with email verification and Google OAuth.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon pink">🌙</div>
-                    <h3>Glassmorphism UI</h3>
-                    <p>Beautiful glass-morphic interface with dark mode support for comfortable viewing any time.</p>
+                
+                <div class="card-hover p-8 rounded-3xl bg-black border border-zinc-800">
+                    <div class="w-14 h-14 rounded-2xl bg-pink-500/10 flex items-center justify-center text-pink-400 mb-6">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Dark Mode</h3>
+                    <p class="text-gray-400">Beautiful glass-morphic interface with dark mode for comfortable viewing.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Tech Stack Section -->
-    <section class="tech-stack" id="tech">
-        <div class="container">
-            <div class="section-header">
-                <h2>Tech Stack</h2>
-                <p>Built with modern, scalable technologies</p>
+    <section class="py-24 px-6 border-t border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Tech Stack</h2>
+                <p class="text-gray-400 text-lg">Built with modern technologies for the best experience</p>
             </div>
-            <div class="tech-grid">
-                <div class="tech-card">
-                    <h3>📱 Frontend</h3>
-                    <div class="tech-list">
-                        <div class="tech-item">
-                            <span>React Native 0.76</span>
-                            <span>Mobile Framework</span>
-                        </div>
-                        <div class="tech-item">
-                            <span>Expo SDK 52</span>
-                            <span>Build Tooling</span>
-                        </div>
-                        <div class="tech-item">
-                            <span>TypeScript</span>
-                            <span>Type Safety</span>
-                        </div>
-                        <div class="tech-item">
-                            <span>Expo Router</span>
-                            <span>Navigation</span>
-                        </div>
-                    </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center hover:border-blue-500/50 transition-colors">
+                    <div class="text-3xl mb-3">⚛️</div>
+                    <div class="font-semibold">React</div>
                 </div>
-                <div class="tech-card">
-                    <h3>☁️ Backend</h3>
-                    <div class="tech-list">
-                        <div class="tech-item">
-                            <span>Firebase Auth</span>
-                            <span>Authentication</span>
-                        </div>
-                        <div class="tech-item">
-                            <span>Firebase RTDB</span>
-                            <span>Real-time Data</span>
-                        </div>
-                        <div class="tech-item">
-                            <span>Groq API</span>
-                            <span>AI Processing</span>
-                        </div>
-                    </div>
+                <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center hover:border-blue-500/50 transition-colors">
+                    <div class="text-3xl mb-3">📘</div>
+                    <div class="font-semibold">TypeScript</div>
                 </div>
-                <div class="tech-card">
-                    <h3>🚀 Deployment</h3>
-                    <div class="tech-list">
-                        <div class="tech-item">
-                            <span>EAS Build</span>
-                            <span>Cloud Builds</span>
-                        </div>
-                        <div class="tech-item">
-                            <span>GitHub Actions</span>
-                            <span>CI/CD</span>
-                        </div>
-                        <div class="tech-item">
-                            <span>Vercel</span>
-                            <span>Web Hosting</span>
-                        </div>
-                    </div>
+                <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center hover:border-orange-500/50 transition-colors">
+                    <div class="text-3xl mb-3">🔥</div>
+                    <div class="font-semibold">Firebase</div>
+                </div>
+                <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center hover:border-purple-500/50 transition-colors">
+                    <div class="text-3xl mb-3">⚡</div>
+                    <div class="font-semibold">Vite</div>
+                </div>
+                <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center hover:border-cyan-500/50 transition-colors">
+                    <div class="text-3xl mb-3">🎨</div>
+                    <div class="font-semibold">Tailwind CSS</div>
+                </div>
+                <div class="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 text-center hover:border-green-500/50 transition-colors">
+                    <div class="text-3xl mb-3">📊</div>
+                    <div class="font-semibold">Recharts</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- AI Section -->
-    <section class="ai-section" id="ai">
-        <div class="ai-content">
-            <div class="ai-badge">🧠 Powered by LLaMA 3.3 70B</div>
-            <h2>AI Fiscal Intelligence</h2>
-            <p>
-                Get personalized financial insights and recommendations powered by Groq's ultra-fast LLaMA 3.3 70B
-                model.
-                Sub-second response times for real-time financial coaching.
-            </p>
-            <a href="wiki/IMPLEMENTATION.md" class="btn btn-secondary" target="_blank">
-                📖 Read AI Implementation
-            </a>
-            <div class="ai-features">
-                <div class="ai-feature">
-                    <h4>📊 Health Score</h4>
-                    <p>AI-calculated 0-100 score based on your financial habits</p>
+    <!-- Quick Start Section -->
+    <section class="py-24 px-6 bg-zinc-900/30">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Quick Start</h2>
+                <p class="text-gray-400 text-lg">Get up and running in minutes</p>
+            </div>
+            
+            <div class="space-y-8">
+                <div class="p-6 rounded-2xl bg-black border border-zinc-800">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm">1</span>
+                        Prerequisites
+                    </h3>
+                    <ul class="text-gray-400 space-y-2 ml-10">
+                        <li>• Node.js 18+ installed</li>
+                        <li>• npm or yarn package manager</li>
+                        <li>• Firebase account for authentication</li>
+                    </ul>
                 </div>
-                <div class="ai-feature">
-                    <h4>💡 Smart Tips</h4>
-                    <p>Personalized insights and actionable recommendations</p>
+                
+                <div class="p-6 rounded-2xl bg-black border border-zinc-800">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm">2</span>
+                        Installation
+                    </h3>
+                    <pre class="bg-zinc-900 rounded-xl p-4 overflow-x-auto text-sm text-gray-300"><code>git clone https://github.com/lekhanpro/spendwisev2.git
+cd spendwisev2
+npm install
+npm run dev</code></pre>
                 </div>
-                <div class="ai-feature">
-                    <h4>📅 Weekly Summaries</h4>
-                    <p>Automated analysis delivered every Monday</p>
-                </div>
-                <div class="ai-feature">
-                    <h4>⚡ Real-time</h4>
-                    <p>Sub-second responses via Groq's optimized inference</p>
+                
+                <div class="p-6 rounded-2xl bg-black border border-zinc-800">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm">3</span>
+                        Build for Production
+                    </h3>
+                    <pre class="bg-zinc-900 rounded-xl p-4 overflow-x-auto text-sm text-gray-300"><code>npm run build
+npm run preview</code></pre>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Developer Section -->
-    <section class="developer">
-        <div class="container">
-            <div class="section-header">
-                <h2>Developer</h2>
-                <p>Built with ❤️ by</p>
-            </div>
-            <div class="developer-content">
-                <div class="developer-card">
-                    <div class="developer-avatar">👨‍💻</div>
-                    <h3>Lekhan HR</h3>
-                    <p class="role">Full Stack Developer</p>
-                    <a href="https://github.com/lekhanpro" target="_blank">@lekhanpro</a>
-                </div>
+    <section class="py-24 px-6 border-t border-white/5">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-4">Developer</h2>
+            <p class="text-gray-400 text-lg mb-12">Built with ❤️ by</p>
+            
+            <div class="inline-flex flex-col items-center p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-3xl mb-4">👨‍💻</div>
+                <h3 class="text-xl font-bold mb-1">Lekhan HR</h3>
+                <p class="text-gray-400 mb-4">Full Stack Developer</p>
+                <a href="https://github.com/lekhanpro" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    @lekhanpro
+                </a>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <a href="#" class="logo">
-                <div class="logo-icon">💰</div>
-                <span class="logo-text">SpendWise</span>
-            </a>
-            <div class="footer-links">
-                <a href="WIKI.md" target="_blank">Project Wiki</a>
-                <a href="RESEARCH_PAPER.md" target="_blank">Research Paper</a>
-                <a href="https://github.com/lekhanpro/spendwisev2" target="_blank">GitHub</a>
-                <a href="https://codewiki.google/github.com/lekhanpro/spendwisev2" target="_blank">CodeWiki</a>
+    <footer class="py-12 px-6 border-t border-white/5 bg-black">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center">💰</div>
+                <span class="font-bold">SpendWise</span>
             </div>
-            <p class="footer-copy">© 2024-2025 SpendWise Ecosystem. Open Source.</p>
+            <div class="flex items-center gap-6 text-sm text-gray-400">
+                <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                <a href="#" class="hover:text-white transition-colors">Terms</a>
+                <a href="https://github.com/lekhanpro/spendwisev2" class="hover:text-white transition-colors">GitHub</a>
+            </div>
+            <p class="text-gray-500 text-sm">© 2024 SpendWise. Open Source.</p>
         </div>
     </footer>
 </body>
-
 </html>
