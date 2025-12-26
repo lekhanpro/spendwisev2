@@ -5,6 +5,7 @@ A comprehensive money management platform built with React Native (Expo) and Fir
 [![GitHub release](https://img.shields.io/github/v/release/lekhanpro/spendwisev2?style=flat-square)](https://github.com/lekhanpro/spendwisev2/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Web-green.svg?style=flat-square)]()
+[![CI](https://github.com/lekhanpro/spendwisev2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/lekhanpro/spendwisev2/actions/workflows/ci.yml)
 
 ## 📥 Download
 
