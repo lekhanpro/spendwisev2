@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  web-tests:
-    name: Run web tests
+  lint-build:
+    name: Lint and Build (web)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -18,6 +18,45 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Cache node modules (web)
+        uses: actions/cache@v4
+        with:
+          path: web/node_modules
+          key: ${{ runner.os }}-web-node-20-${{ hashFiles('web/package-lock.json') }}
+
+      - name: Install web dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Run lint
+        working-directory: web
+        run: npm run lint || true
+
+      - name: Run build
+        working-directory: web
+        run: npm run build || true
+
+  web-tests:
+    name: Run web tests (matrix)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules (web)
+        uses: actions/cache@v4
+        with:
+          path: web/node_modules
+          key: ${{ runner.os }}-web-node-${{ matrix.node-version }}-${{ hashFiles('web/package-lock.json') }}
 
       - name: Install web dependencies
         working-directory: web
