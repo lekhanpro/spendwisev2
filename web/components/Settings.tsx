@@ -211,7 +211,18 @@ export const Settings: React.FC = () => {
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    const text = await file.text();
+                    let text = '';
+                    if (typeof (file as any).text === 'function') {
+                      text = await (file as any).text();
+                    } else {
+                      // File.text may not be available in some test environments — fallback to FileReader
+                      text = await new Promise<string>((res, rej) => {
+                        const reader = new FileReader();
+                        reader.onload = () => res(String(reader.result || ''));
+                        reader.onerror = () => rej(new Error('Failed reading file'));
+                        reader.readAsText(file);
+                      });
+                    }
                     const imported = parseTransactionsCSV(text);
                     if (imported.length === 0) {
                       alert('No transactions found in CSV');
