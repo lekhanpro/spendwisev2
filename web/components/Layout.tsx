@@ -12,6 +12,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const navItems: { id: ViewType; label: string; Icon: any }[] = [
     { id: 'dashboard', label: 'Home', Icon: Icons.Home },
+    { id: 'bills', label: 'Bills', Icon: Icons.Calendar },
     { id: 'transactions', label: 'Transactions', Icon: Icons.List },
     { id: 'budget', label: 'Budget', Icon: Icons.Budget },
     { id: 'reports', label: 'Reports', Icon: Icons.Chart },

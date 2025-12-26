@@ -8,6 +8,7 @@ import { BudgetView } from "./components/BudgetView";
 import { Reports } from "./components/Reports";
 import { Goals } from "./components/Goals";
 import { Settings } from "./components/Settings";
+import { Bills } from "./components/Bills";
 import { Modal } from "./components/Modal";
 import { TransactionForm } from "./components/TransactionForm";
 import { Auth } from "./components/Auth";
@@ -79,6 +80,7 @@ const MainContent: React.FC = () => {
       {activeView === "transactions" && <Transactions />}
       {activeView === "budget" && <BudgetView />}
       {activeView === "reports" && <Reports />}
+      {activeView === "bills" && <Bills />}
       {activeView === "goals" && <Goals />}
       {activeView === "settings" && <Settings />}
 

@@ -53,7 +53,7 @@ export interface Currency {
   locale: string;
 }
 
-export type ViewType = 'dashboard' | 'transactions' | 'budget' | 'reports' | 'goals' | 'settings';
+export type ViewType = 'dashboard' | 'transactions' | 'budget' | 'reports' | 'goals' | 'bills' | 'settings';
 
 export interface AppContextType {
   transactions: Transaction[];

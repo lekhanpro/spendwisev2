@@ -1,7 +1,8 @@
 // components/AIChatbot.tsx - AI Chatbot FAB with Groq integration for web
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
-import { MessageCircle, X, Send, Bot, Loader2 } from './Icons';
+import { MessageCircle, X, Send, Bot, Loader2, Icons } from './Icons';
+import { getFinancialInsights, getQuickTip } from '../lib/ai';
 
 // Get API key from environment variable
 const GROQ_API_KEY = (import.meta as any).env?.VITE_GROQ_API_KEY || '';
@@ -167,12 +168,35 @@ ${getFinancialContext()}`
                                 <p className="text-xs text-zinc-500">Powered by Groq</p>
                             </div>
                         </div>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="w-8 h-8 rounded-full hover:bg-zinc-800 flex items-center justify-center transition-colors"
-                        >
-                            <X className="w-4 h-4 text-zinc-400" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={async () => {
+                                    if (isLoading) return;
+                                    setIsLoading(true);
+                                    try {
+                                        const insights = await getFinancialInsights(transactions, budgets, goals, currency?.symbol || currency?.code || '$');
+                                        const content = `Health Score: ${insights.healthScore}/100\n\nSummary: ${insights.summary}\n\nRecommendations:\n${insights.recommendations.map((r, i) => `${i+1}. ${r}`).join('\n')}\n\nInsights:\n${insights.insights.map((it: any, i: number) => `${i+1}. ${it.icon} ${it.title}: ${it.message}`).join('\n')}`;
+                                        setMessages(prev => [...prev, { role: 'assistant', content }]);
+                                    } catch (error) {
+                                        console.error('Insights error', error);
+                                        setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't fetch insights right now." }]);
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
+                                }}
+                                className="w-8 h-8 rounded-full hover:bg-zinc-800 flex items-center justify-center transition-colors"
+                                title="Get AI Insights"
+                            >
+                                <Icons.TrendUp />
+                            </button>
+
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="w-8 h-8 rounded-full hover:bg-zinc-800 flex items-center justify-center transition-colors"
+                            >
+                                <X className="w-4 h-4 text-zinc-400" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Messages */}

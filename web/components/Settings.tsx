@@ -5,9 +5,19 @@ import { Icons } from './Icons';
 import { Modal } from './Modal';
 import { SUPPORTED_CURRENCIES } from '../constants';
 import { requestNotificationPermission, scheduleDailyReminder } from '../lib/notifications';
+import { exportTransactionsCSV, parseTransactionsCSV, exportTransactionsOFX } from '../lib/export';
+import React, { useState, useMemo } from 'react';
+import { detectFuzzyDuplicates } from '../lib/dedupe';
 
 export const Settings: React.FC = () => {
-  const { darkMode, setDarkMode, resetData, categories, handleLogout, session, currency, setCurrency } = useContext(AppContext)!;
+  const { darkMode, setDarkMode, resetData, categories, handleLogout, session, currency, setCurrency, transactions, addTransaction } = useContext(AppContext)!;
+  const [importPreviewOpen, setImportPreviewOpen] = useState(false);
+  const [previewItems, setPreviewItems] = useState<any[]>([]);
+  const [selectedImportIds, setSelectedImportIds] = useState<Record<string, boolean>>({});
+  const [duplicateMap, setDuplicateMap] = useState<Record<string, string>>({});
+  const [fuzzyThreshold, setFuzzyThreshold] = useState(0.8);
+  const [dateWindowDays, setDateWindowDays] = useState(3);
+  const [amountTolerancePercent, setAmountTolerancePercent] = useState(20);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [dailyReminderEnabled, setDailyReminderEnabled] = useState(false);
@@ -178,12 +188,62 @@ export const Settings: React.FC = () => {
       <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
         <h3 className="font-semibold text-white mb-3">Data Management</h3>
         <div className="space-y-3">
-          <button
-            onClick={() => setShowResetConfirm(true)}
-            className="w-full py-3 rounded-xl font-medium bg-red-500/20 border border-red-500/50 text-red-400 hover:bg-red-500/30 transition-colors"
-          >
-            Reset All Data
-          </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => exportTransactionsCSV(transactions)}
+                className="w-full py-3 rounded-xl font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <Icons.Download /> Export CSV
+              </button>
+
+              <button
+                onClick={() => exportTransactionsOFX(transactions)}
+                className="w-full py-3 rounded-xl font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <Icons.Download /> Export OFX
+              </button>
+
+              <label className="w-full py-3 rounded-xl font-medium bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                Import CSV
+                <input
+                  type="file"
+                  accept="text/csv"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const text = await file.text();
+                    const imported = parseTransactionsCSV(text);
+                    if (imported.length === 0) {
+                      alert('No transactions found in CSV');
+                      (e.target as HTMLInputElement).value = '';
+                      return;
+                    }
+
+                    // Detect duplicates using fuzzy logic
+                    const dupMap = detectFuzzyDuplicates(transactions, imported, { threshold: fuzzyThreshold, dateWindowDays, amountTolerancePercent });
+
+                    // Initialize selection (unchecked if flagged)
+                    const sel: Record<string, boolean> = {};
+                    imported.forEach((it: any) => {
+                      sel[it.id] = !dupMap[it.id];
+                    });
+
+                    setPreviewItems(imported);
+                    setDuplicateMap(dupMap);
+                    setSelectedImportIds(sel);
+                    setImportPreviewOpen(true);
+
+                    // clear input value so same file can be reselected later
+                    (e.target as HTMLInputElement).value = '';
+                  }}
+                  className="hidden"
+                />
+              </label>
+
+              <label className="w-full py-3 rounded-xl font-medium bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 cursor-not-allowed opacity-60">
+                Import OFX
+              </label>
+            </div>
         </div>
       </div>
 
@@ -222,6 +282,115 @@ export const Settings: React.FC = () => {
               className="flex-1 py-3 rounded-xl font-medium bg-red-500 text-white hover:bg-red-600 transition-colors shadow-lg"
             >
               Reset Everything
+            </button>
+          </div>
+        </div>
+      </Modal>
+      {/* Import Preview Modal */}
+      <Modal isOpen={importPreviewOpen} onClose={() => setImportPreviewOpen(false)} title={`Import Preview (${previewItems.length})`}>
+        <div className="space-y-3">
+          <p className="text-sm text-gray-300">Review imported transactions. Duplicates are detected and unchecked by default.</p>
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-gray-300">Fuzzy threshold:</div>
+            <input type="range" min={0.5} max={0.98} step={0.02} value={fuzzyThreshold} onChange={(e) => setFuzzyThreshold(parseFloat(e.target.value))} />
+            <div className="text-sm text-gray-300">{Math.round(fuzzyThreshold * 100)}%</div>
+            <div className="ml-4 text-sm text-gray-300">Date window (days):</div>
+            <input type="number" min={0} max={30} value={dateWindowDays} onChange={(e) => setDateWindowDays(parseInt(e.target.value || '0'))} className="w-16 bg-zinc-800 text-white rounded px-2" />
+            <div className="ml-4 text-sm text-gray-300">Amount tol %:</div>
+            <input type="number" min={0} max={100} value={amountTolerancePercent} onChange={(e) => setAmountTolerancePercent(parseInt(e.target.value || '0'))} className="w-16 bg-zinc-800 text-white rounded px-2" />
+            <button
+              onClick={() => {
+                const dupMap = detectFuzzyDuplicates(transactions, previewItems, { threshold: fuzzyThreshold, dateWindowDays, amountTolerancePercent });
+                const sel: Record<string, boolean> = {};
+                previewItems.forEach((it: any) => { sel[it.id] = !dupMap[it.id]; });
+                setDuplicateMap(dupMap);
+                setSelectedImportIds(sel);
+              }}
+              className="ml-3 px-3 py-1 rounded bg-zinc-800 text-white"
+            >Re-run</button>
+          </div>
+          <div className="max-h-72 overflow-y-auto mt-2 space-y-2">
+            {previewItems.map((it) => (
+              <div key={it.id} className="flex items-start gap-3 p-2 rounded-lg bg-zinc-900/60 border border-zinc-800">
+                <input
+                  type="checkbox"
+                  checked={!!selectedImportIds[it.id]}
+                  onChange={(e) => setSelectedImportIds(prev => ({ ...prev, [it.id]: e.target.checked }))}
+                  className="mt-1"
+                />
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={it.description || it.category || ''}
+                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, description: e.target.value } : p))}
+                      className="flex-1 bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                      placeholder="Description"
+                    />
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={String(it.amount || '')}
+                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, amount: parseFloat(e.target.value || '0') } : p))}
+                      className="w-28 bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      value={new Date(it.date).toISOString().slice(0,10)}
+                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, date: Date.parse(e.target.value) } : p))}
+                      className="bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                    />
+                    <input
+                      type="text"
+                      value={it.category || ''}
+                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, category: e.target.value } : p))}
+                      className="flex-1 bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                      placeholder="Category"
+                    />
+                    <input
+                      type="text"
+                      value={(it.tags || []).join(';')}
+                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, tags: e.target.value.split(';').map((s: string) => s.trim()).filter(Boolean) } : p))}
+                      className="w-40 bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                      placeholder="tags;semi;colon"
+                    />
+                  </div>
+
+                  {duplicateMap[it.id] && (
+                    <div className="text-xs text-yellow-300">{duplicateMap[it.id]}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-3 mt-3">
+            <button
+              onClick={() => setImportPreviewOpen(false)}
+              className="flex-1 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                const toImport = previewItems.filter(it => selectedImportIds[it.id]);
+                if (toImport.length === 0) {
+                  alert('No items selected for import');
+                  return;
+                }
+                toImport.forEach(t => addTransaction(t));
+                alert(`Imported ${toImport.length} transactions`);
+                setImportPreviewOpen(false);
+                setPreviewItems([]);
+                setSelectedImportIds({});
+                setDuplicateMap({});
+              }}
+              className="flex-1 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Import Selected
             </button>
           </div>
         </div>
