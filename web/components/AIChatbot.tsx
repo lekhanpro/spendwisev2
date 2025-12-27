@@ -5,7 +5,7 @@ import { MessageCircle, X, Send, Bot, Loader2, Icons } from './Icons';
 import { getFinancialInsights, getQuickTip } from '../lib/ai';
 
 // Get API key from environment variable
-const GROQ_API_KEY = (import.meta as any).env?.VITE_GROQ_API_KEY || '';
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 interface Message {
@@ -118,18 +118,35 @@ ${getFinancialContext()}`
             });
 
             if (!response.ok) {
-                throw new Error(`API error: ${response.status}`);
+                const errorText = await response.text();
+                console.error('API Error:', response.status, errorText);
+                let errorMessage = `API error: ${response.status}`;
+                
+                if (response.status === 401) {
+                    errorMessage = 'Invalid API key. Please check your VITE_GROQ_API_KEY in your .env file.';
+                } else if (response.status === 429) {
+                    errorMessage = 'Rate limit exceeded. Please try again in a moment.';
+                } else if (response.status >= 500) {
+                    errorMessage = 'Server error. Please try again later.';
+                }
+                
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();
             const assistantMessage = data.choices?.[0]?.message?.content || "Sorry, I couldn't process your request.";
 
+            if (!assistantMessage || assistantMessage.trim() === '') {
+                throw new Error('Empty response from API');
+            }
+
             setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
         } catch (error) {
             console.error('AI Chat error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: "Sorry, I'm having trouble connecting. Please check your API key and try again."
+                content: `⚠️ ${errorMessage}\n\nPlease check:\n1. Your VITE_GROQ_API_KEY is set in .env file\n2. You have an active internet connection\n3. Your API key is valid at https://console.groq.com`
             }]);
         } finally {
             setIsLoading(false);

@@ -1,6 +1,6 @@
 // lib/ai.ts - Groq AI Integration for Financial Insights
-// API key should be set via EAS secrets or environment variable
-const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY || '';
+// API key should be set via environment variable (VITE_GROQ_API_KEY for web)
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 import { Transaction, Budget, Goal } from '../types';
@@ -109,14 +109,33 @@ Respond ONLY with valid JSON, no markdown or explanation.`;
         });
 
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Groq API error:', response.status, errorText);
+            
+            if (response.status === 401) {
+                throw new Error('Invalid API key. Please check your VITE_GROQ_API_KEY.');
+            } else if (response.status === 429) {
+                throw new Error('Rate limit exceeded. Please try again later.');
+            }
+            
             throw new Error(`Groq API error: ${response.status}`);
         }
 
         const data = await response.json();
         const content = data.choices[0]?.message?.content;
 
+        if (!content) {
+            throw new Error('Empty response from Groq API');
+        }
+
         // Parse JSON response
-        const parsed = JSON.parse(content);
+        let parsed;
+        try {
+            parsed = JSON.parse(content);
+        } catch (parseError) {
+            console.error('Failed to parse AI response:', content);
+            throw new Error('Invalid response format from AI');
+        }
 
         return {
             healthScore: parsed.healthScore || 50,

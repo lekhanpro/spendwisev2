@@ -119,13 +119,23 @@ ${getFinancialContext()}`
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('API Error:', response.status, errorText);
-                throw new Error(`API error: ${response.status}`);
+                let errorMessage = `API error: ${response.status}`;
+                
+                if (response.status === 401) {
+                    errorMessage = 'Invalid API key. Please check your EXPO_PUBLIC_GROQ_API_KEY in your .env file.';
+                } else if (response.status === 429) {
+                    errorMessage = 'Rate limit exceeded. Please try again in a moment.';
+                } else if (response.status >= 500) {
+                    errorMessage = 'Server error. Please try again later.';
+                }
+                
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();
             const assistantMessage = data.choices?.[0]?.message?.content;
 
-            if (!assistantMessage) {
+            if (!assistantMessage || assistantMessage.trim() === '') {
                 console.error('Empty response from API:', data);
                 throw new Error('Empty response from API');
             }
@@ -133,9 +143,10 @@ ${getFinancialContext()}`
             setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
         } catch (error) {
             console.error('AI Chat error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: 'Sorry, I\'m having trouble connecting. Please check your internet connection and API key, then try again.'
+                content: `⚠️ ${errorMessage}\n\nPlease check:\n1. Your EXPO_PUBLIC_GROQ_API_KEY is set in .env file\n2. You have an active internet connection\n3. Your API key is valid at https://console.groq.com`
             }]);
         } finally {
             setLoading(false);
