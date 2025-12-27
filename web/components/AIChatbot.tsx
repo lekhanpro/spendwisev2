@@ -23,8 +23,23 @@ export const AIChatbot: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const context = useContext(AppContext);
-    const { transactions = [], budgets = [], goals = [], currency } = context || {};
+    let context;
+    let transactions: any[] = [];
+    let budgets: any[] = [];
+    let goals: any[] = [];
+    let currency: any = { symbol: '$' };
+    
+    try {
+        context = useContext(AppContext);
+        if (context) {
+            transactions = context.transactions || [];
+            budgets = context.budgets || [];
+            goals = context.goals || [];
+            currency = context.currency || { symbol: '$' };
+        }
+    } catch (error) {
+        console.warn('AIChatbot: Could not access AppContext', error);
+    }
 
     // Scroll to bottom when messages change
     useEffect(() => {
