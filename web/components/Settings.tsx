@@ -1,13 +1,14 @@
 
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { AppContext } from '../context/AppContext';
 import { Icons } from './Icons';
 import { Modal } from './Modal';
 import { SUPPORTED_CURRENCIES } from '../constants';
 import { requestNotificationPermission, scheduleDailyReminder } from '../lib/notifications';
 import { exportTransactionsCSV, parseTransactionsCSV, exportTransactionsOFX } from '../lib/export';
-import React, { useState, useMemo } from 'react';
 import { detectFuzzyDuplicates } from '../lib/dedupe';
+import { SavingsCalculator } from './SavingsCalculator';
+import { ReceiptScanner } from './ReceiptScanner';
 
 export const Settings: React.FC = () => {
   const { darkMode, setDarkMode, resetData, categories, handleLogout, session, currency, setCurrency, transactions, addTransaction } = useContext(AppContext)!;
@@ -21,6 +22,8 @@ export const Settings: React.FC = () => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [dailyReminderEnabled, setDailyReminderEnabled] = useState(false);
+  const [showSavingsCalculator, setShowSavingsCalculator] = useState(false);
+  const [showReceiptScanner, setShowReceiptScanner] = useState(false);
 
   useEffect(() => {
     // Check notification permission status
@@ -184,6 +187,37 @@ export const Settings: React.FC = () => {
         </div>
       </div>
 
+      {/* Tools - Glass Card */}
+      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl divide-y divide-zinc-800">
+        <button
+          onClick={() => setShowSavingsCalculator(true)}
+          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-gray-400 text-xl">🧮</div>
+            <div className="text-left">
+              <p className="font-medium text-white">Savings Calculator</p>
+              <p className="text-sm text-gray-500">Calculate time to reach your goals</p>
+            </div>
+          </div>
+          <Icons.ChevronRight />
+        </button>
+
+        <button
+          onClick={() => setShowReceiptScanner(true)}
+          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-gray-400 text-xl">📸</div>
+            <div className="text-left">
+              <p className="font-medium text-white">Receipt Scanner</p>
+              <p className="text-sm text-gray-500">Scan and add receipts automatically</p>
+            </div>
+          </div>
+          <Icons.ChevronRight />
+        </button>
+      </div>
+
       {/* Data Management - Glass Card */}
       <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
         <h3 className="font-semibold text-white mb-3">Data Management</h3>
@@ -297,6 +331,16 @@ export const Settings: React.FC = () => {
           </div>
         </div>
       </Modal>
+      {/* Savings Calculator Modal */}
+      <Modal isOpen={showSavingsCalculator} onClose={() => setShowSavingsCalculator(false)} title="Savings Calculator">
+        <SavingsCalculator />
+      </Modal>
+
+      {/* Receipt Scanner Modal */}
+      <Modal isOpen={showReceiptScanner} onClose={() => setShowReceiptScanner(false)} title="Receipt Scanner">
+        <ReceiptScanner />
+      </Modal>
+
       {/* Import Preview Modal */}
       <Modal isOpen={importPreviewOpen} onClose={() => setImportPreviewOpen(false)} title={`Import Preview (${previewItems.length})`}>
         <div className="space-y-3">
