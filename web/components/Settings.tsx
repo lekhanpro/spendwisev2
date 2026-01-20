@@ -13,6 +13,7 @@ import { RecurringTransactions } from './RecurringTransactions';
 import { CategoryTrends } from './CategoryTrends';
 import { Achievements } from './Achievements';
 import { CustomAlerts } from './CustomAlerts';
+import { Bills } from './Bills';
 import { generatePDFReport } from '../lib/pdfExport';
 
 export const Settings: React.FC = () => {
@@ -33,6 +34,7 @@ export const Settings: React.FC = () => {
   const [showCategoryTrends, setShowCategoryTrends] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [showCustomAlerts, setShowCustomAlerts] = useState(false);
+  const [showBills, setShowBills] = useState(false);
 
   useEffect(() => {
     // Check notification permission status
@@ -68,16 +70,16 @@ export const Settings: React.FC = () => {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
 
       {/* Account Card - Glass Effect */}
-      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl p-4 flex items-center justify-between">
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {session?.user?.photoURL ? (
             <img
               src={session.user.photoURL}
               alt="Profile"
-              className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-zinc-700"
+              className="w-12 h-12 rounded-full border-2 border-blue-200 dark:border-zinc-700"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-zinc-800 border-2 border-gray-300 dark:border-zinc-700 flex items-center justify-center text-xl">
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-zinc-800 border-2 border-blue-200 dark:border-zinc-700 flex items-center justify-center text-xl">
               👤
             </div>
           )}
@@ -88,18 +90,18 @@ export const Settings: React.FC = () => {
         </div>
         <button
           onClick={handleLogout}
-          className="px-4 py-2 bg-gray-200 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white rounded-lg text-sm font-medium hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
+          className="px-4 py-2 bg-red-50 dark:bg-zinc-800 border border-red-200 dark:border-zinc-700 text-red-600 dark:text-white rounded-lg text-sm font-medium hover:bg-red-100 dark:hover:bg-zinc-700 transition-colors"
         >
           Sign Out
         </button>
       </div>
 
       {/* Settings Options - Glass Card */}
-      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl divide-y divide-gray-200 dark:divide-zinc-800">
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl divide-y divide-gray-200 dark:divide-zinc-800">
         {/* Dark Mode */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400">{darkMode ? <Icons.Moon /> : <Icons.Sun />}</div>
+            <div className="text-2xl">{darkMode ? '🌙' : '☀️'}</div>
             <div>
               <p className="font-medium text-gray-900 dark:text-white">Dark Mode</p>
               <p className="text-sm text-gray-600 dark:text-gray-500">Toggle dark/light theme</p>
@@ -107,7 +109,7 @@ export const Settings: React.FC = () => {
           </div>
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className={`w-12 h-6 rounded-full transition-colors ${darkMode ? 'bg-blue-500' : 'bg-gray-400'}`}
+            className={`w-12 h-6 rounded-full transition-colors ${darkMode ? 'bg-blue-500' : 'bg-gray-300'}`}
           >
             <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform mt-0.5 ${darkMode ? 'translate-x-6' : 'translate-x-0.5'}`} />
           </button>
@@ -200,7 +202,7 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* Tools - Glass Card */}
-      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl divide-y divide-gray-200 dark:divide-zinc-800">
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl divide-y divide-gray-200 dark:divide-zinc-800">
         <button
           onClick={() => setShowSavingsCalculator(true)}
           className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
@@ -238,6 +240,20 @@ export const Settings: React.FC = () => {
             <div className="text-left">
               <p className="font-medium text-gray-900 dark:text-white">Recurring Transactions</p>
               <p className="text-sm text-gray-600 dark:text-gray-500">Manage subscriptions and bills</p>
+            </div>
+          </div>
+          <Icons.ChevronRight />
+        </button>
+
+        <button
+          onClick={() => setShowBills(true)}
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-gray-600 dark:text-gray-400 text-xl">📅</div>
+            <div className="text-left">
+              <p className="font-medium text-gray-900 dark:text-white">Bills & Reminders</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Track upcoming bills and payments</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -387,7 +403,7 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* About - Glass Card */}
-      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl p-4">
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
         <h3 className="font-semibold text-gray-900 dark:text-white mb-2">About SpendWise</h3>
         <p className="text-sm text-gray-700 dark:text-gray-400">
           SpendWise is your personal finance companion. Track expenses, manage budgets, and achieve your financial goals with ease.
@@ -395,8 +411,42 @@ export const Settings: React.FC = () => {
         <p className="text-xs text-gray-600 dark:text-gray-500 mt-3">Version 1.0.0</p>
       </div>
 
+      {/* About Me Section */}
+      <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-zinc-800 shadow-lg rounded-2xl p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+            LH
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900 dark:text-white text-lg">Lekhan HR</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Developer & Creator</p>
+          </div>
+        </div>
+        <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+          Built with ❤️ by Lekhan HR. SpendWise helps you take control of your finances with smart tracking, AI insights, and beautiful design.
+        </p>
+        <div className="flex gap-3">
+          <a 
+            href="https://github.com/lekhanpro" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex-1 py-2.5 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-medium text-center hover:scale-105 transition-transform shadow-md flex items-center justify-center gap-2"
+          >
+            <span>🐙</span> GitHub
+          </a>
+          <a 
+            href="https://linkedin.com/in/lekhanhr" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex-1 py-2.5 px-4 bg-blue-600 text-white rounded-xl font-medium text-center hover:scale-105 transition-transform shadow-md flex items-center justify-center gap-2"
+          >
+            <span>💼</span> LinkedIn
+          </a>
+        </div>
+      </div>
+
       {/* Privacy - Glass Card */}
-      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl p-4">
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
         <h3 className="font-semibold text-gray-900 dark:text-white mb-2">🔒 Privacy</h3>
         <p className="text-sm text-gray-700 dark:text-gray-400">
           All your data is stored securely with Firebase. We use industry-standard encryption to protect your financial information.
@@ -453,6 +503,11 @@ export const Settings: React.FC = () => {
       {/* Custom Alerts Modal */}
       <Modal isOpen={showCustomAlerts} onClose={() => setShowCustomAlerts(false)} title="Custom Alerts">
         <CustomAlerts />
+      </Modal>
+
+      {/* Bills Modal */}
+      <Modal isOpen={showBills} onClose={() => setShowBills(false)} title="Bills & Reminders">
+        <Bills />
       </Modal>
 
       {/* Import Preview Modal */}
