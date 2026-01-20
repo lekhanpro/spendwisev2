@@ -177,43 +177,34 @@ ${getFinancialContext()}`
 
     return (
         <>
-            {/* Enhanced AI FAB Button */}
+            {/* Premium AI FAB Button - Claude Style */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 dark:from-purple-500 dark:via-blue-500 dark:to-cyan-500 text-white shadow-2xl hover:shadow-purple-500/50 hover:scale-110 transition-all duration-300 z-50 flex items-center justify-center group overflow-hidden"
-                style={{ boxShadow: '0 8px 32px rgba(147, 51, 234, 0.5)' }}
+                className="fixed bottom-6 right-6 w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 dark:from-amber-600 dark:via-orange-600 dark:to-amber-700 text-white shadow-2xl hover:shadow-amber-500/50 hover:scale-105 transition-all duration-300 z-50 flex items-center justify-center group"
+                style={{ boxShadow: '0 10px 40px rgba(245, 158, 11, 0.4)' }}
             >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="absolute inset-0 rounded-full animate-pulse bg-purple-400/30"></div>
                 {isOpen ? (
-                    <X className="w-7 h-7 relative z-10 transition-transform group-hover:rotate-90 duration-300" />
+                    <X className="w-6 h-6 transition-transform group-hover:rotate-90 duration-300" />
                 ) : (
-                    <MessageCircle className="w-7 h-7 relative z-10 transition-transform group-hover:scale-110 duration-300" />
-                )}
-                {!isOpen && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-zinc-900 animate-bounce"></div>
+                    <MessageCircle className="w-6 h-6 transition-transform group-hover:scale-110 duration-300" />
                 )}
             </button>
 
-            {/* Enhanced Chat Panel */}
+            {/* Premium Chat Panel - Claude Style */}
             {isOpen && (
-                <div className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[550px] max-h-[calc(100vh-8rem)] bg-white dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-zinc-700/50 flex flex-col z-50 overflow-hidden backdrop-blur-xl animate-slide-up">
-                    {/* Gradient Header */}
-                    <div className="relative flex items-center justify-between p-5 border-b border-gray-200 dark:border-zinc-700/50 bg-gradient-to-r from-purple-50 via-blue-50 to-cyan-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-cyan-900/20">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent dark:from-white/5"></div>
-                        <div className="flex items-center gap-3 relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 dark:from-purple-500 dark:to-blue-500 flex items-center justify-center shadow-lg animate-pulse">
-                                <Bot className="w-6 h-6 text-white" />
+                <div className="fixed bottom-24 right-6 w-[420px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-8rem)] bg-white dark:bg-[#1e1e1e] rounded-2xl shadow-2xl border border-gray-200 dark:border-[#2d2d2d] flex flex-col z-50 overflow-hidden">
+                    {/* Minimal Header - Claude Style */}
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-[#2d2d2d]">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                                <Bot className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-gray-900 dark:text-white text-lg">AI Assistant</h3>
-                                <p className="text-xs text-gray-600 dark:text-zinc-400 flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                                    Online • Powered by Groq
-                                </p>
+                                <h3 className="font-semibold text-gray-900 dark:text-[#e8e8e8] text-base">SpendWise AI</h3>
+                                <p className="text-xs text-gray-500 dark:text-[#8e8e8e]">Financial Assistant</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 relative z-10">
+                        <div className="flex items-center gap-1">
                             <button
                                 onClick={async () => {
                                     if (isLoading) return;
@@ -229,45 +220,55 @@ ${getFinancialContext()}`
                                         setIsLoading(false);
                                     }
                                 }}
-                                className="w-10 h-10 rounded-xl bg-white/80 dark:bg-zinc-800/80 hover:bg-white dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-110 shadow-md backdrop-blur-sm"
+                                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2d2d2d] transition-colors"
                                 title="Get AI Insights"
                             >
-                                <Icons.TrendUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                <Icons.TrendUp className="w-4 h-4 text-gray-600 dark:text-[#8e8e8e]" />
                             </button>
-
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="w-10 h-10 rounded-xl bg-white/80 dark:bg-zinc-800/80 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center justify-center transition-all hover:scale-110 shadow-md backdrop-blur-sm group"
+                                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2d2d2d] transition-colors"
                             >
-                                <X className="w-5 h-5 text-gray-600 dark:text-zinc-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
+                                <X className="w-4 h-4 text-gray-600 dark:text-[#8e8e8e]" />
                             </button>
                         </div>
                     </div>
 
-                    {/* Messages with gradient background */}
-                    <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gradient-to-b from-gray-50 to-white dark:from-zinc-900 dark:to-zinc-900/50">
+                    {/* Messages - Claude Style */}
+                    <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6 bg-white dark:bg-[#1e1e1e]">
                         {messages.map((msg, i) => (
-                            <div
-                                key={i}
-                                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`}
-                                style={{ animationDelay: `${i * 0.05}s` }}
-                            >
-                                <div
-                                    className={`max-w-[85%] px-5 py-3 rounded-2xl transition-all hover:scale-[1.02] ${msg.role === 'user'
-                                            ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-br-md shadow-lg shadow-blue-500/30'
-                                            : 'bg-white dark:bg-gradient-to-br dark:from-zinc-800 dark:to-zinc-800/50 text-gray-900 dark:text-zinc-100 rounded-bl-md border border-gray-200 dark:border-zinc-700/50 shadow-lg backdrop-blur-sm'
-                                        }`}
-                                >
-                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                            <div key={i} className="flex gap-3 group">
+                                {msg.role === 'assistant' && (
+                                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <Bot className="w-4 h-4 text-white" />
+                                    </div>
+                                )}
+                                <div className={`flex-1 ${msg.role === 'user' ? 'ml-10' : ''}`}>
+                                    <div className={`${msg.role === 'user' 
+                                        ? 'bg-gray-100 dark:bg-[#2d2d2d] rounded-2xl px-4 py-3' 
+                                        : ''
+                                    }`}>
+                                        <p className="text-[15px] leading-relaxed text-gray-900 dark:text-[#e8e8e8] whitespace-pre-wrap">
+                                            {msg.content}
+                                        </p>
+                                    </div>
                                 </div>
+                                {msg.role === 'user' && (
+                                    <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <span className="text-white text-sm font-medium">You</span>
+                                    </div>
+                                )}
                             </div>
                         ))}
                         {isLoading && (
-                            <div className="flex justify-start animate-slide-up">
-                                <div className="bg-white dark:bg-gradient-to-br dark:from-zinc-800 dark:to-zinc-800/50 text-gray-900 dark:text-zinc-100 px-5 py-4 rounded-2xl rounded-bl-md border border-gray-200 dark:border-zinc-700/50 shadow-lg backdrop-blur-sm">
-                                    <div className="flex items-center gap-2">
-                                        <Loader2 className="w-5 h-5 animate-spin text-purple-600 dark:text-purple-400" />
-                                        <span className="text-sm text-gray-600 dark:text-zinc-400">Thinking...</span>
+                            <div className="flex gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0">
+                                    <Bot className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 text-gray-500 dark:text-[#8e8e8e]">
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span className="text-sm">Thinking...</span>
                                     </div>
                                 </div>
                             </div>
@@ -275,29 +276,31 @@ ${getFinancialContext()}`
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Enhanced Input */}
-                    <div className="p-4 border-t border-gray-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-900/80 backdrop-blur-xl">
-                        <div className="flex items-center gap-3">
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Ask me anything about your finances..."
-                                className="flex-1 bg-gray-100 dark:bg-zinc-800/80 text-gray-900 dark:text-white rounded-2xl px-5 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 border border-gray-200 dark:border-zinc-700/50 placeholder-gray-500 dark:placeholder-zinc-500 transition-all backdrop-blur-sm shadow-inner"
-                                maxLength={500}
-                            />
-                            <button
-                                onClick={sendMessage}
-                                disabled={!input.trim() || isLoading}
-                                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-110 active:scale-95 shadow-lg shadow-purple-500/30 group"
-                            >
-                                <Send className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                            </button>
+                    {/* Input - Claude Style */}
+                    <div className="border-t border-gray-200 dark:border-[#2d2d2d] p-4 bg-white dark:bg-[#1e1e1e]">
+                        <div className="flex items-end gap-2">
+                            <div className="flex-1 relative">
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="Message SpendWise AI..."
+                                    className="w-full px-4 py-3 pr-12 bg-gray-100 dark:bg-[#2d2d2d] text-gray-900 dark:text-[#e8e8e8] rounded-xl text-[15px] focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-600 border-0 placeholder-gray-500 dark:placeholder-[#6e6e6e] resize-none"
+                                    maxLength={500}
+                                />
+                                <button
+                                    onClick={sendMessage}
+                                    disabled={!input.trim() || isLoading}
+                                    className="absolute right-2 bottom-2 p-2 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-all"
+                                >
+                                    <Send className="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-zinc-500 mt-2 text-center">
-                            AI can make mistakes. Verify important information.
+                        <p className="text-[11px] text-gray-400 dark:text-[#6e6e6e] mt-2 text-center">
+                            AI can make mistakes. Check important info.
                         </p>
                     </div>
                 </div>
