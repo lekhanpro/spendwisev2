@@ -9,9 +9,14 @@ import { exportTransactionsCSV, parseTransactionsCSV, exportTransactionsOFX } fr
 import { detectFuzzyDuplicates } from '../lib/dedupe';
 import { SavingsCalculator } from './SavingsCalculator';
 import { ReceiptScanner } from './ReceiptScanner';
+import { RecurringTransactions } from './RecurringTransactions';
+import { CategoryTrends } from './CategoryTrends';
+import { Achievements } from './Achievements';
+import { CustomAlerts } from './CustomAlerts';
+import { generatePDFReport } from '../lib/pdfExport';
 
 export const Settings: React.FC = () => {
-  const { darkMode, setDarkMode, resetData, categories, handleLogout, session, currency, setCurrency, transactions, addTransaction } = useContext(AppContext)!;
+  const { darkMode, setDarkMode, resetData, categories, handleLogout, session, currency, setCurrency, transactions, addTransaction, budgets, goals, formatCurrency } = useContext(AppContext)!;
   const [importPreviewOpen, setImportPreviewOpen] = useState(false);
   const [previewItems, setPreviewItems] = useState<any[]>([]);
   const [selectedImportIds, setSelectedImportIds] = useState<Record<string, boolean>>({});
@@ -24,6 +29,10 @@ export const Settings: React.FC = () => {
   const [dailyReminderEnabled, setDailyReminderEnabled] = useState(false);
   const [showSavingsCalculator, setShowSavingsCalculator] = useState(false);
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
+  const [showRecurringTransactions, setShowRecurringTransactions] = useState(false);
+  const [showCategoryTrends, setShowCategoryTrends] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [showCustomAlerts, setShowCustomAlerts] = useState(false);
 
   useEffect(() => {
     // Check notification permission status
@@ -93,12 +102,15 @@ export const Settings: React.FC = () => {
             <div className="text-gray-400">{darkMode ? <Icons.Moon /> : <Icons.Sun />}</div>
             <div>
               <p className="font-medium text-white">Dark Mode</p>
-              <p className="text-sm text-gray-500">Always enabled for modern look</p>
+              <p className="text-sm text-gray-500">Toggle dark/light theme</p>
             </div>
           </div>
-          <div className="w-12 h-6 rounded-full bg-blue-500">
-            <div className="w-5 h-5 bg-white rounded-full shadow transform translate-x-6 mt-0.5" />
-          </div>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`w-12 h-6 rounded-full transition-colors ${darkMode ? 'bg-blue-500' : 'bg-gray-400'}`}
+          >
+            <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform mt-0.5 ${darkMode ? 'translate-x-6' : 'translate-x-0.5'}`} />
+          </button>
         </div>
 
         {/* Currency Selector */}
@@ -212,6 +224,88 @@ export const Settings: React.FC = () => {
             <div className="text-left">
               <p className="font-medium text-white">Receipt Scanner</p>
               <p className="text-sm text-gray-500">Scan and add receipts automatically</p>
+            </div>
+          </div>
+          <Icons.ChevronRight />
+        </button>
+
+        <button
+          onClick={() => setShowRecurringTransactions(true)}
+          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-gray-400 text-xl">🔄</div>
+            <div className="text-left">
+              <p className="font-medium text-white">Recurring Transactions</p>
+              <p className="text-sm text-gray-500">Manage subscriptions and bills</p>
+            </div>
+          </div>
+          <Icons.ChevronRight />
+        </button>
+
+        <button
+          onClick={() => setShowCategoryTrends(true)}
+          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-gray-400 text-xl">📈</div>
+            <div className="text-left">
+              <p className="font-medium text-white">Category Trends</p>
+              <p className="text-sm text-gray-500">Track spending patterns over time</p>
+            </div>
+          </div>
+          <Icons.ChevronRight />
+        </button>
+
+        <button
+          onClick={() => setShowAchievements(true)}
+          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-gray-400 text-xl">🏆</div>
+            <div className="text-left">
+              <p className="font-medium text-white">Achievements</p>
+              <p className="text-sm text-gray-500">View your badges and progress</p>
+            </div>
+          </div>
+          <Icons.ChevronRight />
+        </button>
+
+        <button
+          onClick={() => setShowCustomAlerts(true)}
+          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-gray-400 text-xl">🔔</div>
+            <div className="text-left">
+              <p className="font-medium text-white">Custom Alerts</p>
+              <p className="text-sm text-gray-500">Set personalized spending alerts</p>
+            </div>
+          </div>
+          <Icons.ChevronRight />
+        </button>
+
+        <button
+          onClick={() => {
+            const monthStart = new Date();
+            monthStart.setDate(1);
+            monthStart.setHours(0, 0, 0, 0);
+            const monthEnd = new Date();
+            monthEnd.setMonth(monthEnd.getMonth() + 1);
+            monthEnd.setDate(0);
+            monthEnd.setHours(23, 59, 59, 999);
+            generatePDFReport(transactions, budgets, goals, categories, formatCurrency, {
+              start: monthStart.getTime(),
+              end: monthEnd.getTime()
+            });
+          }}
+          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-gray-400 text-xl">📄</div>
+            <div className="text-left">
+              <p className="font-medium text-white">PDF Report</p>
+              <p className="text-sm text-gray-500">Generate monthly financial report</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -339,6 +433,26 @@ export const Settings: React.FC = () => {
       {/* Receipt Scanner Modal */}
       <Modal isOpen={showReceiptScanner} onClose={() => setShowReceiptScanner(false)} title="Receipt Scanner">
         <ReceiptScanner />
+      </Modal>
+
+      {/* Recurring Transactions Modal */}
+      <Modal isOpen={showRecurringTransactions} onClose={() => setShowRecurringTransactions(false)} title="Recurring Transactions">
+        <RecurringTransactions />
+      </Modal>
+
+      {/* Category Trends Modal */}
+      <Modal isOpen={showCategoryTrends} onClose={() => setShowCategoryTrends(false)} title="Category Trends">
+        <CategoryTrends />
+      </Modal>
+
+      {/* Achievements Modal */}
+      <Modal isOpen={showAchievements} onClose={() => setShowAchievements(false)} title="Achievements">
+        <Achievements />
+      </Modal>
+
+      {/* Custom Alerts Modal */}
+      <Modal isOpen={showCustomAlerts} onClose={() => setShowCustomAlerts(false)} title="Custom Alerts">
+        <CustomAlerts />
       </Modal>
 
       {/* Import Preview Modal */}
