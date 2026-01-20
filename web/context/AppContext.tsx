@@ -27,7 +27,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [categories] = useState<Category[]>(DEFAULT_CATEGORIES);
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [darkMode, setDarkMode] = useState<boolean>(true); // Default to dark mode
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -78,7 +78,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     // Subscribe to settings
     const unsubSettings = subscribeToSettings(userId, (settings) => {
       if (settings) {
-        setDarkMode(settings.darkMode ?? false);
+        setDarkMode(settings.darkMode ?? true); // Default to dark mode
         setCurrency(settings.currency ?? SUPPORTED_CURRENCIES[0]);
       }
       setIsLoading(false);

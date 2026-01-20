@@ -65,44 +65,44 @@ export const Settings: React.FC = () => {
 
   return (
     <div className="space-y-4 animate-slide-up">
-      <h1 className="text-2xl font-bold text-white">Settings</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
 
       {/* Account Card - Glass Effect */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4 flex items-center justify-between">
+      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {session?.user?.photoURL ? (
             <img
               src={session.user.photoURL}
               alt="Profile"
-              className="w-12 h-12 rounded-full border-2 border-zinc-700"
+              className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-zinc-700"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-xl">
+            <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-zinc-800 border-2 border-gray-300 dark:border-zinc-700 flex items-center justify-center text-xl">
               👤
             </div>
           )}
           <div>
-            <p className="font-medium text-white">{session?.user?.displayName || 'User'}</p>
-            <p className="text-sm text-gray-400">{session?.user?.email || 'No email'}</p>
+            <p className="font-medium text-gray-900 dark:text-white">{session?.user?.displayName || 'User'}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{session?.user?.email || 'No email'}</p>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="px-4 py-2 bg-zinc-800 border border-zinc-700 text-white rounded-lg text-sm font-medium hover:bg-zinc-700 transition-colors"
+          className="px-4 py-2 bg-gray-200 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white rounded-lg text-sm font-medium hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
         >
           Sign Out
         </button>
       </div>
 
       {/* Settings Options - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl divide-y divide-zinc-800">
+      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl divide-y divide-gray-200 dark:divide-zinc-800">
         {/* Dark Mode */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <div className="text-gray-400">{darkMode ? <Icons.Moon /> : <Icons.Sun />}</div>
+            <div className="text-gray-600 dark:text-gray-400">{darkMode ? <Icons.Moon /> : <Icons.Sun />}</div>
             <div>
-              <p className="font-medium text-white">Dark Mode</p>
-              <p className="text-sm text-gray-500">Toggle dark/light theme</p>
+              <p className="font-medium text-gray-900 dark:text-white">Dark Mode</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Toggle dark/light theme</p>
             </div>
           </div>
           <button
@@ -116,10 +116,10 @@ export const Settings: React.FC = () => {
         {/* Currency Selector */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">💱</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">💱</div>
             <div>
-              <p className="font-medium text-white">Currency</p>
-              <p className="text-sm text-gray-500">Select your preferred currency</p>
+              <p className="font-medium text-gray-900 dark:text-white">Currency</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Select your preferred currency</p>
             </div>
           </div>
           <select
@@ -128,7 +128,7 @@ export const Settings: React.FC = () => {
               const selected = SUPPORTED_CURRENCIES.find(c => c.code === e.target.value);
               if (selected) setCurrency(selected);
             }}
-            className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm font-medium text-white outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 bg-gray-100 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm font-medium text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
           >
             {SUPPORTED_CURRENCIES.map(c => (
               <option key={c.code} value={c.code}>{c.code} ({c.symbol})</option>
@@ -139,16 +139,16 @@ export const Settings: React.FC = () => {
         {/* Notifications */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">🔔</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">🔔</div>
             <div>
-              <p className="font-medium text-white">Notifications</p>
-              <p className="text-sm text-gray-500">{notificationsEnabled ? 'Enabled' : 'Enable alerts & reminders'}</p>
+              <p className="font-medium text-gray-900 dark:text-white">Notifications</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">{notificationsEnabled ? 'Enabled' : 'Enable alerts & reminders'}</p>
             </div>
           </div>
           <button
             onClick={handleEnableNotifications}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${notificationsEnabled
-              ? 'bg-green-500/20 border border-green-500/50 text-green-400'
+              ? 'bg-green-500/20 border border-green-500/50 text-green-600 dark:text-green-400'
               : 'bg-blue-500 text-white hover:bg-blue-600'
               }`}
           >
@@ -160,15 +160,15 @@ export const Settings: React.FC = () => {
         {notificationsEnabled && (
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
-              <div className="text-gray-400 text-xl">⏰</div>
+              <div className="text-gray-600 dark:text-gray-400 text-xl">⏰</div>
               <div>
-                <p className="font-medium text-white">Daily Reminder</p>
-                <p className="text-sm text-gray-500">Get reminded at 8 PM daily</p>
+                <p className="font-medium text-gray-900 dark:text-white">Daily Reminder</p>
+                <p className="text-sm text-gray-600 dark:text-gray-500">Get reminded at 8 PM daily</p>
               </div>
             </div>
             <button
               onClick={handleToggleDailyReminder}
-              className={`w-12 h-6 rounded-full transition-colors ${dailyReminderEnabled ? 'bg-blue-500' : 'bg-zinc-700'}`}
+              className={`w-12 h-6 rounded-full transition-colors ${dailyReminderEnabled ? 'bg-blue-500' : 'bg-gray-400 dark:bg-zinc-700'}`}
             >
               <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform mt-0.5 ${dailyReminderEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
             </button>
@@ -180,18 +180,18 @@ export const Settings: React.FC = () => {
           <div className="flex items-center gap-3 mb-3">
             <span className="text-xl">📁</span>
             <div>
-              <p className="font-medium text-white">Categories</p>
-              <p className="text-sm text-gray-500">{categories.length} categories available</p>
+              <p className="font-medium text-gray-900 dark:text-white">Categories</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">{categories.length} categories available</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             {categories.slice(0, 10).map(cat => (
-              <span key={cat.id} className="px-3 py-1 rounded-full text-sm bg-zinc-800 border border-zinc-700 text-gray-300">
+              <span key={cat.id} className="px-3 py-1 rounded-full text-sm bg-gray-200 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-800 dark:text-gray-300">
                 {cat.icon} {cat.name}
               </span>
             ))}
             {categories.length > 10 && (
-              <span className="px-3 py-1 rounded-full text-sm bg-zinc-800 border border-zinc-700 text-gray-500">
+              <span className="px-3 py-1 rounded-full text-sm bg-gray-200 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-600 dark:text-gray-500">
                 +{categories.length - 10} more
               </span>
             )}
@@ -200,16 +200,16 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* Tools - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl divide-y divide-zinc-800">
+      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl divide-y divide-gray-200 dark:divide-zinc-800">
         <button
           onClick={() => setShowSavingsCalculator(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">🧮</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">🧮</div>
             <div className="text-left">
-              <p className="font-medium text-white">Savings Calculator</p>
-              <p className="text-sm text-gray-500">Calculate time to reach your goals</p>
+              <p className="font-medium text-gray-900 dark:text-white">Savings Calculator</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Calculate time to reach your goals</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -217,13 +217,13 @@ export const Settings: React.FC = () => {
 
         <button
           onClick={() => setShowReceiptScanner(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">📸</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">📸</div>
             <div className="text-left">
-              <p className="font-medium text-white">Receipt Scanner</p>
-              <p className="text-sm text-gray-500">Scan and add receipts automatically</p>
+              <p className="font-medium text-gray-900 dark:text-white">Receipt Scanner</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Scan and add receipts automatically</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -231,13 +231,13 @@ export const Settings: React.FC = () => {
 
         <button
           onClick={() => setShowRecurringTransactions(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">🔄</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">🔄</div>
             <div className="text-left">
-              <p className="font-medium text-white">Recurring Transactions</p>
-              <p className="text-sm text-gray-500">Manage subscriptions and bills</p>
+              <p className="font-medium text-gray-900 dark:text-white">Recurring Transactions</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Manage subscriptions and bills</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -245,13 +245,13 @@ export const Settings: React.FC = () => {
 
         <button
           onClick={() => setShowCategoryTrends(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">📈</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">📈</div>
             <div className="text-left">
-              <p className="font-medium text-white">Category Trends</p>
-              <p className="text-sm text-gray-500">Track spending patterns over time</p>
+              <p className="font-medium text-gray-900 dark:text-white">Category Trends</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Track spending patterns over time</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -259,13 +259,13 @@ export const Settings: React.FC = () => {
 
         <button
           onClick={() => setShowAchievements(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">🏆</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">🏆</div>
             <div className="text-left">
-              <p className="font-medium text-white">Achievements</p>
-              <p className="text-sm text-gray-500">View your badges and progress</p>
+              <p className="font-medium text-gray-900 dark:text-white">Achievements</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">View your badges and progress</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -273,13 +273,13 @@ export const Settings: React.FC = () => {
 
         <button
           onClick={() => setShowCustomAlerts(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">🔔</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">🔔</div>
             <div className="text-left">
-              <p className="font-medium text-white">Custom Alerts</p>
-              <p className="text-sm text-gray-500">Set personalized spending alerts</p>
+              <p className="font-medium text-gray-900 dark:text-white">Custom Alerts</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Set personalized spending alerts</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -299,13 +299,13 @@ export const Settings: React.FC = () => {
               end: monthEnd.getTime()
             });
           }}
-          className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="text-gray-400 text-xl">📄</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">📄</div>
             <div className="text-left">
-              <p className="font-medium text-white">PDF Report</p>
-              <p className="text-sm text-gray-500">Generate monthly financial report</p>
+              <p className="font-medium text-gray-900 dark:text-white">PDF Report</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">Generate monthly financial report</p>
             </div>
           </div>
           <Icons.ChevronRight />
@@ -313,8 +313,8 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* Data Management - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-white mb-3">Data Management</h3>
+      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Data Management</h3>
         <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -387,18 +387,18 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* About - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-white mb-2">About SpendWise</h3>
-        <p className="text-sm text-gray-400">
+      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">About SpendWise</h3>
+        <p className="text-sm text-gray-700 dark:text-gray-400">
           SpendWise is your personal finance companion. Track expenses, manage budgets, and achieve your financial goals with ease.
         </p>
-        <p className="text-xs text-gray-500 mt-3">Version 1.0.0</p>
+        <p className="text-xs text-gray-600 dark:text-gray-500 mt-3">Version 1.0.0</p>
       </div>
 
       {/* Privacy - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-white mb-2">🔒 Privacy</h3>
-        <p className="text-sm text-gray-400">
+      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">🔒 Privacy</h3>
+        <p className="text-sm text-gray-700 dark:text-gray-400">
           All your data is stored securely with Firebase. We use industry-standard encryption to protect your financial information.
         </p>
       </div>
