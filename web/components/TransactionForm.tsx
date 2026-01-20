@@ -11,7 +11,7 @@ interface TransactionFormProps {
 }
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({ transaction, onSave, onCancel }) => {
-  const { categories } = useContext(AppContext)!;
+  const { categories, currency } = useContext(AppContext)!;
   const [formData, setFormData] = useState<Partial<Transaction>>({
     type: 'expense',
     amount: 0,
@@ -33,6 +33,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ transaction, o
   }, [transaction]);
 
   const filteredCategories = categories.filter(c => c.type === formData.type);
+  const currencySymbol = currency?.symbol || '$';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,56 +48,65 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ transaction, o
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Type Selector */}
-      <div className="flex gap-3 p-1.5 bg-gray-100 dark:bg-zinc-800/50 rounded-2xl border border-gray-200 dark:border-zinc-700/50">
+      {/* Type Selector - Enhanced */}
+      <div className="flex gap-3 p-2 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-2xl border-2 border-gray-200 dark:border-zinc-700/50 shadow-inner">
         {['expense', 'income'].map((type) => (
           <button
             key={type}
             type="button"
             onClick={() => setFormData({ ...formData, type: type as TransactionType, category: type === 'expense' ? 'food' : 'salary' })}
-            className={`flex-1 py-3 rounded-xl font-semibold transition-all ${formData.type === type
+            className={`flex-1 py-3.5 rounded-xl font-bold text-base transition-all duration-200 ${formData.type === type
               ? type === 'expense' 
-                ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-lg shadow-red-500/30' 
-                : 'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30'
-              : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-zinc-700/50 hover:text-gray-900 dark:hover:text-white'}`}
+                ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white shadow-xl shadow-red-500/40 scale-105' 
+                : 'bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white shadow-xl shadow-green-500/40 scale-105'
+              : 'text-gray-500 dark:text-gray-500 hover:bg-white/80 dark:hover:bg-zinc-700/50 hover:text-gray-900 dark:hover:text-white hover:scale-105'}`}
           >
-            {type === 'expense' ? '💸 Expense' : '💰 Income'}
+            <span className="text-xl mr-2">{type === 'expense' ? '💸' : '💰'}</span>
+            {type.charAt(0).toUpperCase() + type.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Amount Input */}
+      {/* Amount Input - Enhanced */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Amount</label>
-        <div className="relative">
-          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-2xl font-bold text-gray-400 dark:text-gray-500">$</span>
+        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span className="text-lg">💵</span>
+          Amount
+        </label>
+        <div className="relative group">
+          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-3xl font-black text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400 transition-colors">
+            {currencySymbol}
+          </span>
           <input
             type="number"
             step="0.01"
             value={formData.amount || ''}
             onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-            className="w-full pl-12 pr-5 py-4 text-3xl font-bold bg-gray-50 dark:bg-zinc-800/50 border-2 border-gray-200 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full pl-16 pr-6 py-5 text-4xl font-black bg-gradient-to-br from-gray-50 to-white dark:from-zinc-800/50 dark:to-zinc-800/30 border-2 border-gray-300 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-gray-600 outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-inner"
             placeholder="0.00"
             required
           />
         </div>
       </div>
 
-      {/* Category Grid */}
+      {/* Category Grid - Enhanced */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Category</label>
+        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span className="text-lg">📁</span>
+          Category
+        </label>
         <div className="grid grid-cols-4 gap-3">
           {filteredCategories.map(cat => (
             <button
               key={cat.id}
               type="button"
               onClick={() => setFormData({ ...formData, category: cat.id })}
-              className={`p-4 rounded-2xl flex flex-col items-center gap-2 transition-all border-2 ${formData.category === cat.id
-                ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-500 ring-2 ring-blue-500/20 scale-105'
-                : 'bg-gray-50 dark:bg-zinc-800/30 border-gray-200 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600 hover:scale-105'}`}
+              className={`p-4 rounded-2xl flex flex-col items-center gap-2 transition-all duration-200 border-2 ${formData.category === cat.id
+                ? 'bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 border-blue-600 dark:border-blue-500 ring-4 ring-blue-500/30 scale-110 shadow-xl shadow-blue-500/30'
+                : 'bg-white dark:bg-zinc-800/40 border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600 hover:scale-105 shadow-md'}`}
             >
-              <span className="text-3xl">{cat.icon}</span>
-              <span className={`text-xs font-medium truncate w-full text-center ${formData.category === cat.id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`}>
+              <span className="text-3xl drop-shadow-lg">{cat.icon}</span>
+              <span className={`text-xs font-bold truncate w-full text-center ${formData.category === cat.id ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                 {cat.name.split(' ')[0]}
               </span>
             </button>
@@ -104,67 +114,76 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ transaction, o
         </div>
       </div>
 
-      {/* Payment Method */}
+      {/* Payment Method - Enhanced */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Payment Method</label>
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span className="text-lg">💳</span>
+          Payment Method
+        </label>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
           {PAYMENT_METHODS.map(pm => (
             <button
               key={pm.id}
               type="button"
               onClick={() => setFormData({ ...formData, paymentMethod: pm.id })}
-              className={`flex items-center gap-2 px-5 py-3 rounded-xl whitespace-nowrap transition-all border-2 font-medium ${formData.paymentMethod === pm.id
-                ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-500 text-blue-700 dark:text-blue-400 shadow-md'
-                : 'bg-gray-50 dark:bg-zinc-800/30 border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600'}`}
+              className={`flex items-center gap-2 px-5 py-3.5 rounded-xl whitespace-nowrap transition-all duration-200 border-2 font-semibold shadow-md ${formData.paymentMethod === pm.id
+                ? 'bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 border-purple-600 dark:border-purple-500 text-white shadow-purple-500/30 scale-105'
+                : 'bg-white dark:bg-zinc-800/40 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600 hover:scale-105'}`}
             >
-              <span className="text-lg">{pm.icon}</span>
+              <span className="text-xl">{pm.icon}</span>
               <span className="text-sm">{pm.name}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Date Input */}
+      {/* Date Input - Enhanced */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Date</label>
+        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span className="text-lg">📅</span>
+          Date
+        </label>
         <input
           type="date"
           value={dateInput}
           onChange={(e) => setDateInput(e.target.value)}
-          className="w-full px-5 py-3.5 bg-gray-50 dark:bg-zinc-800/50 border-2 border-gray-200 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [color-scheme:dark]"
+          className="w-full px-5 py-4 bg-white dark:bg-zinc-800/40 border-2 border-gray-300 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white font-medium outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-md [color-scheme:dark]"
         />
       </div>
 
-      {/* Description */}
+      {/* Description - Enhanced */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description (Optional)</label>
+        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span className="text-lg">📝</span>
+          Description <span className="text-xs font-normal text-gray-500">(Optional)</span>
+        </label>
         <input
           type="text"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-5 py-3.5 bg-gray-50 dark:bg-zinc-800/50 border-2 border-gray-200 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          className="w-full px-5 py-4 bg-white dark:bg-zinc-800/40 border-2 border-gray-300 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 font-medium outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-md"
           placeholder="Add a note..."
         />
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3 pt-4">
+      {/* Action Buttons - Enhanced */}
+      <div className="flex gap-4 pt-4">
         <button 
           type="button" 
           onClick={onCancel} 
-          className="flex-1 py-4 rounded-2xl font-semibold bg-gray-100 dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700 hover:border-gray-300 dark:hover:border-zinc-600 transition-all"
+          className="flex-1 py-4 rounded-2xl font-bold text-base bg-white dark:bg-zinc-800 border-2 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 hover:border-gray-400 dark:hover:border-zinc-600 transition-all shadow-lg hover:scale-105 active:scale-95"
         >
           Cancel
         </button>
         <button 
           type="submit" 
-          className={`flex-1 py-4 rounded-2xl font-semibold text-white transition-all shadow-lg ${
+          className={`flex-1 py-4 rounded-2xl font-bold text-base text-white transition-all shadow-xl hover:scale-105 active:scale-95 ${
             formData.type === 'expense' 
-              ? 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-red-500/30' 
-              : 'bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-green-500/30'
+              ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700 hover:from-red-600 hover:via-red-700 hover:to-red-800 shadow-red-500/40' 
+              : 'bg-gradient-to-br from-green-500 via-green-600 to-green-700 hover:from-green-600 hover:via-green-700 hover:to-green-800 shadow-green-500/40'
           }`}
         >
-          {transaction ? 'Update' : 'Add'} {formData.type === 'expense' ? 'Expense' : 'Income'}
+          {transaction ? '✓ Update' : '+ Add'} {formData.type === 'expense' ? 'Expense' : 'Income'}
         </button>
       </div>
     </form>
