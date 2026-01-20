@@ -177,10 +177,10 @@ ${getFinancialContext()}`
 
     return (
         <>
-            {/* Premium AI FAB Button - Claude Style */}
+            {/* Premium AI FAB Button - Claude Style - Positioned Left and Higher */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 dark:from-amber-600 dark:via-orange-600 dark:to-amber-700 text-white shadow-2xl hover:shadow-amber-500/50 hover:scale-105 transition-all duration-300 z-50 flex items-center justify-center group"
+                className="fixed bottom-24 left-6 w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 dark:from-amber-600 dark:via-orange-600 dark:to-amber-700 text-white shadow-2xl hover:shadow-amber-500/50 hover:scale-105 transition-all duration-300 z-50 flex items-center justify-center group"
                 style={{ boxShadow: '0 10px 40px rgba(245, 158, 11, 0.4)' }}
             >
                 {isOpen ? (
@@ -192,7 +192,7 @@ ${getFinancialContext()}`
 
             {/* Premium Chat Panel - Claude Style */}
             {isOpen && (
-                <div className="fixed bottom-24 right-6 w-[420px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-8rem)] bg-white dark:bg-[#1e1e1e] rounded-2xl shadow-2xl border border-gray-200 dark:border-[#2d2d2d] flex flex-col z-50 overflow-hidden">
+                <div className="fixed bottom-[6.5rem] left-6 w-[420px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-10rem)] bg-white dark:bg-[#1e1e1e] rounded-2xl shadow-2xl border border-gray-200 dark:border-[#2d2d2d] flex flex-col z-50 overflow-hidden">
                     {/* Minimal Header - Claude Style */}
                     <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-[#2d2d2d]">
                         <div className="flex items-center gap-3">

@@ -101,9 +101,6 @@ const MainContent: React.FC = () => {
           }}
         />
       </Modal>
-
-      {/* AI Chatbot FAB */}
-      <AIChatbot />
     </Layout>
   );
 };
