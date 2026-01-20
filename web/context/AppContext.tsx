@@ -14,6 +14,7 @@ import {
   subscribeToGoals,
   subscribeToSettings
 } from '../lib/database';
+import { sendBudgetAlert } from '../lib/notifications';
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -152,10 +153,38 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   }, [firebaseUser]);
 
   // Transaction operations
-  const addTransaction = (transaction: Transaction) => {
+  const addTransaction = async (transaction: Transaction) => {
     const newTransactions = [transaction, ...transactions];
     setTransactions(newTransactions);
     syncTransactions(newTransactions);
+    
+    // Check budget alerts instantly for expense transactions
+    if (transaction.type === 'expense') {
+      const budget = budgets.find(b => b.category === transaction.category);
+      if (budget) {
+        // Calculate current month spending
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+        
+        const monthlySpending = newTransactions
+          .filter(t => 
+            t.type === 'expense' && 
+            t.category === transaction.category && 
+            t.date >= monthStart && 
+            t.date <= monthEnd
+          )
+          .reduce((sum, t) => sum + t.amount, 0);
+        
+        const percentUsed = (monthlySpending / budget.limit) * 100;
+        
+        // Send instant notification if threshold reached
+        if (percentUsed >= 80) {
+          const categoryName = categories.find(c => c.id === transaction.category)?.name || 'Unknown';
+          await sendBudgetAlert(categoryName, percentUsed);
+        }
+      }
+    }
   };
 
   const updateTransaction = (transaction: Transaction) => {

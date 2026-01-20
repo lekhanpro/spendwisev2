@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { Icons } from './Icons';
 import { generateId } from '../constants';
+import { sendNotification } from '../lib/notifications';
 
 interface CustomAlert {
   id: string;
@@ -60,14 +61,24 @@ export const CustomAlerts: React.FC = () => {
     saveAlerts(alerts.map(a => a.id === id ? { ...a, enabled: !a.enabled } : a));
   };
 
-  // Check alerts
+  // Check alerts - runs on every transaction change for instant notifications
   useEffect(() => {
-    alerts.filter(a => a.enabled).forEach(alert => {
-      const shouldTrigger = checkAlert(alert);
-      if (shouldTrigger) {
-        showNotification(alert);
+    const checkAndNotify = async () => {
+      for (const alert of alerts.filter(a => a.enabled && a.frequency === 'instant')) {
+        const shouldTrigger = checkAlert(alert);
+        if (shouldTrigger) {
+          // Check if we already notified recently (within last 5 minutes)
+          const lastNotified = localStorage.getItem(`alert_${alert.id}_last`);
+          const now = Date.now();
+          if (!lastNotified || now - parseInt(lastNotified) > 5 * 60 * 1000) {
+            await showNotification(alert);
+            localStorage.setItem(`alert_${alert.id}_last`, now.toString());
+          }
+        }
       }
-    });
+    };
+    
+    checkAndNotify();
   }, [transactions, alerts]);
 
   const checkAlert = (alert: CustomAlert): boolean => {
@@ -109,13 +120,24 @@ export const CustomAlerts: React.FC = () => {
     }
   };
 
-  const showNotification = (alert: CustomAlert) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('SpendWise Alert', {
-        body: `${alert.name} - Check your spending!`,
-        icon: '/logo.png'
-      });
+  const showNotification = async (alert: CustomAlert) => {
+    const cat = alert.category ? categories.find(c => c.id === alert.category) : null;
+    const catName = cat ? cat.name : '';
+    
+    let message = '';
+    switch (alert.type) {
+      case 'spending':
+        message = `Your daily spending has ${alert.condition} ${formatCurrency(alert.amount)}!`;
+        break;
+      case 'category':
+        message = `Your ${catName} spending has ${alert.condition} ${formatCurrency(alert.amount)}!`;
+        break;
+      case 'balance':
+        message = `Your account balance is ${alert.condition} ${formatCurrency(alert.amount)}!`;
+        break;
     }
+    
+    await sendNotification(`🔔 ${alert.name}`, message);
   };
 
   return (

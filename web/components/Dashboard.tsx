@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { Icons } from './Icons';
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
-import { AIChatbot } from './AIChatbot';
 
 export const Dashboard: React.FC = () => {
   const { transactions, budgets, goals, categories, setActiveView, setShowTransactionModal, formatCurrency } = useContext(AppContext)!;
@@ -252,9 +251,6 @@ export const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
-
-      {/* AI Chatbot - Only on Dashboard */}
-      <AIChatbot />
     </div>
   );
 };

@@ -435,7 +435,7 @@ export const Settings: React.FC = () => {
             <span>🐙</span> GitHub
           </a>
           <a 
-            href="https://linkedin.com/in/lekhanhr" 
+            href="https://www.linkedin.com/in/lekhan-hr-507b89371/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex-1 py-2.5 px-4 bg-blue-600 text-white rounded-xl font-medium text-center hover:scale-105 transition-transform shadow-md flex items-center justify-center gap-2"

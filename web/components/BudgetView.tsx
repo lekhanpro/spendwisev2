@@ -55,7 +55,7 @@ export const BudgetView: React.FC = () => {
   return (
     <div className="space-y-4 animate-slide-up">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Budgets</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Budgets</h1>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
           className="px-4 py-2 bg-blue-500 text-white rounded-xl font-medium flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors"
@@ -65,24 +65,24 @@ export const BudgetView: React.FC = () => {
       </div>
 
       {/* Summary Card - Glass Effect */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-sm text-gray-400">Total Budget</p>
-            <p className="text-2xl font-bold text-white">{formatCurrency(totalBudget)}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Total Budget</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(totalBudget)}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-400">Spent</p>
-            <p className="text-2xl font-bold text-white">{formatCurrency(totalSpent)}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Spent</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(totalSpent)}</p>
           </div>
         </div>
-        <div className="w-full bg-zinc-800 rounded-full h-3 overflow-hidden">
+        <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 overflow-hidden">
           <div
             className={`h-3 rounded-full transition-all ${totalSpent / totalBudget > 1 ? 'bg-red-500' : totalSpent / totalBudget > 0.8 ? 'bg-yellow-500' : 'bg-green-500'}`}
             style={{ width: `${Math.min(100, (totalSpent / totalBudget) * 100)}%` }}
           />
         </div>
-        <p className="text-sm text-gray-400 mt-2">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
           {formatCurrency(Math.max(0, totalBudget - totalSpent))} remaining this month
         </p>
       </div>
@@ -90,14 +90,14 @@ export const BudgetView: React.FC = () => {
       {/* Budget List */}
       <div className="space-y-3">
         {budgetsWithProgress.map(budget => (
-          <div key={budget.id} className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4 hover:bg-white/5 transition-colors group">
+          <div key={budget.id} className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border border-zinc-700" style={{ backgroundColor: (budget.category?.color || '#ccc') + '15' }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border-2 border-gray-200 dark:border-zinc-700" style={{ backgroundColor: (budget.category?.color || '#ccc') + '15' }}>
                 {budget.category?.icon}
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-white">{budget.category?.name}</p>
-                <p className="text-sm text-gray-500 capitalize">{budget.period}</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{budget.category?.name}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-500 capitalize">{budget.period}</p>
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
@@ -112,42 +112,42 @@ export const BudgetView: React.FC = () => {
                     });
                     setShowForm(true);
                   }}
-                  className="p-2 rounded-lg hover:bg-zinc-700 text-gray-400 hover:text-white transition-colors"
+                  className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-400 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   <Icons.Edit />
                 </button>
                 <button
                   onClick={() => deleteBudget(budget.id)}
-                  className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors"
+                  className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/20 text-gray-400 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                 >
                   <Icons.Trash />
                 </button>
               </div>
             </div>
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-gray-300">{formatCurrency(budget.spent)} of {formatCurrency(budget.limit)}</span>
-              <span className={`font-medium ${budget.percentage > 100 ? 'text-red-400' : budget.percentage > 80 ? 'text-yellow-400' : 'text-green-400'}`}>
+              <span className="text-gray-700 dark:text-gray-300">{formatCurrency(budget.spent)} of {formatCurrency(budget.limit)}</span>
+              <span className={`font-medium ${budget.percentage > 100 ? 'text-red-600 dark:text-red-400' : budget.percentage > 80 ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
                 {budget.percentage.toFixed(0)}%
               </span>
             </div>
-            <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
               <div
                 className={`h-2 rounded-full transition-all ${budget.percentage > 100 ? 'bg-red-500' : budget.percentage > 80 ? 'bg-yellow-500' : 'bg-green-500'}`}
                 style={{ width: `${Math.min(100, budget.percentage)}%` }}
               />
             </div>
-            <p className={`text-sm mt-2 ${budget.remaining < 0 ? 'text-red-400' : 'text-gray-400'}`}>
+            <p className={`text-sm mt-2 ${budget.remaining < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'}`}>
               {budget.remaining < 0 ? `${formatCurrency(Math.abs(budget.remaining))} over budget` : `${formatCurrency(budget.remaining)} left`}
             </p>
           </div>
         ))}
         {budgets.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-800">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-gray-200 dark:border-zinc-800">
               <span className="text-2xl">📊</span>
             </div>
             <p className="text-gray-500">No budgets set</p>
-            <button onClick={() => setShowForm(true)} className="mt-4 text-blue-400 font-medium hover:text-blue-300">Create your first budget</button>
+            <button onClick={() => setShowForm(true)} className="mt-4 text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300">Create your first budget</button>
           </div>
         )}
       </div>
