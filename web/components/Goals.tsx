@@ -31,7 +31,7 @@ export const Goals: React.FC = () => {
   return (
     <div className="space-y-4 animate-slide-up">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Savings Goals</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Savings Goals</h1>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
           className="px-4 py-2 bg-blue-500 text-white rounded-xl font-medium flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors"
@@ -41,11 +41,11 @@ export const Goals: React.FC = () => {
       </div>
 
       {/* Summary - Glass Effect */}
-      <div className="bg-blue-600/20 backdrop-blur-md border border-blue-500/30 rounded-2xl p-6 text-blue-100 shadow-lg">
-        <p className="text-blue-200/70 text-sm">Total Savings Progress</p>
-        <p className="text-3xl font-bold mt-1 text-white">{formatCurrency(totalSaved)} <span className="text-lg font-normal text-blue-300/70">/ {formatCurrency(totalTarget)}</span></p>
-        <div className="w-full bg-blue-900/30 rounded-full h-3 mt-4 overflow-hidden">
-          <div className="bg-blue-400 rounded-full h-3 transition-all shadow-[0_0_10px_rgba(96,165,250,0.5)]" style={{ width: `${totalTarget > 0 ? Math.min(100, (totalSaved / totalTarget) * 100) : 0}%` }} />
+      <div className="bg-blue-50 dark:bg-blue-600/20 backdrop-blur-md border-2 border-blue-200 dark:border-blue-500/30 rounded-2xl p-6 shadow-lg">
+        <p className="text-blue-700 dark:text-blue-200/70 text-sm">Total Savings Progress</p>
+        <p className="text-3xl font-bold mt-1 text-blue-900 dark:text-white">{formatCurrency(totalSaved)} <span className="text-lg font-normal text-blue-600 dark:text-blue-300/70">/ {formatCurrency(totalTarget)}</span></p>
+        <div className="w-full bg-blue-200 dark:bg-blue-900/30 rounded-full h-3 mt-4 overflow-hidden">
+          <div className="bg-blue-600 dark:bg-blue-400 rounded-full h-3 transition-all shadow-[0_0_10px_rgba(37,99,235,0.5)]" style={{ width: `${totalTarget > 0 ? Math.min(100, (totalSaved / totalTarget) * 100) : 0}%` }} />
         </div>
       </div>
 
@@ -57,7 +57,7 @@ export const Goals: React.FC = () => {
           const monthlyNeeded = daysLeft > 0 ? (goal.targetAmount - goal.currentAmount) / (daysLeft / 30) : 0;
 
           return (
-            <div key={goal.id} className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4 hover:bg-white/5 transition-colors group">
+            <div key={goal.id} className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">

@@ -102,8 +102,8 @@ export const Reports: React.FC = () => {
   return (
     <div className="space-y-4 animate-slide-up">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Reports</h1>
-        <button onClick={exportCSV} className="p-2 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 rounded-xl shadow-md text-gray-400 hover:text-white hover:bg-zinc-800 transition-colors">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reports</h1>
+        <button onClick={exportCSV} className="p-2 bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 rounded-xl shadow-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
           <Icons.Download />
         </button>
       </div>
@@ -116,7 +116,7 @@ export const Reports: React.FC = () => {
             onClick={() => setPeriod(value)}
             className={`px-4 py-2 rounded-full font-medium whitespace-nowrap transition-all border ${period === value
               ? 'bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20'
-              : 'bg-zinc-900/50 border-zinc-800 text-gray-400 hover:text-white hover:border-zinc-700'}`}
+              : 'bg-white dark:bg-zinc-900/50 border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-zinc-700'}`}
           >
             {label}
           </button>
@@ -125,19 +125,19 @@ export const Reports: React.FC = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 rounded-2xl p-4 text-emerald-100 shadow-lg">
-          <p className="text-sm text-emerald-200/70">Total Income</p>
-          <p className="text-2xl font-bold text-emerald-400">{formatCurrency(income)}</p>
+        <div className="bg-emerald-50 dark:bg-emerald-500/20 backdrop-blur-md border-2 border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-4 shadow-lg">
+          <p className="text-sm text-emerald-700 dark:text-emerald-200/70">Total Income</p>
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(income)}</p>
         </div>
-        <div className="bg-red-500/20 backdrop-blur-md border border-red-500/30 rounded-2xl p-4 text-red-100 shadow-lg">
-          <p className="text-sm text-red-200/70">Total Expenses</p>
-          <p className="text-2xl font-bold text-red-400">{formatCurrency(expenses)}</p>
+        <div className="bg-red-50 dark:bg-red-500/20 backdrop-blur-md border-2 border-red-200 dark:border-red-500/30 rounded-2xl p-4 shadow-lg">
+          <p className="text-sm text-red-700 dark:text-red-200/70">Total Expenses</p>
+          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(expenses)}</p>
         </div>
       </div>
 
       {/* Spending Breakdown - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-white mb-4">Spending Breakdown</h3>
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Spending Breakdown</h3>
         <div className="flex gap-4 items-center">
           <div className="w-40 h-40 flex-shrink-0">
             {categoryData.length > 0 ? (
@@ -167,8 +167,8 @@ export const Reports: React.FC = () => {
       </div>
 
       {/* Category Details - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-white mb-4">Category Details</h3>
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Category Details</h3>
         <div className="space-y-3">
           {categoryData.map(cat => (
             <div key={cat.id} className="flex items-center gap-3">
@@ -193,8 +193,8 @@ export const Reports: React.FC = () => {
       </div>
 
       {/* Monthly Comparison - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-white mb-4">6-Month Comparison</h3>
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">6-Month Comparison</h3>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={comparisonData}>
@@ -213,8 +213,8 @@ export const Reports: React.FC = () => {
       </div>
 
       {/* Insights - Glass Card */}
-      <div className="bg-zinc-900/50 backdrop-blur-md border border-zinc-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-white mb-3">💡 Insights</h3>
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">💡 Insights</h3>
         <div className="space-y-2">
           {categoryData[0] && (
             <p className="text-sm text-gray-300">
