@@ -12,7 +12,6 @@ import { Bills } from "./components/Bills";
 import { Modal } from "./components/Modal";
 import { TransactionForm } from "./components/TransactionForm";
 import { Auth } from "./components/Auth";
-import { AIChatbot } from "./components/AIChatbot";
 
 
 // Firebase imports
