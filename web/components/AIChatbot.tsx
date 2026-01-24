@@ -28,7 +28,7 @@ export const AIChatbot: React.FC = () => {
     let budgets: any[] = [];
     let goals: any[] = [];
     let currency: any = { symbol: '$' };
-    
+
     try {
         context = useContext(AppContext);
         if (context) {
@@ -136,7 +136,7 @@ ${getFinancialContext()}`
                 const errorText = await response.text();
                 console.error('API Error:', response.status, errorText);
                 let errorMessage = `API error: ${response.status}`;
-                
+
                 if (response.status === 401) {
                     errorMessage = 'Invalid API key. Please check your VITE_GROQ_API_KEY in your .env file.';
                 } else if (response.status === 429) {
@@ -144,7 +144,7 @@ ${getFinancialContext()}`
                 } else if (response.status >= 500) {
                     errorMessage = 'Server error. Please try again later.';
                 }
-                
+
                 throw new Error(errorMessage);
             }
 
@@ -192,7 +192,7 @@ ${getFinancialContext()}`
 
             {/* Premium Chat Panel - Claude Style */}
             {isOpen && (
-                <div className="fixed bottom-[6.5rem] left-6 w-[420px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-10rem)] bg-white dark:bg-[#1e1e1e] rounded-2xl shadow-2xl border border-gray-200 dark:border-[#2d2d2d] flex flex-col z-50 overflow-hidden">
+                <div className="fixed bottom-40 left-6 w-[420px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-12rem)] bg-white dark:bg-[#1e1e1e] rounded-2xl shadow-2xl border border-gray-200 dark:border-[#2d2d2d] flex flex-col z-50 overflow-hidden">
                     {/* Minimal Header - Claude Style */}
                     <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-[#2d2d2d]">
                         <div className="flex items-center gap-3">
@@ -211,7 +211,7 @@ ${getFinancialContext()}`
                                     setIsLoading(true);
                                     try {
                                         const insights = await getFinancialInsights(transactions, budgets, goals, currency?.symbol || currency?.code || '$');
-                                        const content = `Health Score: ${insights.healthScore}/100\n\nSummary: ${insights.summary}\n\nRecommendations:\n${insights.recommendations.map((r, i) => `${i+1}. ${r}`).join('\n')}\n\nInsights:\n${insights.insights.map((it: any, i: number) => `${i+1}. ${it.icon} ${it.title}: ${it.message}`).join('\n')}`;
+                                        const content = `Health Score: ${insights.healthScore}/100\n\nSummary: ${insights.summary}\n\nRecommendations:\n${insights.recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n')}\n\nInsights:\n${insights.insights.map((it: any, i: number) => `${i + 1}. ${it.icon} ${it.title}: ${it.message}`).join('\n')}`;
                                         setMessages(prev => [...prev, { role: 'assistant', content }]);
                                     } catch (error) {
                                         console.error('Insights error', error);
@@ -244,10 +244,10 @@ ${getFinancialContext()}`
                                     </div>
                                 )}
                                 <div className={`flex-1 ${msg.role === 'user' ? 'ml-10' : ''}`}>
-                                    <div className={`${msg.role === 'user' 
-                                        ? 'bg-gray-100 dark:bg-[#2d2d2d] rounded-2xl px-4 py-3' 
+                                    <div className={`${msg.role === 'user'
+                                        ? 'bg-gray-100 dark:bg-[#2d2d2d] rounded-2xl px-4 py-3'
                                         : ''
-                                    }`}>
+                                        }`}>
                                         <p className="text-[15px] leading-relaxed text-gray-900 dark:text-[#e8e8e8] whitespace-pre-wrap">
                                             {msg.content}
                                         </p>
