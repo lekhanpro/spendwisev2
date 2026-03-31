@@ -63,31 +63,31 @@ Add these Firebase configuration secrets (copy the values exactly as shown):
 
 ### VITE_FIREBASE_API_KEY
 - **Name**: `VITE_FIREBASE_API_KEY`
-- **Value**: `AIzaSyCtQkTfAaPNNHoc4vdn0DDYg9or7QiUTgM`
+- **Value**: [Your Firebase API key from Firebase Console]
 
 ### VITE_FIREBASE_AUTH_DOMAIN
 - **Name**: `VITE_FIREBASE_AUTH_DOMAIN`
-- **Value**: `spendwise-be25a.firebaseapp.com`
+- **Value**: [your-project.firebaseapp.com]
 
 ### VITE_FIREBASE_PROJECT_ID
 - **Name**: `VITE_FIREBASE_PROJECT_ID`
-- **Value**: `spendwise-be25a`
+- **Value**: [your-project-id]
 
 ### VITE_FIREBASE_STORAGE_BUCKET
 - **Name**: `VITE_FIREBASE_STORAGE_BUCKET`
-- **Value**: `spendwise-be25a.firebasestorage.app`
+- **Value**: [your-project.firebasestorage.app]
 
 ### VITE_FIREBASE_MESSAGING_SENDER_ID
 - **Name**: `VITE_FIREBASE_MESSAGING_SENDER_ID`
-- **Value**: `587962306992`
+- **Value**: [your-sender-id]
 
 ### VITE_FIREBASE_APP_ID
 - **Name**: `VITE_FIREBASE_APP_ID`
-- **Value**: `1:587962306992:web:abd7374fdab20b485b4675`
+- **Value**: [your-app-id]
 
 ### VITE_FIREBASE_MEASUREMENT_ID (Optional - for Analytics)
 - **Name**: `VITE_FIREBASE_MEASUREMENT_ID`
-- **Value**: `G-6CTB1CDSW8`
+- **Value**: [your-measurement-id]
 
 ## Step 4: Verify All Secrets Are Added
 

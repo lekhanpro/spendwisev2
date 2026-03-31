@@ -64,17 +64,17 @@ Click "New repository secret" for each of these:
 | `VERCEL_ORG_ID` | [From .vercel/project.json or dashboard] |
 | `VERCEL_PROJECT_ID` | [From .vercel/project.json or dashboard] |
 
-### Firebase Secrets (Copy these exactly)
+### Firebase Secrets (Get these from your Firebase Console)
 
 | Secret Name | Value |
 |------------|-------|
-| `VITE_FIREBASE_API_KEY` | `AIzaSyCtQkTfAaPNNHoc4vdn0DDYg9or7QiUTgM` |
-| `VITE_FIREBASE_AUTH_DOMAIN` | `spendwise-be25a.firebaseapp.com` |
-| `VITE_FIREBASE_PROJECT_ID` | `spendwise-be25a` |
-| `VITE_FIREBASE_STORAGE_BUCKET` | `spendwise-be25a.firebasestorage.app` |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | `587962306992` |
-| `VITE_FIREBASE_APP_ID` | `1:587962306992:web:abd7374fdab20b485b4675` |
-| `VITE_FIREBASE_MEASUREMENT_ID` | `G-6CTB1CDSW8` |
+| `VITE_FIREBASE_API_KEY` | [Your Firebase API key] |
+| `VITE_FIREBASE_AUTH_DOMAIN` | [your-project.firebaseapp.com] |
+| `VITE_FIREBASE_PROJECT_ID` | [your-project-id] |
+| `VITE_FIREBASE_STORAGE_BUCKET` | [your-project.firebasestorage.app] |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | [your-sender-id] |
+| `VITE_FIREBASE_APP_ID` | [your-app-id] |
+| `VITE_FIREBASE_MEASUREMENT_ID` | [your-measurement-id] |
 
 ## Step 3: Configure Firebase (5 minutes)
 
