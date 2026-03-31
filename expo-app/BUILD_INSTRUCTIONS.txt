@@ -1,0 +1,70 @@
+========================================
+SPENDWISE APK BUILD INSTRUCTIONS
+========================================
+
+EASIEST METHOD (5 minutes):
+----------------------------
+
+1. Open PowerShell in the expo-app folder
+
+2. Run: eas login
+   - If you don't have an account, go to https://expo.dev/signup
+   - Create a FREE account (takes 30 seconds)
+   - Enter your email and password when prompted
+
+3. Run: eas build --platform android --profile preview
+
+4. Wait 10-20 minutes for the build to complete
+
+5. You'll get a download link - click it to download your APK
+
+6. Transfer APK to your Android phone and install
+
+
+ALTERNATIVE: Use My Pre-Built APK
+----------------------------------
+I've already extracted all the code. You can:
+
+1. Use the existing mobile/SpendWise-v1.0.2.apk in the parent folder
+   OR
+2. Use web/SpendWise-v1.0.2.apk
+
+These are already built and ready to install!
+
+
+WHY I CAN'T BUILD FOR YOU:
+---------------------------
+- EAS build requires YOUR Expo account login
+- I cannot access your credentials
+- The build must be done from your machine with your account
+
+
+WHAT I'VE DONE:
+---------------
+✅ Extracted all React Native code from the website
+✅ Created complete Expo project structure
+✅ Installed all dependencies
+✅ Set up Firebase configuration
+✅ Created all screens (Dashboard, Transactions, Budgets, Goals, Settings)
+✅ Installed EAS CLI globally on your machine
+
+
+WHAT YOU NEED TO DO:
+--------------------
+Just 2 commands:
+1. eas login
+2. eas build --platform android --profile preview
+
+That's it!
+
+
+NEED HELP?
+----------
+If you get stuck:
+1. Make sure you're in the expo-app folder
+2. Make sure you have internet connection
+3. Create Expo account at expo.dev if you don't have one
+4. Run the 2 commands above
+
+
+========================================

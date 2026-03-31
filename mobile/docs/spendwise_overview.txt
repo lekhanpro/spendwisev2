@@ -1,0 +1,272 @@
+# SpendWise - Complete App Documentation for Video
+
+## About SpendWise
+
+SpendWise is a comprehensive money management mobile application built with React Native using Expo framework and Firebase backend services. The app features AI-powered financial insights using Groq's LLaMA 3.3 70B Versatile model.
+
+Developer: Lekhan HR
+Platforms: Android (APK) and Web App
+Web Demo: spendwisev2.vercel.app
+GitHub: github.com/lekhanpro/spendwisev2
+
+---
+
+## The Problem SpendWise Solves
+
+Most people struggle with three major financial problems:
+
+First, they don't know where their money goes. Every month, money disappears into countless small purchases, subscriptions, and expenses that are hard to track.
+
+Second, they consistently overspend. Without a clear system to monitor spending limits, it's easy to exceed what you can afford in categories like food, entertainment, or shopping.
+
+Third, they fail to save consistently. People want to save for goals like vacations, new phones, or emergency funds, but without tracking progress, saving gets pushed to "next month" indefinitely.
+
+SpendWise addresses all three problems in one app, with the added power of AI-driven personalized advice.
+
+---
+
+## App Screens and Features
+
+SpendWise has 7 main tabs: Dashboard, Transactions, Insights, Reports, Budget, Goals, and Settings.
+
+---
+
+### Dashboard Screen
+
+The Dashboard is the home screen that shows your complete financial picture at a glance.
+
+At the top, you see your current balance with total income, total expenses, and savings for the current month.
+
+Below that is a weekly spending chart that visualizes your spending patterns over the last 7 days. The chart updates in real-time whenever you add new transactions.
+
+At the bottom, recent transactions are displayed for quick reference. You can tap any transaction to view or edit it.
+
+A floating plus button allows you to quickly add new transactions from anywhere in the app.
+
+---
+
+### Transactions Screen
+
+The Transactions screen shows your complete financial history with all income and expenses.
+
+Two filter buttons at the top let you view only Income or only Expenses.
+
+Each transaction displays the category icon, category name, description, date, and amount. Income shows in green and expenses in red.
+
+Tapping the plus button opens the Add Transaction form with these fields:
+- Transaction type: Income or Expense toggle
+- Amount: Numeric input for the transaction value
+- Category: Selection from available categories
+- Payment Method: How you paid
+- Date: Calendar picker
+- Description: Optional notes
+- Tags: Optional labels
+
+---
+
+### Categories Available
+
+The app includes 14 pre-built categories:
+
+Expense categories with their icons and colors:
+1. Food & Dining (pizza emoji, amber color)
+2. Transport (car emoji, blue color)
+3. Entertainment (movie emoji, purple color)
+4. Bills & Utilities (lightbulb emoji, red color)
+5. Shopping (shopping bag emoji, pink color)
+6. Health & Fitness (muscle emoji, green color)
+7. Education (books emoji, indigo color)
+8. Travel (airplane emoji, teal color)
+9. Groceries (shopping cart emoji, lime color)
+10. Other (package emoji, gray color)
+
+Income categories:
+1. Salary (money bag emoji, green color)
+2. Freelance (laptop emoji, blue color)
+3. Investments (chart emoji, purple color)
+4. Gifts (gift emoji, amber color)
+
+---
+
+### Payment Methods
+
+Users can track payments using 5 methods:
+1. Cash (dollar bill emoji)
+2. Credit Card (credit card emoji)
+3. Debit Card (ATM emoji)
+4. Digital Wallet (phone emoji)
+5. Bank Transfer (bank emoji)
+
+---
+
+### Budget Screen
+
+The Budget screen lets users set spending limits for specific categories.
+
+Each budget shows:
+- Category name and icon
+- Budget limit amount
+- Amount spent so far
+- Visual progress bar
+- Percentage used
+- Period type
+
+Budget periods available: Weekly or Monthly
+
+The progress bar color changes based on usage:
+- Green when under 80%
+- Yellow/amber when between 80% and 100%  
+- Red when over budget
+
+Notifications can be enabled for each budget to alert users at 80% usage as a warning and at 100% when the limit is reached.
+
+---
+
+### Goals Screen
+
+The Goals screen helps users save for specific targets.
+
+Each goal includes:
+- Goal name (like "New Phone" or "Vacation Fund" or "Emergency Fund")
+- Target amount
+- Current saved amount
+- Deadline date
+- Priority level: Low, Medium, or High
+- Visual progress bar with percentage
+
+Users add funds to their goals as they save, and the progress bar fills up accordingly.
+
+The app calculates days remaining until the deadline and shows if you're on track to reach your goal.
+
+---
+
+### AI Insights Screen - The Unique Feature
+
+The Insights screen is powered by Groq's LLaMA 3.3 70B Versatile model, making SpendWise unique among finance apps.
+
+At the top is the Financial Health Score displayed in a circular badge. This is a number from 0 to 100 that represents your overall financial health. The score is calculated by the AI based on:
+- Your savings rate
+- Budget usage
+- Goal progress
+- Spending patterns
+
+Score colors:
+- Green (70-100): Excellent financial health
+- Yellow (40-69): Moderate, needs attention
+- Red (0-39): Poor, urgent action needed
+
+Below the score is a Quick Tip section that shows a random helpful financial tip each time you visit.
+
+The AI Insights section shows personalized cards with four types:
+1. Success insights (green): Positive achievements like "Great job! You saved 35% this month"
+2. Warning insights (amber): Alerts like "Your food budget is at 90%"
+3. Tips (blue): Suggestions like "Try the 50/30/20 rule"
+4. Info insights (gray): General observations
+
+Each insight card has an emoji icon, a title, and a detailed message.
+
+The Recommendations section shows 3 actionable tips from the AI based on your actual financial data. These are numbered 1, 2, 3 and explain specific steps you can take.
+
+A "Get New Insights" button refreshes the AI analysis with your latest data.
+
+The AI analyzes:
+- Monthly income total
+- Monthly expense total
+- Savings rate percentage
+- Spending by each category
+- Budget usage percentages for each budget
+- Goal progress and days remaining
+
+This is not generic advice - the AI receives your actual numbers and provides personalized recommendations.
+
+---
+
+### Reports Screen
+
+The Reports screen provides visual analytics for understanding spending patterns.
+
+A time range selector lets you choose: Weekly, Monthly, or Yearly views.
+
+The Pie Chart shows expense breakdown by category. Each slice represents a category with its color, showing what percentage of spending goes to each category.
+
+The Bar Chart shows daily spending trends, helping you identify which days you spend more.
+
+Below the charts, summary statistics show:
+- Total income
+- Total expenses
+- Number of transactions
+- Net savings
+
+---
+
+### Settings Screen
+
+The Settings screen includes:
+
+Currency Selection: Choose from 6 supported currencies:
+- USD (US Dollar) with $ symbol
+- INR (Indian Rupee) with ₹ symbol
+- EUR (Euro) with € symbol
+- GBP (British Pound) with £ symbol
+- JPY (Japanese Yen) with ¥ symbol
+- AED (UAE Dirham)
+
+Theme: Follows system dark/light mode automatically
+
+Notification Options:
+- Budget alerts when approaching or exceeding limits
+- Daily reminder at 8 PM to log expenses
+- Weekly AI summary on Monday mornings
+
+Account management and logout options.
+
+---
+
+## Technical Details
+
+Built with:
+- React Native 0.76 for cross-platform mobile development
+- Expo SDK 52 for development and builds
+- Expo Router for file-based navigation
+- TypeScript for type safety
+- React Context for state management
+- react-native-chart-kit for charts
+- Expo Notifications for push notifications
+
+Backend:
+- Firebase Authentication for login with email/password
+- Firebase Realtime Database for cloud data storage and sync
+- Groq API using the llama-3.3-70b-versatile model
+
+The AI prompt sends the following data to Groq:
+- Monthly income and expense totals
+- Savings rate
+- Spending amounts by category
+- Budget usage percentages
+- Goal progress with days remaining
+
+Groq returns JSON with:
+- healthScore (0-100)
+- Array of insight objects with title, message, type, and icon
+- Array of 3 recommendation strings
+- Summary paragraph
+
+---
+
+## What Makes SpendWise Unique
+
+Most expense trackers just show you data. SpendWise actually thinks about your data.
+
+The AI doesn't give generic tips like "save more money." It analyzes YOUR specific income, expenses, budgets, and goals to tell you exactly what's working and what needs attention.
+
+Every time you refresh the Insights screen, the AI looks at your latest transactions and provides updated, personalized advice.
+
+The Financial Health Score gives you a single number to track your overall financial wellbeing, like a fitness score but for your money.
+
+---
+
+## Summary
+
+SpendWise is a free, open-source money management app that combines beautiful design with powerful AI insights. Track transactions with 14 categories and 5 payment methods. Set budgets with alerts at 80% and 100%. Create savings goals with deadlines and priorities. View visual reports with pie charts and bar graphs. And get personalized AI advice powered by one of the most advanced language models available.
+
+Available as an Android APK or web app at spendwisev2.vercel.app.

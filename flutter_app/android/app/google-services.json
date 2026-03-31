@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "587962306992",
+    "firebase_url": "https://spendwise-be25a-default-rtdb.firebaseio.com",
+    "project_id": "spendwise-be25a",
+    "storage_bucket": "spendwise-be25a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587962306992:android:abd7374fdab20b485b4675",
+        "android_client_info": {
+          "package_name": "com.spendwise.spendwise"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtQkTfAaPNNHoc4vdn0DDYg9or7QiUTgM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

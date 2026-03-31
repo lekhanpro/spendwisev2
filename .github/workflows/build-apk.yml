@@ -1,0 +1,90 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    defaults:
+      run:
+        working-directory: web
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Remove docs from dist (if any)
+        run: rm -rf dist/docs 2>/dev/null || true
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Copy APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk SpendWise-${{ github.ref_name }}.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SpendWise-APK
+          path: SpendWise-*.apk
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: SpendWise-*.apk
+          generate_release_notes: true
+          name: SpendWise ${{ github.ref_name }}
+          body: |
+            ## 📱 SpendWise Android App
+            
+            **Download and install the APK on your Android device.**
+            
+            ### Features:
+            - 💰 Track income & expenses
+            - 📊 Budget management
+            - 🎯 Savings goals
+            - 📈 Financial reports
+            - 🔔 Notifications & reminders
+            
+            ### Installation:
+            1. Download the APK file
+            2. Enable "Install from unknown sources" in Settings
+            3. Open the APK file to install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
