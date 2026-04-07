@@ -27,11 +27,11 @@ export const MarketOverviewSection: React.FC = () => {
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {market.indices.map((index) => (
           <InvestCard key={index.symbol} className="p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
                 <p className="text-sm text-gray-500 dark:text-gray-400">{index.name}</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{formatInr(index.value, 0)}</p>
                 <p className={`text-sm font-semibold mt-2 ${index.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
@@ -39,7 +39,7 @@ export const MarketOverviewSection: React.FC = () => {
                   {index.changePercent.toFixed(2)}%
                 </p>
               </div>
-              <div className="w-28 h-16">
+              <div className="h-20 w-full sm:h-16 sm:w-28">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={index.priceSeries['1M']}>
                     <defs>
@@ -60,7 +60,7 @@ export const MarketOverviewSection: React.FC = () => {
                 </ResponsiveContainer>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 mt-4">
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <MetricPill label="Day Low" value={formatInr(index.dayLow, 0)} />
               <MetricPill label="Day High" value={formatInr(index.dayHigh, 0)} />
             </div>
@@ -112,7 +112,7 @@ export const MarketOverviewSection: React.FC = () => {
             title="Portfolio Pulse"
             description="How the investment book looks before you drill down."
           />
-          <div className="grid grid-cols-2 gap-3 mt-5">
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <MetricPill label="Portfolio Value" value={formatInr(portfolio.totalValue, 0)} />
             <MetricPill
               label="Unrealized P/L"
@@ -149,14 +149,16 @@ export const MarketOverviewSection: React.FC = () => {
               <p className="text-sm font-semibold text-emerald-500 mb-3">Top Gainers</p>
               <div className="space-y-3">
                 {market.topGainers.map((stock) => (
-                  <div key={stock.symbol} className="flex items-center justify-between rounded-2xl border border-gray-200 dark:border-zinc-800 px-4 py-3">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{stock.symbol}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{stock.name}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-gray-900 dark:text-white">{formatInr(stock.price, 0)}</p>
-                      <p className="text-sm font-semibold text-emerald-500">+{stock.changePercent.toFixed(2)}%</p>
+                  <div key={stock.symbol} className="rounded-2xl border border-gray-200 px-4 py-3 dark:border-zinc-800">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 dark:text-white">{stock.symbol}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{stock.name}</p>
+                      </div>
+                      <div className="sm:text-right">
+                        <p className="font-semibold text-gray-900 dark:text-white">{formatInr(stock.price, 0)}</p>
+                        <p className="text-sm font-semibold text-emerald-500">+{stock.changePercent.toFixed(2)}%</p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -166,14 +168,16 @@ export const MarketOverviewSection: React.FC = () => {
               <p className="text-sm font-semibold text-red-500 mb-3">Top Losers</p>
               <div className="space-y-3">
                 {market.topLosers.map((stock) => (
-                  <div key={stock.symbol} className="flex items-center justify-between rounded-2xl border border-gray-200 dark:border-zinc-800 px-4 py-3">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{stock.symbol}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{stock.name}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-gray-900 dark:text-white">{formatInr(stock.price, 0)}</p>
-                      <p className="text-sm font-semibold text-red-500">{stock.changePercent.toFixed(2)}%</p>
+                  <div key={stock.symbol} className="rounded-2xl border border-gray-200 px-4 py-3 dark:border-zinc-800">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 dark:text-white">{stock.symbol}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{stock.name}</p>
+                      </div>
+                      <div className="sm:text-right">
+                        <p className="font-semibold text-gray-900 dark:text-white">{formatInr(stock.price, 0)}</p>
+                        <p className="text-sm font-semibold text-red-500">{stock.changePercent.toFixed(2)}%</p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -187,12 +191,12 @@ export const MarketOverviewSection: React.FC = () => {
           <div className="space-y-3 mt-5">
             {watchlistCards.map((stock) => (
               <div key={stock.symbol} className="rounded-2xl border border-gray-200 dark:border-zinc-800 px-4 py-3 bg-gray-50 dark:bg-zinc-950/40">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
                     <p className="font-medium text-gray-900 dark:text-white">{stock.symbol}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{stock.sector}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="sm:text-right">
                     <p className="font-semibold text-gray-900 dark:text-white">{formatInr(stock.price, 0)}</p>
                     <p className={`text-sm font-semibold ${stock.changePercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                       {stock.changePercent >= 0 ? '+' : ''}

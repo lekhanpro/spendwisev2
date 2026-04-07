@@ -9,6 +9,7 @@ export interface Category {
   icon: string;
   color: string;
   type: TransactionType;
+  isCustom?: boolean;
 }
 
 export interface PaymentMethod {
@@ -53,6 +54,12 @@ export interface Currency {
   locale: string;
 }
 
+export interface UserSettings {
+  darkMode: boolean;
+  currency: Currency;
+  customCategories?: Category[];
+}
+
 export type ViewType = 'dashboard' | 'transactions' | 'budget' | 'reports' | 'invest' | 'goals' | 'bills' | 'settings';
 
 export interface AppContextType {
@@ -60,6 +67,7 @@ export interface AppContextType {
   budgets: Budget[];
   goals: Goal[];
   categories: Category[];
+  customCategories: Category[];
   darkMode: boolean;
   activeView: ViewType;
   setDarkMode: (mode: boolean) => void;
@@ -83,4 +91,6 @@ export interface AppContextType {
   currency: Currency;
   setCurrency: (c: Currency) => void;
   formatCurrency: (amount: number) => string;
+  addCustomCategory: (category: Omit<Category, 'id'>) => Category | null;
+  removeCustomCategory: (id: string) => void;
 }

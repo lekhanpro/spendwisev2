@@ -70,7 +70,7 @@ export const RoadmapSection: React.FC = () => {
             title="Personalized roadmap inputs"
             description="This replaces the old quiz flow with a professional suitability form tied directly to allocation and goal recommendations."
           />
-          <div className="grid grid-cols-2 gap-3 mt-5">
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-sm text-gray-700 dark:text-gray-300">
               Age
               <input
@@ -172,7 +172,7 @@ export const RoadmapSection: React.FC = () => {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mt-5">
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <MetricPill label="Risk Band" value={riskBand} tone="warning" />
             <MetricPill label="Monthly SIP" value={formatInr(profile.monthlyInvestable, 0)} />
             <MetricPill label="Projected Corpus" value={formatInr(sipProjection.futureValue, 0)} tone="positive" />
@@ -193,7 +193,7 @@ export const RoadmapSection: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-3 gap-3 mt-5">
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <MetricPill label="Invested" value={formatInr(sipProjection.invested, 0)} />
             <MetricPill label="Projected Gain" value={formatInr(sipProjection.gain, 0)} tone="positive" />
             <MetricPill label="Assumed Return" value={`${(sipProjection.annualRate * 100).toFixed(0)}%`} />
@@ -211,7 +211,7 @@ export const RoadmapSection: React.FC = () => {
               placeholder="Goal name"
               className="w-full px-4 py-3 rounded-2xl bg-gray-50 dark:bg-zinc-950/40 border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <select
                 value={goalForm.type}
                 onChange={(event) => setGoalForm((current) => ({ ...current, type: event.target.value as GoalForm['type'] }))}
@@ -235,7 +235,7 @@ export const RoadmapSection: React.FC = () => {
                 <option value="aspirational">Aspirational</option>
               </select>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <input
                 type="number"
                 value={goalForm.targetAmount}
@@ -251,7 +251,7 @@ export const RoadmapSection: React.FC = () => {
                 className="px-4 py-3 rounded-2xl bg-gray-50 dark:bg-zinc-950/40 border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <input
                 type="number"
                 value={goalForm.monthlyContribution}
@@ -289,8 +289,8 @@ export const RoadmapSection: React.FC = () => {
                 const progress = goal.targetAmount > 0 ? (goal.currentAmount / goal.targetAmount) * 100 : 0;
                 return (
                   <div key={goal.id} className="rounded-2xl border border-gray-200 dark:border-zinc-800 p-4 bg-gray-50 dark:bg-zinc-950/40">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
                         <p className="font-medium text-gray-900 dark:text-white">{goal.name}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           {goal.priority} priority, target {new Date(goal.targetDate).toLocaleDateString('en-IN')}
@@ -300,7 +300,7 @@ export const RoadmapSection: React.FC = () => {
                         Remove
                       </button>
                     </div>
-                    <div className="grid grid-cols-3 gap-3 mt-4">
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
                       <MetricPill label="Current" value={formatInr(goal.currentAmount, 0)} />
                       <MetricPill label="Target" value={formatInr(goal.targetAmount, 0)} />
                       <MetricPill label="Monthly" value={formatInr(goal.monthlyContribution, 0)} />

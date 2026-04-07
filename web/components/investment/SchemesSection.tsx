@@ -77,8 +77,8 @@ export const SchemesSection: React.FC = () => {
             const selected = comparisonSchemeIds.includes(scheme.id);
             return (
               <div key={scheme.id} className="rounded-2xl border border-gray-200 dark:border-zinc-800 p-4 bg-gray-50 dark:bg-zinc-950/40">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
                     <p className="font-semibold text-gray-900 dark:text-white">{scheme.name}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{scheme.category}</p>
                   </div>
@@ -94,7 +94,7 @@ export const SchemesSection: React.FC = () => {
                     {selected ? 'Comparing' : 'Compare'}
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <MetricPill label="Rate / Return" value={scheme.interestRate ? `${scheme.interestRate.toFixed(1)}%` : scheme.returnsLabel} tone="positive" />
                   <MetricPill label="Risk" value={scheme.risk} tone={scheme.risk === 'Low' ? 'positive' : scheme.risk === 'Moderate' ? 'warning' : 'negative'} />
                 </div>

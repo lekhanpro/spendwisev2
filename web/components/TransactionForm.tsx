@@ -1,189 +1,223 @@
-
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { AppContext } from '../context/AppContext';
-import { Transaction, TransactionType } from '../types';
 import { PAYMENT_METHODS, generateId } from '../constants';
+import { Transaction, TransactionType } from '../types';
+import { CategoryCreator } from './CategoryCreator';
 
 interface TransactionFormProps {
   transaction: Transaction | null;
-  onSave: (t: Transaction) => void;
+  onSave: (transaction: Transaction) => void;
   onCancel: () => void;
 }
+
+const getDefaultCategory = (type: TransactionType, categoryIds: { id: string; type: TransactionType }[]) =>
+  categoryIds.find((category) => category.type === type)?.id ?? '';
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({ transaction, onSave, onCancel }) => {
   const { categories, currency } = useContext(AppContext)!;
   const [formData, setFormData] = useState<Partial<Transaction>>({
     type: 'expense',
     amount: 0,
-    category: 'food',
+    category: getDefaultCategory('expense', categories),
     paymentMethod: 'cash',
-    date: new Date().getTime(),
+    date: Date.now(),
     description: '',
-    tags: []
+    tags: [],
   });
-
-  // Format date for input field
   const [dateInput, setDateInput] = useState(new Date().toISOString().split('T')[0]);
+
+  const filteredCategories = useMemo(
+    () => categories.filter((category) => category.type === formData.type),
+    [categories, formData.type]
+  );
 
   useEffect(() => {
     if (transaction) {
       setFormData(transaction);
       setDateInput(new Date(transaction.date).toISOString().split('T')[0]);
+      return;
     }
+
+    const nextType: TransactionType = 'expense';
+    setFormData({
+      type: nextType,
+      amount: 0,
+      category: getDefaultCategory(nextType, categories),
+      paymentMethod: 'cash',
+      date: Date.now(),
+      description: '',
+      tags: [],
+    });
+    setDateInput(new Date().toISOString().split('T')[0]);
   }, [transaction]);
 
-  const filteredCategories = categories.filter(c => c.type === formData.type);
-  const currencySymbol = currency?.symbol || '$';
+  useEffect(() => {
+    if (!filteredCategories.find((category) => category.id === formData.category)) {
+      setFormData((current) => ({
+        ...current,
+        category: getDefaultCategory((current.type as TransactionType) ?? 'expense', categories),
+      }));
+    }
+  }, [categories, filteredCategories, formData.category]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.amount || formData.amount <= 0) return;
+  const handleTypeChange = (type: TransactionType) => {
+    setFormData((current) => ({
+      ...current,
+      type,
+      category: getDefaultCategory(type, categories),
+    }));
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!formData.amount || formData.amount <= 0 || !formData.category || !formData.type) {
+      return;
+    }
+
     onSave({
       ...(formData as Transaction),
       id: transaction?.id || generateId(),
       amount: Number(formData.amount),
-      date: new Date(dateInput).getTime()
+      date: new Date(dateInput).getTime(),
+      description: formData.description?.trim() ?? '',
+      tags: formData.tags ?? [],
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Type Selector - Enhanced */}
-      <div className="flex gap-3 p-2 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-zinc-800/50 dark:to-zinc-800/30 rounded-2xl border-2 border-gray-200 dark:border-zinc-700/50 shadow-inner">
-        {['expense', 'income'].map((type) => (
+      <div className="grid grid-cols-2 gap-3">
+        {(['expense', 'income'] as const).map((type) => (
           <button
             key={type}
             type="button"
-            onClick={() => setFormData({ ...formData, type: type as TransactionType, category: type === 'expense' ? 'food' : 'salary' })}
-            className={`flex-1 py-3.5 rounded-xl font-bold text-base transition-all duration-200 ${formData.type === type
-              ? type === 'expense' 
-                ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white shadow-xl shadow-red-500/40 scale-105' 
-                : 'bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white shadow-xl shadow-green-500/40 scale-105'
-              : 'text-gray-500 dark:text-gray-500 hover:bg-white/80 dark:hover:bg-zinc-700/50 hover:text-gray-900 dark:hover:text-white hover:scale-105'}`}
+            onClick={() => handleTypeChange(type)}
+            className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
+              formData.type === type
+                ? type === 'expense'
+                  ? 'border-red-500 bg-red-50 text-red-700 dark:border-red-500 dark:bg-red-500/10 dark:text-red-300'
+                  : 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-500 dark:bg-emerald-500/10 dark:text-emerald-300'
+                : 'border-gray-200 bg-white text-gray-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300'
+            }`}
           >
-            <span className="text-xl mr-2">{type === 'expense' ? '💸' : '💰'}</span>
-            {type.charAt(0).toUpperCase() + type.slice(1)}
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] opacity-70">{type}</p>
+            <p className="mt-2 text-lg font-semibold">{type === 'expense' ? 'Spend money' : 'Receive money'}</p>
           </button>
         ))}
       </div>
 
-      {/* Amount Input - Enhanced */}
       <div>
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <span className="text-lg">💵</span>
-          Amount
-        </label>
-        <div className="relative group">
-          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-3xl font-black text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400 transition-colors">
-            {currencySymbol}
+        <label className="mb-3 block text-sm font-semibold text-gray-700 dark:text-gray-300">Amount</label>
+        <div className="relative">
+          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-2xl font-bold text-gray-400 dark:text-gray-500">
+            {currency.symbol}
           </span>
           <input
             type="number"
             step="0.01"
             value={formData.amount || ''}
-            onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-            className="w-full pl-16 pr-6 py-5 text-4xl font-black bg-gradient-to-br from-gray-50 to-white dark:from-zinc-800/50 dark:to-zinc-800/30 border-2 border-gray-300 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-gray-600 outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-inner"
+            onChange={(event) => setFormData((current) => ({ ...current, amount: parseFloat(event.target.value) }))}
+            className="w-full rounded-3xl border border-gray-200 bg-gray-50 py-5 pl-14 pr-5 text-3xl font-bold text-gray-900 outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-white"
             placeholder="0.00"
             required
           />
         </div>
       </div>
 
-      {/* Category Grid - Enhanced */}
       <div>
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <span className="text-lg">📁</span>
-          Category
-        </label>
-        <div className="grid grid-cols-4 gap-3">
-          {filteredCategories.map(cat => (
+        <label className="mb-3 block text-sm font-semibold text-gray-700 dark:text-gray-300">Category</label>
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+          {filteredCategories.map((category) => (
             <button
-              key={cat.id}
+              key={category.id}
               type="button"
-              onClick={() => setFormData({ ...formData, category: cat.id })}
-              className={`p-4 rounded-2xl flex flex-col items-center gap-2 transition-all duration-200 border-2 ${formData.category === cat.id
-                ? 'bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 border-blue-600 dark:border-blue-500 ring-4 ring-blue-500/30 scale-110 shadow-xl shadow-blue-500/30'
-                : 'bg-white dark:bg-zinc-800/40 border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600 hover:scale-105 shadow-md'}`}
+              onClick={() => setFormData((current) => ({ ...current, category: category.id }))}
+              className={`min-w-0 rounded-2xl border px-3 py-4 text-center transition-all ${
+                formData.category === category.id
+                  ? 'border-blue-500 bg-blue-50 dark:border-blue-500 dark:bg-blue-500/10'
+                  : 'border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-900'
+              }`}
             >
-              <span className="text-3xl drop-shadow-lg">{cat.icon}</span>
-              <span className={`text-xs font-bold truncate w-full text-center ${formData.category === cat.id ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
-                {cat.name.split(' ')[0]}
-              </span>
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl text-2xl" style={{ backgroundColor: `${category.color}20` }}>
+                {category.icon}
+              </div>
+              <p className="mt-2 break-words text-xs font-medium text-gray-700 dark:text-gray-300">{category.name}</p>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Payment Method - Enhanced */}
+      <CategoryCreator
+        type={(formData.type as TransactionType) ?? 'expense'}
+        title="Need a different category?"
+        description="Create a custom category right here and select it instantly."
+        buttonLabel="Custom category"
+        onCreated={(category) => setFormData((current) => ({ ...current, category: category.id }))}
+      />
+
       <div>
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <span className="text-lg">💳</span>
-          Payment Method
-        </label>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-          {PAYMENT_METHODS.map(pm => (
+        <label className="mb-3 block text-sm font-semibold text-gray-700 dark:text-gray-300">Payment method</label>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {PAYMENT_METHODS.map((paymentMethod) => (
             <button
-              key={pm.id}
+              key={paymentMethod.id}
               type="button"
-              onClick={() => setFormData({ ...formData, paymentMethod: pm.id })}
-              className={`flex items-center gap-2 px-5 py-3.5 rounded-xl whitespace-nowrap transition-all duration-200 border-2 font-semibold shadow-md ${formData.paymentMethod === pm.id
-                ? 'bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 border-purple-600 dark:border-purple-500 text-white shadow-purple-500/30 scale-105'
-                : 'bg-white dark:bg-zinc-800/40 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600 hover:scale-105'}`}
+              onClick={() => setFormData((current) => ({ ...current, paymentMethod: paymentMethod.id }))}
+              className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
+                formData.paymentMethod === paymentMethod.id
+                  ? 'border-violet-500 bg-violet-50 dark:border-violet-500 dark:bg-violet-500/10'
+                  : 'border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-900'
+              }`}
             >
-              <span className="text-xl">{pm.icon}</span>
-              <span className="text-sm">{pm.name}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{paymentMethod.icon}</span>
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">{paymentMethod.name}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{paymentMethod.id}</p>
+                </div>
+              </div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Date Input - Enhanced */}
-      <div>
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <span className="text-lg">📅</span>
-          Date
-        </label>
-        <input
-          type="date"
-          value={dateInput}
-          onChange={(e) => setDateInput(e.target.value)}
-          className="w-full px-5 py-4 bg-white dark:bg-zinc-800/40 border-2 border-gray-300 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white font-medium outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-md [color-scheme:dark]"
-        />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-3 block text-sm font-semibold text-gray-700 dark:text-gray-300">Date</label>
+          <input
+            type="date"
+            value={dateInput}
+            onChange={(event) => setDateInput(event.target.value)}
+            className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-900 outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white [color-scheme:dark]"
+          />
+        </div>
+        <div>
+          <label className="mb-3 block text-sm font-semibold text-gray-700 dark:text-gray-300">Description</label>
+          <input
+            type="text"
+            value={formData.description || ''}
+            onChange={(event) => setFormData((current) => ({ ...current, description: event.target.value }))}
+            className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-900 outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+            placeholder="Coffee with client, April rent, bonus payout..."
+          />
+        </div>
       </div>
 
-      {/* Description - Enhanced */}
-      <div>
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-          <span className="text-lg">📝</span>
-          Description <span className="text-xs font-normal text-gray-500">(Optional)</span>
-        </label>
-        <input
-          type="text"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-5 py-4 bg-white dark:bg-zinc-800/40 border-2 border-gray-300 dark:border-zinc-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 font-medium outline-none focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all shadow-md"
-          placeholder="Add a note..."
-        />
-      </div>
-
-      {/* Action Buttons - Enhanced */}
-      <div className="flex gap-4 pt-4">
-        <button 
-          type="button" 
-          onClick={onCancel} 
-          className="flex-1 py-4 rounded-2xl font-bold text-base bg-white dark:bg-zinc-800 border-2 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 hover:border-gray-400 dark:hover:border-zinc-600 transition-all shadow-lg hover:scale-105 active:scale-95"
+      <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:border-gray-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300 sm:w-auto sm:flex-1"
         >
           Cancel
         </button>
-        <button 
-          type="submit" 
-          className={`flex-1 py-4 rounded-2xl font-bold text-base text-white transition-all shadow-xl hover:scale-105 active:scale-95 ${
-            formData.type === 'expense' 
-              ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700 hover:from-red-600 hover:via-red-700 hover:to-red-800 shadow-red-500/40' 
-              : 'bg-gradient-to-br from-green-500 via-green-600 to-green-700 hover:from-green-600 hover:via-green-700 hover:to-green-800 shadow-green-500/40'
+        <button
+          type="submit"
+          className={`w-full rounded-2xl px-4 py-3 font-medium text-white transition-colors sm:w-auto sm:flex-1 ${
+            formData.type === 'expense' ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'
           }`}
         >
-          {transaction ? '✓ Update' : '+ Add'} {formData.type === 'expense' ? 'Expense' : 'Income'}
+          {transaction ? 'Save transaction' : `Add ${formData.type === 'expense' ? 'expense' : 'income'}`}
         </button>
       </div>
     </form>

@@ -1,19 +1,18 @@
-
-import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { AppContextType, Transaction, Budget, Goal, Category, ViewType, Currency } from '../types';
-import { DEFAULT_CATEGORIES, SAMPLE_TRANSACTIONS, SAMPLE_BUDGETS, SAMPLE_GOALS, SUPPORTED_CURRENCIES } from '../constants';
-import { auth } from '../lib/auth';
+import React, { createContext, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '../lib/auth';
 import {
-  saveTransactions,
   saveBudgets,
   saveGoals,
   saveSettings,
-  subscribeToTransactions,
+  saveTransactions,
   subscribeToBudgets,
   subscribeToGoals,
-  subscribeToSettings
+  subscribeToSettings,
+  subscribeToTransactions,
 } from '../lib/database';
+import { DEFAULT_CATEGORIES, SUPPORTED_CURRENCIES, generateId } from '../constants';
+import { AppContextType, Budget, Category, Currency, Goal, Transaction, UserSettings, ViewType } from '../types';
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -26,31 +25,32 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [categories] = useState<Category[]>(DEFAULT_CATEGORIES);
-  const [darkMode, setDarkMode] = useState<boolean>(true); // Default to dark mode
+  const [customCategories, setCustomCategories] = useState<Category[]>([]);
+  const [darkMode, setDarkMode] = useState<boolean>(true);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [currency, setCurrency] = useState<Currency>(SUPPORTED_CURRENCIES[0]);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSyncing] = useState(false);
 
-  // Firebase Auth listener
+  const categories = useMemo(() => [...DEFAULT_CATEGORIES, ...customCategories], [customCategories]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setFirebaseUser(user);
       if (!user) {
-        // Clear data on logout
         setTransactions([]);
         setBudgets([]);
         setGoals([]);
+        setCustomCategories([]);
         setIsLoading(false);
       }
     });
+
     return () => unsubscribe();
   }, []);
 
-  // Subscribe to realtime data when user is logged in
   useEffect(() => {
     if (!firebaseUser) {
       setIsLoading(false);
@@ -60,31 +60,31 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     const userId = firebaseUser.uid;
     setIsLoading(true);
 
-    // Subscribe to transactions
     const unsubTransactions = subscribeToTransactions(userId, (data) => {
       setTransactions(Array.isArray(data) ? data : []);
     });
 
-    // Subscribe to budgets
     const unsubBudgets = subscribeToBudgets(userId, (data) => {
       setBudgets(Array.isArray(data) ? data : []);
     });
 
-    // Subscribe to goals
     const unsubGoals = subscribeToGoals(userId, (data) => {
       setGoals(Array.isArray(data) ? data : []);
     });
 
-    // Subscribe to settings
     const unsubSettings = subscribeToSettings(userId, (settings) => {
       if (settings) {
-        setDarkMode(settings.darkMode ?? true); // Default to dark mode
+        setDarkMode(settings.darkMode ?? true);
         setCurrency(settings.currency ?? SUPPORTED_CURRENCIES[0]);
+        setCustomCategories(Array.isArray(settings.customCategories) ? settings.customCategories : []);
+      } else {
+        setDarkMode(true);
+        setCurrency(SUPPORTED_CURRENCIES[0]);
+        setCustomCategories([]);
       }
       setIsLoading(false);
     });
 
-    // Set a timeout for loading state
     const timeout = setTimeout(() => {
       setIsLoading(false);
     }, 5000);
@@ -98,7 +98,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     };
   }, [firebaseUser]);
 
-  // Apply dark mode
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -107,105 +106,131 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   }, [darkMode]);
 
-  // Save transactions to Firebase
-  const syncTransactions = useCallback(async (newTransactions: Transaction[]) => {
+  const syncTransactions = useCallback(async (nextTransactions: Transaction[]) => {
     if (firebaseUser && !isSyncing) {
       try {
-        await saveTransactions(firebaseUser.uid, newTransactions);
+        await saveTransactions(firebaseUser.uid, nextTransactions);
       } catch (error) {
         console.error('Failed to sync transactions:', error);
       }
     }
   }, [firebaseUser, isSyncing]);
 
-  // Save budgets to Firebase
-  const syncBudgets = useCallback(async (newBudgets: Budget[]) => {
+  const syncBudgets = useCallback(async (nextBudgets: Budget[]) => {
     if (firebaseUser && !isSyncing) {
       try {
-        await saveBudgets(firebaseUser.uid, newBudgets);
+        await saveBudgets(firebaseUser.uid, nextBudgets);
       } catch (error) {
         console.error('Failed to sync budgets:', error);
       }
     }
   }, [firebaseUser, isSyncing]);
 
-  // Save goals to Firebase
-  const syncGoals = useCallback(async (newGoals: Goal[]) => {
+  const syncGoals = useCallback(async (nextGoals: Goal[]) => {
     if (firebaseUser && !isSyncing) {
       try {
-        await saveGoals(firebaseUser.uid, newGoals);
+        await saveGoals(firebaseUser.uid, nextGoals);
       } catch (error) {
         console.error('Failed to sync goals:', error);
       }
     }
   }, [firebaseUser, isSyncing]);
 
-  // Save settings to Firebase
-  const syncSettings = useCallback(async (newDarkMode: boolean, newCurrency: Currency) => {
+  const syncSettings = useCallback(async (settings: UserSettings) => {
     if (firebaseUser) {
       try {
-        await saveSettings(firebaseUser.uid, { darkMode: newDarkMode, currency: newCurrency });
+        await saveSettings(firebaseUser.uid, settings);
       } catch (error) {
         console.error('Failed to sync settings:', error);
       }
     }
   }, [firebaseUser]);
 
-  // Transaction operations
   const addTransaction = async (transaction: Transaction) => {
-    const newTransactions = [transaction, ...transactions];
-    setTransactions(newTransactions);
-    syncTransactions(newTransactions);
+    const nextTransactions = [transaction, ...transactions];
+    setTransactions(nextTransactions);
+    syncTransactions(nextTransactions);
   };
 
   const updateTransaction = (transaction: Transaction) => {
-    const newTransactions = transactions.map(t => t.id === transaction.id ? transaction : t);
-    setTransactions(newTransactions);
-    syncTransactions(newTransactions);
+    const nextTransactions = transactions.map((item) => (item.id === transaction.id ? transaction : item));
+    setTransactions(nextTransactions);
+    syncTransactions(nextTransactions);
   };
 
   const deleteTransaction = (id: string) => {
-    const newTransactions = transactions.filter(t => t.id !== id);
-    setTransactions(newTransactions);
-    syncTransactions(newTransactions);
+    const nextTransactions = transactions.filter((item) => item.id !== id);
+    setTransactions(nextTransactions);
+    syncTransactions(nextTransactions);
   };
 
-  // Budget operations
   const addBudget = (budget: Budget) => {
-    const newBudgets = [...budgets.filter(b => b.category !== budget.category), budget];
-    setBudgets(newBudgets);
-    syncBudgets(newBudgets);
+    const nextBudgets = [...budgets.filter((item) => item.category !== budget.category), budget];
+    setBudgets(nextBudgets);
+    syncBudgets(nextBudgets);
   };
 
   const updateBudget = (budget: Budget) => {
-    const newBudgets = budgets.map(b => b.id === budget.id ? budget : b);
-    setBudgets(newBudgets);
-    syncBudgets(newBudgets);
+    const nextBudgets = budgets.map((item) => (item.id === budget.id ? budget : item));
+    setBudgets(nextBudgets);
+    syncBudgets(nextBudgets);
   };
 
   const deleteBudget = (id: string) => {
-    const newBudgets = budgets.filter(b => b.id !== id);
-    setBudgets(newBudgets);
-    syncBudgets(newBudgets);
+    const nextBudgets = budgets.filter((item) => item.id !== id);
+    setBudgets(nextBudgets);
+    syncBudgets(nextBudgets);
   };
 
-  // Goal operations
   const addGoal = (goal: Goal) => {
-    const newGoals = [...goals, goal];
-    setGoals(newGoals);
-    syncGoals(newGoals);
+    const nextGoals = [...goals, goal];
+    setGoals(nextGoals);
+    syncGoals(nextGoals);
   };
 
   const updateGoal = (goal: Goal) => {
-    const newGoals = goals.map(g => g.id === goal.id ? goal : g);
-    setGoals(newGoals);
-    syncGoals(newGoals);
+    const nextGoals = goals.map((item) => (item.id === goal.id ? goal : item));
+    setGoals(nextGoals);
+    syncGoals(nextGoals);
   };
 
   const deleteGoal = (id: string) => {
-    const newGoals = goals.filter(g => g.id !== id);
-    setGoals(newGoals);
-    syncGoals(newGoals);
+    const nextGoals = goals.filter((item) => item.id !== id);
+    setGoals(nextGoals);
+    syncGoals(nextGoals);
+  };
+
+  const addCustomCategory = (categoryInput: Omit<Category, 'id'>) => {
+    const normalizedName = categoryInput.name.trim();
+    if (!normalizedName) {
+      return null;
+    }
+
+    const existing = categories.find(
+      (category) => category.type === categoryInput.type && category.name.trim().toLowerCase() === normalizedName.toLowerCase()
+    );
+
+    if (existing) {
+      return existing;
+    }
+
+    const nextCategory: Category = {
+      ...categoryInput,
+      id: `custom-${generateId()}`,
+      name: normalizedName,
+      isCustom: true,
+    };
+
+    const nextCustomCategories = [...customCategories, nextCategory];
+    setCustomCategories(nextCustomCategories);
+    syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
+    return nextCategory;
+  };
+
+  const removeCustomCategory = (id: string) => {
+    const nextCustomCategories = customCategories.filter((category) => category.id !== id);
+    setCustomCategories(nextCustomCategories);
+    syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
   };
 
   const resetData = () => {
@@ -225,43 +250,70 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setTransactions([]);
       setBudgets([]);
       setGoals([]);
+      setCustomCategories([]);
       setFirebaseUser(null);
       setActiveView('dashboard');
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error('Error logging out:', error);
     }
   };
 
-  // Settings update with sync
   const handleSetDarkMode = (mode: boolean) => {
     setDarkMode(mode);
-    syncSettings(mode, currency);
+    syncSettings({ darkMode: mode, currency, customCategories });
   };
 
-  const handleSetCurrency = (newCurrency: Currency) => {
-    setCurrency(newCurrency);
-    syncSettings(darkMode, newCurrency);
+  const handleSetCurrency = (nextCurrency: Currency) => {
+    setCurrency(nextCurrency);
+    syncSettings({ darkMode, currency: nextCurrency, customCategories });
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat(currency.locale, {
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat(currency.locale, {
       style: 'currency',
       currency: currency.code,
     }).format(amount);
-  };
 
   const contextValue: AppContextType = {
-    transactions, budgets, goals, categories, darkMode, activeView,
-    setDarkMode: handleSetDarkMode, setActiveView,
-    addTransaction, updateTransaction, deleteTransaction,
-    addBudget, updateBudget, deleteBudget,
-    addGoal, updateGoal, deleteGoal,
+    transactions,
+    budgets,
+    goals,
+    categories,
+    customCategories,
+    darkMode,
+    activeView,
+    setDarkMode: handleSetDarkMode,
+    setActiveView,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
+    addBudget,
+    updateBudget,
+    deleteBudget,
+    addGoal,
+    updateGoal,
+    deleteGoal,
     resetData,
-    showTransactionModal, setShowTransactionModal,
-    editingTransaction, setEditingTransaction,
-    session: firebaseUser ? { user: { id: firebaseUser.uid, email: firebaseUser.email, displayName: firebaseUser.displayName, photoURL: firebaseUser.photoURL } } : null,
+    showTransactionModal,
+    setShowTransactionModal,
+    editingTransaction,
+    setEditingTransaction,
+    session: firebaseUser
+      ? {
+          user: {
+            id: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL,
+          },
+        }
+      : null,
     handleLogout,
-    currency, setCurrency: handleSetCurrency, formatCurrency
+    currency,
+    setCurrency: handleSetCurrency,
+    formatCurrency,
+    addCustomCategory,
+    removeCustomCategory,
   };
 
   if (isLoading) {

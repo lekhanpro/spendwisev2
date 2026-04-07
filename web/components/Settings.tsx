@@ -1,22 +1,39 @@
-
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { AppContext } from '../context/AppContext';
-import { Icons } from './Icons';
-import { Modal } from './Modal';
 import { SUPPORTED_CURRENCIES } from '../constants';
-import { exportTransactionsCSV, parseTransactionsCSV, exportTransactionsOFX } from '../lib/export';
 import { detectFuzzyDuplicates } from '../lib/dedupe';
-import { SavingsCalculator } from './SavingsCalculator';
+import { exportTransactionsCSV, exportTransactionsOFX, parseTransactionsCSV } from '../lib/export';
+import { generatePDFReport } from '../lib/pdfExport';
+import { Achievements } from './Achievements';
+import { Bills } from './Bills';
+import { CategoryCreator } from './CategoryCreator';
+import { CategoryTrends } from './CategoryTrends';
+import { CustomAlerts } from './CustomAlerts';
+import { InvestCard, MetricPill, QuietToggle, SectionTitle } from './investment/InvestUI';
+import { Modal } from './Modal';
 import { ReceiptScanner } from './ReceiptScanner';
 import { RecurringTransactions } from './RecurringTransactions';
-import { CategoryTrends } from './CategoryTrends';
-import { Achievements } from './Achievements';
-import { CustomAlerts } from './CustomAlerts';
-import { Bills } from './Bills';
-import { generatePDFReport } from '../lib/pdfExport';
+import { SavingsCalculator } from './SavingsCalculator';
 
 export const Settings: React.FC = () => {
-  const { darkMode, setDarkMode, resetData, categories, handleLogout, session, currency, setCurrency, transactions, addTransaction, budgets, goals, formatCurrency } = useContext(AppContext)!;
+  const {
+    darkMode,
+    setDarkMode,
+    resetData,
+    categories,
+    customCategories,
+    removeCustomCategory,
+    handleLogout,
+    session,
+    currency,
+    setCurrency,
+    transactions,
+    addTransaction,
+    budgets,
+    goals,
+    formatCurrency,
+  } = useContext(AppContext)!;
+
   const [importPreviewOpen, setImportPreviewOpen] = useState(false);
   const [previewItems, setPreviewItems] = useState<any[]>([]);
   const [selectedImportIds, setSelectedImportIds] = useState<Record<string, boolean>>({});
@@ -33,11 +50,22 @@ export const Settings: React.FC = () => {
   const [showCustomAlerts, setShowCustomAlerts] = useState(false);
   const [showBills, setShowBills] = useState(false);
 
+  const expenseCategories = useMemo(() => categories.filter((category) => category.type === 'expense'), [categories]);
+  const incomeCategories = useMemo(() => categories.filter((category) => category.type === 'income'), [categories]);
+  const customUsage = useMemo(() => {
+    const usage = new Map<string, number>();
+    customCategories.forEach((category) => usage.set(category.id, 0));
+    transactions.forEach((transaction) => usage.set(transaction.category, (usage.get(transaction.category) ?? 0) + 1));
+    budgets.forEach((budget) => usage.set(budget.category, (usage.get(budget.category) ?? 0) + 1));
+    return usage;
+  }, [budgets, customCategories, transactions]);
+
   const notifyUser = (message: string) => {
     if (typeof window !== 'undefined' && /jsdom/i.test(window.navigator.userAgent)) {
       console.info(message);
       return;
     }
+
     try {
       window.alert(message);
     } catch {
@@ -45,525 +73,490 @@ export const Settings: React.FC = () => {
     }
   };
 
+  const toolActions = [
+    { label: 'Savings calculator', description: 'Projection support for savings targets', icon: '🧮', onClick: () => setShowSavingsCalculator(true) },
+    { label: 'Receipt scanner', description: 'Extract transactions from receipts', icon: '📸', onClick: () => setShowReceiptScanner(true) },
+    { label: 'Recurring transactions', description: 'Manage subscriptions and repeated spends', icon: '🔄', onClick: () => setShowRecurringTransactions(true) },
+    { label: 'Bills and reminders', description: 'Track upcoming due dates and bills', icon: '📅', onClick: () => setShowBills(true) },
+    { label: 'Category trends', description: 'See which categories are heating up', icon: '📈', onClick: () => setShowCategoryTrends(true) },
+    { label: 'Achievements', description: 'Review milestone progress and badges', icon: '🏆', onClick: () => setShowAchievements(true) },
+    { label: 'Custom alerts', description: 'Panel-only alerts tuned to your preferences', icon: '🔔', onClick: () => setShowCustomAlerts(true) },
+  ];
+
   return (
-    <div className="space-y-4 animate-slide-up">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+    <div className="space-y-6 animate-slide-up">
+      <InvestCard className="overflow-hidden">
+        <div className="relative bg-gradient-to-br from-slate-900 via-blue-950 to-cyan-900 p-6 text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_38%)]" />
+          <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs uppercase tracking-[0.22em] text-white/75">Workspace Controls</p>
+              <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Settings and data studio</h1>
+              <p className="mt-3 text-white/85">
+                Theme, data tools, imports, category management, and account controls in the same SpendWise dashboard language.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-end">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
+                {session?.user?.photoURL ? (
+                  <img src={session.user.photoURL} alt="Profile" className="h-11 w-11 rounded-full border border-white/20 object-cover" />
+                ) : (
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-lg">👤</div>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate font-semibold">{session?.user?.displayName || 'SpendWise User'}</p>
+                  <p className="truncate text-sm text-white/70">{session?.user?.email || 'No email connected'}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-white/15"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
 
-      {/* Account Card - Glass Effect */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {session?.user?.photoURL ? (
-            <img
-              src={session.user.photoURL}
-              alt="Profile"
-              className="w-12 h-12 rounded-full border-2 border-blue-200 dark:border-zinc-700"
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <MetricPill label="Transactions" value={`${transactions.length}`} />
+            <MetricPill label="Budgets" value={`${budgets.length}`} />
+            <MetricPill label="Goals" value={`${goals.length}`} tone="positive" />
+            <MetricPill label="Custom Categories" value={`${customCategories.length}`} tone="warning" />
+          </div>
+        </div>
+      </InvestCard>
+
+      <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+        <InvestCard className="p-5">
+          <SectionTitle eyebrow="Preferences" title="Workspace preferences" description="Theme, currency, and quiet-alert behavior." />
+          <div className="mt-4 divide-y divide-gray-200 dark:divide-zinc-800">
+            <QuietToggle
+              label="Dark mode"
+              description="Switch the full SpendWise workspace between dark and light."
+              checked={darkMode}
+              onChange={setDarkMode}
             />
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-zinc-800 border-2 border-blue-200 dark:border-zinc-700 flex items-center justify-center text-xl">
-              👤
-            </div>
-          )}
-          <div>
-            <p className="font-medium text-gray-900 dark:text-white">{session?.user?.displayName || 'User'}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{session?.user?.email || 'No email'}</p>
           </div>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-red-50 dark:bg-zinc-800 border border-red-200 dark:border-zinc-700 text-red-600 dark:text-white rounded-lg text-sm font-medium hover:bg-red-100 dark:hover:bg-zinc-700 transition-colors"
-        >
-          Sign Out
-        </button>
-      </div>
 
-      {/* Settings Options - Glass Card */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl divide-y divide-gray-200 dark:divide-zinc-800">
-        {/* Dark Mode */}
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <div className="text-2xl">{darkMode ? '🌙' : '☀️'}</div>
-            <div>
-              <p className="font-medium text-gray-900 dark:text-white">Dark Mode</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Toggle dark/light theme</p>
-            </div>
-          </div>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className={`w-12 h-6 rounded-full transition-colors ${darkMode ? 'bg-blue-500' : 'bg-gray-300'}`}
-          >
-            <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform mt-0.5 ${darkMode ? 'translate-x-6' : 'translate-x-0.5'}`} />
-          </button>
-        </div>
-
-        {/* Currency Selector */}
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">💱</div>
-            <div>
-              <p className="font-medium text-gray-900 dark:text-white">Currency</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Select your preferred currency</p>
-            </div>
-          </div>
-          <select
-            value={currency.code}
-            onChange={(e) => {
-              const selected = SUPPORTED_CURRENCIES.find(c => c.code === e.target.value);
-              if (selected) setCurrency(selected);
-            }}
-            className="px-3 py-2 bg-gray-100 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm font-medium text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {SUPPORTED_CURRENCIES.map(c => (
-              <option key={c.code} value={c.code}>{c.code} ({c.symbol})</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">🔕</div>
-            <div>
-              <p className="font-medium text-gray-900 dark:text-white">Quiet Notifications</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">SpendWise no longer auto-pops recurring alerts. Investment notification preferences live inside the Invest page and only surface in the notification panel.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Categories */}
-        <div className="p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="text-xl">📁</span>
-            <div>
-              <p className="font-medium text-gray-900 dark:text-white">Categories</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">{categories.length} categories available</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.slice(0, 10).map(cat => (
-              <span key={cat.id} className="px-3 py-1 rounded-full text-sm bg-gray-200 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-800 dark:text-gray-300">
-                {cat.icon} {cat.name}
-              </span>
-            ))}
-            {categories.length > 10 && (
-              <span className="px-3 py-1 rounded-full text-sm bg-gray-200 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 text-gray-600 dark:text-gray-500">
-                +{categories.length - 10} more
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Tools - Glass Card */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl divide-y divide-gray-200 dark:divide-zinc-800">
-        <button
-          onClick={() => setShowSavingsCalculator(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">🧮</div>
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-white">Savings Calculator</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Calculate time to reach your goals</p>
-            </div>
-          </div>
-          <Icons.ChevronRight />
-        </button>
-
-        <button
-          onClick={() => setShowReceiptScanner(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">📸</div>
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-white">Receipt Scanner</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Scan and add receipts automatically</p>
-            </div>
-          </div>
-          <Icons.ChevronRight />
-        </button>
-
-        <button
-          onClick={() => setShowRecurringTransactions(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">🔄</div>
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-white">Recurring Transactions</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Manage subscriptions and bills</p>
-            </div>
-          </div>
-          <Icons.ChevronRight />
-        </button>
-
-        <button
-          onClick={() => setShowBills(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">📅</div>
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-white">Bills & Reminders</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Track upcoming bills and payments</p>
-            </div>
-          </div>
-          <Icons.ChevronRight />
-        </button>
-
-        <button
-          onClick={() => setShowCategoryTrends(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">📈</div>
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-white">Category Trends</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Track spending patterns over time</p>
-            </div>
-          </div>
-          <Icons.ChevronRight />
-        </button>
-
-        <button
-          onClick={() => setShowAchievements(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">🏆</div>
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-white">Achievements</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">View your badges and progress</p>
-            </div>
-          </div>
-          <Icons.ChevronRight />
-        </button>
-
-        <button
-          onClick={() => setShowCustomAlerts(true)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">🔔</div>
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-white">Custom Alerts</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Set personalized spending alerts</p>
-            </div>
-          </div>
-          <Icons.ChevronRight />
-        </button>
-
-        <button
-          onClick={() => {
-            const monthStart = new Date();
-            monthStart.setDate(1);
-            monthStart.setHours(0, 0, 0, 0);
-            const monthEnd = new Date();
-            monthEnd.setMonth(monthEnd.getMonth() + 1);
-            monthEnd.setDate(0);
-            monthEnd.setHours(23, 59, 59, 999);
-            generatePDFReport(transactions, budgets, goals, categories, formatCurrency, {
-              start: monthStart.getTime(),
-              end: monthEnd.getTime()
-            });
-          }}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">📄</div>
-            <div className="text-left">
-              <p className="font-medium text-gray-900 dark:text-white">PDF Report</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">Generate monthly financial report</p>
-            </div>
-          </div>
-          <Icons.ChevronRight />
-        </button>
-      </div>
-
-      {/* Data Management - Glass Card */}
-      <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-md rounded-2xl p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Data Management</h3>
-        <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => exportTransactionsCSV(transactions)}
-                className="w-full py-3 rounded-xl font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Currency</p>
+              <select
+                value={currency.code}
+                onChange={(event) => {
+                  const selected = SUPPORTED_CURRENCIES.find((item) => item.code === event.target.value);
+                  if (selected) {
+                    setCurrency(selected);
+                  }
+                }}
+                className="mt-3 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-900 outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
               >
-                <Icons.Download /> Export CSV
-              </button>
+                {SUPPORTED_CURRENCIES.map((item) => (
+                  <option key={item.code} value={item.code}>
+                    {item.code} ({item.symbol})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Notifications</p>
+              <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">
+                SpendWise no longer auto-pops recurring alerts. Investment preferences stay opt-in and surface only inside the notification panel.
+              </p>
+            </div>
+          </div>
+        </InvestCard>
 
-              <button
-                onClick={() => exportTransactionsOFX(transactions)}
-                className="w-full py-3 rounded-xl font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <Icons.Download /> Export OFX
-              </button>
+        <InvestCard className="p-5">
+          <SectionTitle eyebrow="Category Studio" title="Built-in and custom categories" description="Add custom expense or income categories and reuse them in transactions and budgets." />
+          <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Expense categories</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {expenseCategories.map((category) => (
+                    <span key={category.id} className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300">
+                      {category.icon} {category.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Income categories</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {incomeCategories.map((category) => (
+                    <span key={category.id} className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300">
+                      {category.icon} {category.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-              <label className="w-full py-3 rounded-xl font-medium bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                Import CSV
-                <input
-                  type="file"
-                  accept="text/csv"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    let text = '';
-                    if (typeof (file as any).text === 'function') {
-                      text = await (file as any).text();
-                    } else {
-                      // File.text may not be available in some test environments — fallback to FileReader
-                      text = await new Promise<string>((res, rej) => {
-                        const reader = new FileReader();
-                        reader.onload = () => res(String(reader.result || ''));
-                        reader.onerror = () => rej(new Error('Failed reading file'));
-                        reader.readAsText(file);
-                      });
-                    }
-                    const imported = parseTransactionsCSV(text);
-                    if (imported.length === 0) {
-                      notifyUser('No transactions found in CSV');
-                      (e.target as HTMLInputElement).value = '';
-                      return;
-                    }
+            <div className="space-y-4">
+              <CategoryCreator defaultOpen title="Add a custom category" description="Use this for personal buckets like tuition, side hustle, or pet care." />
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Custom categories</p>
+                <div className="mt-3 space-y-3">
+                  {customCategories.length === 0 && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">No custom categories yet. Add one above and it will show up in both transaction and budget flows.</p>
+                  )}
+                  {customCategories.map((category) => {
+                    const usageCount = customUsage.get(category.id) ?? 0;
+                    return (
+                      <div key={category.id} className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xl" style={{ backgroundColor: `${category.color}20` }}>
+                            {category.icon}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate font-medium text-gray-900 dark:text-white">{category.name}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{category.type} · {usageCount} linked items</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          disabled={usageCount > 0}
+                          onClick={() => removeCustomCategory(category.id)}
+                          className={`rounded-xl px-3 py-2 text-sm font-medium ${
+                            usageCount > 0
+                              ? 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-zinc-800 dark:text-gray-500'
+                              : 'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300'
+                          }`}
+                        >
+                          {usageCount > 0 ? 'In use' : 'Remove'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </InvestCard>
+      </div>
 
-                    // Detect duplicates using fuzzy logic
-                    const dupMap = detectFuzzyDuplicates(transactions, imported, { threshold: fuzzyThreshold, dateWindowDays, amountTolerancePercent });
+      <InvestCard className="p-5">
+        <SectionTitle eyebrow="Toolkit" title="SpendWise tools" description="All helper tools remain available, but now live inside the same card system as the rest of the app." />
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {toolActions.map((tool) => (
+            <button
+              key={tool.label}
+              type="button"
+              onClick={tool.onClick}
+              className="rounded-2xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:border-blue-500 hover:bg-white dark:border-zinc-800 dark:bg-zinc-950/40 dark:hover:bg-zinc-900"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{tool.icon}</span>
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">{tool.label}</p>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{tool.description}</p>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </InvestCard>
 
-                    // Initialize selection (unchecked if flagged)
-                    const sel: Record<string, boolean> = {};
-                    imported.forEach((it: any) => {
-                      sel[it.id] = !dupMap[it.id];
+      <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+        <InvestCard className="p-5">
+          <SectionTitle eyebrow="Data Management" title="Import, export, and reporting" description="Bring in CSV files, export data, or generate a monthly PDF snapshot." />
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => exportTransactionsCSV(transactions)}
+              className="rounded-2xl bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700"
+            >
+              Export CSV
+            </button>
+            <button
+              type="button"
+              onClick={() => exportTransactionsOFX(transactions)}
+              className="rounded-2xl bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
+            >
+              Export OFX
+            </button>
+            <label className="flex cursor-pointer items-center justify-center rounded-2xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:border-blue-500 hover:text-blue-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300 dark:hover:text-blue-400">
+              Import CSV
+              <input
+                type="file"
+                accept="text/csv"
+                onChange={async (event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) {
+                    return;
+                  }
+
+                  let text = '';
+                  if (typeof (file as any).text === 'function') {
+                    text = await (file as any).text();
+                  } else {
+                    text = await new Promise<string>((resolve, reject) => {
+                      const reader = new FileReader();
+                      reader.onload = () => resolve(String(reader.result || ''));
+                      reader.onerror = () => reject(new Error('Failed reading file'));
+                      reader.readAsText(file);
                     });
+                  }
 
-                    setPreviewItems(imported);
-                    setDuplicateMap(dupMap);
-                    setSelectedImportIds(sel);
-                    setImportPreviewOpen(true);
+                  const imported = parseTransactionsCSV(text);
+                  if (imported.length === 0) {
+                    notifyUser('No transactions found in CSV');
+                    (event.target as HTMLInputElement).value = '';
+                    return;
+                  }
 
-                    // clear input value so same file can be reselected later
-                    (e.target as HTMLInputElement).value = '';
-                  }}
-                  className="hidden"
-                />
-              </label>
+                  const dupMap = detectFuzzyDuplicates(transactions, imported, {
+                    threshold: fuzzyThreshold,
+                    dateWindowDays,
+                    amountTolerancePercent,
+                  });
 
-              <label className="w-full py-3 rounded-xl font-medium bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 cursor-not-allowed opacity-60">
-                Import OFX
-              </label>
+                  const selection: Record<string, boolean> = {};
+                  imported.forEach((item: any) => {
+                    selection[item.id] = !dupMap[item.id];
+                  });
+
+                  setPreviewItems(imported);
+                  setDuplicateMap(dupMap);
+                  setSelectedImportIds(selection);
+                  setImportPreviewOpen(true);
+                  (event.target as HTMLInputElement).value = '';
+                }}
+                className="hidden"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                const monthStart = new Date();
+                monthStart.setDate(1);
+                monthStart.setHours(0, 0, 0, 0);
+                const monthEnd = new Date();
+                monthEnd.setMonth(monthEnd.getMonth() + 1);
+                monthEnd.setDate(0);
+                monthEnd.setHours(23, 59, 59, 999);
+                generatePDFReport(transactions, budgets, goals, categories, formatCurrency, {
+                  start: monthStart.getTime(),
+                  end: monthEnd.getTime(),
+                });
+              }}
+              className="rounded-2xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:border-blue-500 hover:text-blue-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300 dark:hover:text-blue-400"
+            >
+              Generate PDF report
+            </button>
+          </div>
+        </InvestCard>
+
+        <div className="space-y-4">
+          <InvestCard className="p-5">
+            <SectionTitle eyebrow="Security" title="Account and reset" description="Use reset carefully. It permanently removes transactions, budgets, and goals." />
+            <div className="mt-5 space-y-3">
+              <button
+                type="button"
+                onClick={() => setShowResetConfirm(true)}
+                className="w-full rounded-2xl bg-red-600 px-4 py-3 font-medium text-white transition-colors hover:bg-red-700"
+              >
+                Reset all data
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:border-gray-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300"
+              >
+                Sign out
+              </button>
             </div>
+          </InvestCard>
+
+          <InvestCard className="p-5">
+            <SectionTitle eyebrow="About" title="SpendWise" description="A focused finance workspace for tracking, planning, and investing without noisy popups." />
+            <div className="mt-4 space-y-3 text-sm text-gray-700 dark:text-gray-300">
+              <p>Version 1.0.0</p>
+              <p>All data is stored securely with Firebase, and alerts remain panel-only unless you explicitly opt into them.</p>
+            </div>
+          </InvestCard>
         </div>
       </div>
 
-      {/* About - Glass Card */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">About SpendWise</h3>
-        <p className="text-sm text-gray-700 dark:text-gray-400">
-          SpendWise is your personal finance companion. Track expenses, manage budgets, and achieve your financial goals with ease.
-        </p>
-        <p className="text-xs text-gray-600 dark:text-gray-500 mt-3">Version 1.0.0</p>
-      </div>
-
-      {/* About Me Section */}
-      <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-zinc-800 shadow-lg rounded-2xl p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
-            LH
-          </div>
-          <div>
-            <h3 className="font-bold text-gray-900 dark:text-white text-lg">Lekhan HR</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Developer & Creator</p>
-          </div>
-        </div>
-        <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-          Built with ❤️ by Lekhan HR. SpendWise helps you take control of your finances with smart tracking, AI insights, and beautiful design.
-        </p>
-        <div className="flex gap-3">
-          <a 
-            href="https://github.com/lekhanpro" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex-1 py-2.5 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-medium text-center hover:scale-105 transition-transform shadow-md flex items-center justify-center gap-2"
-          >
-            <span>🐙</span> GitHub
-          </a>
-          <a 
-            href="https://www.linkedin.com/in/lekhan-hr-507b89371/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex-1 py-2.5 px-4 bg-blue-600 text-white rounded-xl font-medium text-center hover:scale-105 transition-transform shadow-md flex items-center justify-center gap-2"
-          >
-            <span>💼</span> LinkedIn
-          </a>
-        </div>
-      </div>
-
-      {/* Privacy - Glass Card */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">🔒 Privacy</h3>
-        <p className="text-sm text-gray-700 dark:text-gray-400">
-          All your data is stored securely with Firebase. We use industry-standard encryption to protect your financial information.
-        </p>
-      </div>
-
-      {/* Reset Confirmation Modal */}
       <Modal isOpen={showResetConfirm} onClose={() => setShowResetConfirm(false)} title="Reset All Data?">
         <div className="space-y-4">
-          <p className="text-gray-300">
-            This will permanently delete all your transactions, budgets, and goals. This action cannot be undone.
+          <p className="text-gray-700 dark:text-gray-300">
+            This will permanently delete all transactions, budgets, and goals. Custom categories stay in settings until you remove them separately.
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
+              type="button"
               onClick={() => setShowResetConfirm(false)}
-              className="flex-1 py-3 rounded-xl font-medium bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700"
+              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300 sm:flex-1"
             >
               Cancel
             </button>
             <button
-              onClick={() => { resetData(); setShowResetConfirm(false); }}
-              className="flex-1 py-3 rounded-xl font-medium bg-red-500 text-white hover:bg-red-600 transition-colors shadow-lg"
+              type="button"
+              onClick={() => {
+                resetData();
+                setShowResetConfirm(false);
+              }}
+              className="w-full rounded-2xl bg-red-600 px-4 py-3 font-medium text-white hover:bg-red-700 sm:flex-1"
             >
-              Reset Everything
+              Reset everything
             </button>
           </div>
         </div>
       </Modal>
-      {/* Savings Calculator Modal */}
+
       <Modal isOpen={showSavingsCalculator} onClose={() => setShowSavingsCalculator(false)} title="Savings Calculator">
         <SavingsCalculator />
       </Modal>
 
-      {/* Receipt Scanner Modal */}
       <Modal isOpen={showReceiptScanner} onClose={() => setShowReceiptScanner(false)} title="Receipt Scanner">
         <ReceiptScanner />
       </Modal>
 
-      {/* Recurring Transactions Modal */}
       <Modal isOpen={showRecurringTransactions} onClose={() => setShowRecurringTransactions(false)} title="Recurring Transactions">
         <RecurringTransactions />
       </Modal>
 
-      {/* Category Trends Modal */}
       <Modal isOpen={showCategoryTrends} onClose={() => setShowCategoryTrends(false)} title="Category Trends">
         <CategoryTrends />
       </Modal>
 
-      {/* Achievements Modal */}
       <Modal isOpen={showAchievements} onClose={() => setShowAchievements(false)} title="Achievements">
         <Achievements />
       </Modal>
 
-      {/* Custom Alerts Modal */}
       <Modal isOpen={showCustomAlerts} onClose={() => setShowCustomAlerts(false)} title="Custom Alerts">
         <CustomAlerts />
       </Modal>
 
-      {/* Bills Modal */}
       <Modal isOpen={showBills} onClose={() => setShowBills(false)} title="Bills & Reminders">
         <Bills />
       </Modal>
 
-      {/* Import Preview Modal */}
       <Modal isOpen={importPreviewOpen} onClose={() => setImportPreviewOpen(false)} title={`Import Preview (${previewItems.length})`}>
-        <div className="space-y-3">
-          <p className="text-sm text-gray-300">Review imported transactions. Duplicates are detected and unchecked by default.</p>
-          <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-300">Fuzzy threshold:</div>
-            <input type="range" min={0.5} max={0.98} step={0.02} value={fuzzyThreshold} onChange={(e) => setFuzzyThreshold(parseFloat(e.target.value))} />
-            <div className="text-sm text-gray-300">{Math.round(fuzzyThreshold * 100)}%</div>
-            <div className="ml-4 text-sm text-gray-300">Date window (days):</div>
-            <input type="number" min={0} max={30} value={dateWindowDays} onChange={(e) => setDateWindowDays(parseInt(e.target.value || '0'))} className="w-16 bg-zinc-800 text-white rounded px-2" />
-            <div className="ml-4 text-sm text-gray-300">Amount tol %:</div>
-            <input type="number" min={0} max={100} value={amountTolerancePercent} onChange={(e) => setAmountTolerancePercent(parseInt(e.target.value || '0'))} className="w-16 bg-zinc-800 text-white rounded px-2" />
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700 dark:text-gray-300">Review imported transactions. Duplicates are detected and unchecked by default.</p>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[1fr_auto_auto_auto_auto] xl:items-center">
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-700 dark:text-gray-300">Fuzzy threshold</span>
+              <input type="range" min={0.5} max={0.98} step={0.02} value={fuzzyThreshold} onChange={(event) => setFuzzyThreshold(parseFloat(event.target.value))} />
+              <span className="text-sm text-gray-700 dark:text-gray-300">{Math.round(fuzzyThreshold * 100)}%</span>
+            </div>
+            <input
+              type="number"
+              min={0}
+              max={30}
+              value={dateWindowDays}
+              onChange={(event) => setDateWindowDays(parseInt(event.target.value || '0', 10))}
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+            />
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={amountTolerancePercent}
+              onChange={(event) => setAmountTolerancePercent(parseInt(event.target.value || '0', 10))}
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+            />
             <button
+              type="button"
               onClick={() => {
                 const dupMap = detectFuzzyDuplicates(transactions, previewItems, { threshold: fuzzyThreshold, dateWindowDays, amountTolerancePercent });
-                const sel: Record<string, boolean> = {};
-                previewItems.forEach((it: any) => { sel[it.id] = !dupMap[it.id]; });
+                const selection: Record<string, boolean> = {};
+                previewItems.forEach((item: any) => {
+                  selection[item.id] = !dupMap[item.id];
+                });
                 setDuplicateMap(dupMap);
-                setSelectedImportIds(sel);
+                setSelectedImportIds(selection);
               }}
-              className="ml-3 px-3 py-1 rounded bg-zinc-800 text-white"
-            >Re-run</button>
+              className="rounded-xl bg-gray-900 px-4 py-2 text-white dark:bg-white dark:text-black"
+            >
+              Re-run
+            </button>
           </div>
-          <div className="max-h-72 overflow-y-auto mt-2 space-y-2">
-            {previewItems.map((it) => (
-              <div key={it.id} className="flex items-start gap-3 p-2 rounded-lg bg-zinc-900/60 border border-zinc-800">
+
+          <div className="max-h-72 space-y-3 overflow-y-auto">
+            {previewItems.map((item) => (
+              <div key={item.id} className="flex items-start gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 dark:border-zinc-800 dark:bg-zinc-950/40">
                 <input
                   type="checkbox"
-                  checked={!!selectedImportIds[it.id]}
-                  onChange={(e) => setSelectedImportIds(prev => ({ ...prev, [it.id]: e.target.checked }))}
+                  checked={!!selectedImportIds[item.id]}
+                  onChange={(event) => setSelectedImportIds((current) => ({ ...current, [item.id]: event.target.checked }))}
                   className="mt-1"
                 />
                 <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
+                  <div className="grid gap-2 sm:grid-cols-[1fr_9rem]">
                     <input
                       type="text"
-                      value={it.description || it.category || ''}
-                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, description: e.target.value } : p))}
-                      className="flex-1 bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                      value={item.description || item.category || ''}
+                      onChange={(event) => setPreviewItems((current) => current.map((preview) => (preview.id === item.id ? { ...preview, description: event.target.value } : preview)))}
+                      className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
                       placeholder="Description"
                     />
                     <input
                       type="number"
                       step="0.01"
-                      value={String(it.amount || '')}
-                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, amount: parseFloat(e.target.value || '0') } : p))}
-                      className="w-28 bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                      value={String(item.amount || '')}
+                      onChange={(event) => setPreviewItems((current) => current.map((preview) => (preview.id === item.id ? { ...preview, amount: parseFloat(event.target.value || '0') } : preview)))}
+                      className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
                     />
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="grid gap-2 sm:grid-cols-[11rem_1fr_10rem]">
                     <input
                       type="date"
-                      value={new Date(it.date).toISOString().slice(0,10)}
-                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, date: Date.parse(e.target.value) } : p))}
-                      className="bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                      value={new Date(item.date).toISOString().slice(0, 10)}
+                      onChange={(event) => setPreviewItems((current) => current.map((preview) => (preview.id === item.id ? { ...preview, date: Date.parse(event.target.value) } : preview)))}
+                      className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
                     />
                     <input
                       type="text"
-                      value={it.category || ''}
-                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, category: e.target.value } : p))}
-                      className="flex-1 bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                      value={item.category || ''}
+                      onChange={(event) => setPreviewItems((current) => current.map((preview) => (preview.id === item.id ? { ...preview, category: event.target.value } : preview)))}
+                      className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
                       placeholder="Category"
                     />
                     <input
                       type="text"
-                      value={(it.tags || []).join(';')}
-                      onChange={(e) => setPreviewItems(prev => prev.map(p => p.id === it.id ? { ...p, tags: e.target.value.split(';').map((s: string) => s.trim()).filter(Boolean) } : p))}
-                      className="w-40 bg-zinc-800 text-white rounded px-2 py-1 text-sm"
+                      value={(item.tags || []).join(';')}
+                      onChange={(event) => setPreviewItems((current) => current.map((preview) => (preview.id === item.id ? { ...preview, tags: event.target.value.split(';').map((tag: string) => tag.trim()).filter(Boolean) } : preview)))}
+                      className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
                       placeholder="tags;semi;colon"
                     />
                   </div>
 
-                  {duplicateMap[it.id] && (
-                    <div className="text-xs text-yellow-300">{duplicateMap[it.id]}</div>
-                  )}
+                  {duplicateMap[item.id] && <div className="text-xs text-amber-600 dark:text-amber-400">{duplicateMap[item.id]}</div>}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex gap-3 mt-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
+              type="button"
               onClick={() => setImportPreviewOpen(false)}
-              className="flex-1 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-white"
+              className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-gray-300 sm:flex-1"
             >
               Cancel
             </button>
             <button
+              type="button"
               onClick={() => {
-                const toImport = previewItems.filter(it => selectedImportIds[it.id]);
+                const toImport = previewItems.filter((item) => selectedImportIds[item.id]);
                 if (toImport.length === 0) {
                   notifyUser('No items selected for import');
                   return;
                 }
-                toImport.forEach(t => addTransaction(t));
+                toImport.forEach((transaction) => addTransaction(transaction));
                 notifyUser(`Imported ${toImport.length} transactions`);
                 setImportPreviewOpen(false);
                 setPreviewItems([]);
                 setSelectedImportIds({});
                 setDuplicateMap({});
               }}
-              className="flex-1 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+              className="w-full rounded-2xl bg-blue-600 px-4 py-3 font-medium text-white hover:bg-blue-700 sm:flex-1"
             >
               Import Selected
             </button>

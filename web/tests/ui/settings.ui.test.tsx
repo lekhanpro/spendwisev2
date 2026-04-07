@@ -19,14 +19,15 @@ import { AppContext } from '../../context/AppContext';
 
 const makeContext = (overrides = {}) => {
   const base = {
-    transactions: [], budgets: [], goals: [], categories: [], darkMode: false,
+    transactions: [], budgets: [], goals: [], categories: [], customCategories: [], darkMode: false,
     activeView: 'settings', setDarkMode: () => {}, setActiveView: () => {},
     addTransaction: vi.fn(), updateTransaction: vi.fn(), deleteTransaction: vi.fn(),
     addBudget: vi.fn(), updateBudget: vi.fn(), deleteBudget: vi.fn(),
     addGoal: vi.fn(), updateGoal: vi.fn(), deleteGoal: vi.fn(),
     resetData: vi.fn(), showTransactionModal: false, setShowTransactionModal: vi.fn(),
     editingTransaction: null, setEditingTransaction: vi.fn(), session: { user: { displayName: 'Test', email: 't@test' } },
-    handleLogout: vi.fn(), currency: { code: 'USD', symbol: '$', name: 'USD', locale: 'en-US' }, setCurrency: vi.fn(), formatCurrency: (a: number) => `$${a}`
+    handleLogout: vi.fn(), currency: { code: 'USD', symbol: '$', name: 'USD', locale: 'en-US' }, setCurrency: vi.fn(), formatCurrency: (a: number) => `$${a}`,
+    addCustomCategory: vi.fn(), removeCustomCategory: vi.fn(),
   } as any;
   return { ...base, ...overrides };
 };

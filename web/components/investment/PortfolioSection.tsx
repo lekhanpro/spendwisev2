@@ -95,7 +95,7 @@ export const PortfolioSection: React.FC = () => {
             title="Book Summary"
             description="Track actual holdings, drift, benchmark gap, and estimated income yield."
           />
-          <div className="grid grid-cols-2 gap-3 mt-5">
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <MetricPill label="Invested" value={formatInr(portfolio.totalInvested, 0)} />
             <MetricPill label="Current Value" value={formatInr(portfolio.totalValue, 0)} />
             <MetricPill
@@ -116,7 +116,7 @@ export const PortfolioSection: React.FC = () => {
             <MetricPill label="Estimated Dividend" value={formatInr(estimatedDividend, 0)} tone="positive" />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[0.46fr_0.54fr] mt-5">
+          <div className="mt-5 grid gap-4 lg:grid-cols-[0.46fr_0.54fr]">
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -171,7 +171,7 @@ export const PortfolioSection: React.FC = () => {
         <InvestCard className="p-5">
           <SectionTitle eyebrow="Add Holding" title={editingId ? 'Edit position' : 'Track an investment'} description="Works for direct equities, debt products, and gold allocations." />
           <form className="space-y-4 mt-5" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <input
                 value={form.symbol}
                 onChange={(event) => setForm((current) => ({ ...current, symbol: event.target.value.toUpperCase() }))}
@@ -196,7 +196,7 @@ export const PortfolioSection: React.FC = () => {
               placeholder="Instrument name"
               className="w-full px-4 py-3 rounded-2xl bg-gray-50 dark:bg-zinc-950/40 border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <input
                 type="number"
                 min="0.01"

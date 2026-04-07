@@ -1,7 +1,7 @@
 // lib/database.ts - Firebase Realtime Database service
 import { app } from "./firebase";
 import { getDatabase, ref, set, get, push, remove, onValue, off, DataSnapshot } from "firebase/database";
-import { Transaction, Budget, Goal, Currency } from "../types";
+import { Transaction, Budget, Goal, UserSettings } from "../types";
 
 // Initialize Realtime Database
 export const database = getDatabase(app);
@@ -81,7 +81,7 @@ export const subscribeToGoals = (
 // ============ SETTINGS ============
 export const saveSettings = async (
     userId: string,
-    settings: { darkMode: boolean; currency: Currency }
+    settings: UserSettings
 ) => {
     const settingsRef = ref(database, `${getUserPath(userId)}/settings`);
     await set(settingsRef, settings);
@@ -89,7 +89,7 @@ export const saveSettings = async (
 
 export const getSettings = async (
     userId: string
-): Promise<{ darkMode: boolean; currency: Currency } | null> => {
+): Promise<UserSettings | null> => {
     const settingsRef = ref(database, `${getUserPath(userId)}/settings`);
     const snapshot = await get(settingsRef);
     return snapshot.exists() ? snapshot.val() : null;
@@ -97,7 +97,7 @@ export const getSettings = async (
 
 export const subscribeToSettings = (
     userId: string,
-    callback: (settings: { darkMode: boolean; currency: Currency } | null) => void
+    callback: (settings: UserSettings | null) => void
 ) => {
     const settingsRef = ref(database, `${getUserPath(userId)}/settings`);
     onValue(settingsRef, (snapshot: DataSnapshot) => {

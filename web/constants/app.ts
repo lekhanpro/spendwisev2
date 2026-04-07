@@ -3,18 +3,36 @@ import { Category, PaymentMethod, Currency } from '../types';
 
 export const DEFAULT_CATEGORIES: Category[] = [
     { id: 'food', name: 'Food & Dining', icon: '🍕', color: '#f59e0b', type: 'expense' },
+    { id: 'rent', name: 'Rent & Housing', icon: '🏠', color: '#2563eb', type: 'expense' },
+    { id: 'home', name: 'Home Essentials', icon: '🛋️', color: '#0f766e', type: 'expense' },
     { id: 'transport', name: 'Transport', icon: '🚗', color: '#3b82f6', type: 'expense' },
+    { id: 'fuel', name: 'Fuel', icon: '⛽', color: '#1d4ed8', type: 'expense' },
     { id: 'entertainment', name: 'Entertainment', icon: '🎬', color: '#8b5cf6', type: 'expense' },
     { id: 'bills', name: 'Bills & Utilities', icon: '💡', color: '#ef4444', type: 'expense' },
+    { id: 'subscriptions', name: 'Subscriptions', icon: '📺', color: '#7c3aed', type: 'expense' },
     { id: 'shopping', name: 'Shopping', icon: '🛍️', color: '#ec4899', type: 'expense' },
+    { id: 'electronics', name: 'Electronics', icon: '💻', color: '#6366f1', type: 'expense' },
     { id: 'health', name: 'Health & Fitness', icon: '💪', color: '#10b981', type: 'expense' },
+    { id: 'insurance', name: 'Insurance', icon: '🛡️', color: '#0ea5e9', type: 'expense' },
+    { id: 'personal', name: 'Personal Care', icon: '🧴', color: '#db2777', type: 'expense' },
     { id: 'education', name: 'Education', icon: '📚', color: '#6366f1', type: 'expense' },
     { id: 'travel', name: 'Travel', icon: '✈️', color: '#14b8a6', type: 'expense' },
     { id: 'groceries', name: 'Groceries', icon: '🛒', color: '#84cc16', type: 'expense' },
+    { id: 'family', name: 'Family & Kids', icon: '👨‍👩‍👧', color: '#f97316', type: 'expense' },
+    { id: 'gifts-expense', name: 'Gifts & Donations', icon: '🎁', color: '#d97706', type: 'expense' },
+    { id: 'pets', name: 'Pets', icon: '🐾', color: '#16a34a', type: 'expense' },
+    { id: 'taxes', name: 'Taxes & Fees', icon: '🧾', color: '#b91c1c', type: 'expense' },
+    { id: 'investing-expense', name: 'Investing & SIP', icon: '📊', color: '#0284c7', type: 'expense' },
     { id: 'other', name: 'Other', icon: '📦', color: '#64748b', type: 'expense' },
     { id: 'salary', name: 'Salary', icon: '💰', color: '#10b981', type: 'income' },
     { id: 'freelance', name: 'Freelance', icon: '💻', color: '#3b82f6', type: 'income' },
+    { id: 'business', name: 'Business Income', icon: '🏢', color: '#0ea5e9', type: 'income' },
+    { id: 'bonus', name: 'Bonus', icon: '🏅', color: '#f59e0b', type: 'income' },
     { id: 'investments', name: 'Investments', icon: '📈', color: '#8b5cf6', type: 'income' },
+    { id: 'dividends', name: 'Dividends', icon: '💹', color: '#7c3aed', type: 'income' },
+    { id: 'interest', name: 'Interest', icon: '🏦', color: '#14b8a6', type: 'income' },
+    { id: 'rental', name: 'Rental Income', icon: '🏘️', color: '#2563eb', type: 'income' },
+    { id: 'refunds', name: 'Refunds', icon: '↩️', color: '#06b6d4', type: 'income' },
     { id: 'gifts', name: 'Gifts', icon: '🎁', color: '#f59e0b', type: 'income' },
 ];
 
@@ -64,4 +82,3 @@ export const Colors = {
         warning: '#f59e0b',
     },
 };
-

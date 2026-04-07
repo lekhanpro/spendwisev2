@@ -71,8 +71,8 @@ export const StocksSection: React.FC = () => {
                     : 'border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950/40'
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-gray-900 dark:text-white">{stock.symbol}</p>
                       {tracked && <span className="text-xs rounded-full px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">Tracked</span>}
@@ -80,7 +80,7 @@ export const StocksSection: React.FC = () => {
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{stock.name}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">{stock.sector}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="sm:text-right">
                     <p className="font-semibold text-gray-900 dark:text-white">{formatInr(stock.price, 0)}</p>
                     <p className={`text-sm font-semibold mt-1 ${stock.changePercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                       {stock.changePercent >= 0 ? '+' : ''}
@@ -119,7 +119,7 @@ export const StocksSection: React.FC = () => {
             }
           />
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-5">
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricPill label="Price" value={formatInr(activeStock.price, 2)} />
             <MetricPill
               label="Change"
@@ -162,7 +162,7 @@ export const StocksSection: React.FC = () => {
         <div className="grid gap-4 md:grid-cols-2">
           <InvestCard className="p-5">
             <SectionTitle eyebrow="Fundamental" title="Quality and valuation" />
-            <div className="grid grid-cols-2 gap-3 mt-5">
+            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <MetricPill label="P/E" value={activeStock.peRatio.toFixed(1)} />
               <MetricPill label="P/B" value={activeStock.pbRatio.toFixed(1)} />
               <MetricPill label="ROE" value={`${activeStock.roe.toFixed(1)}%`} tone="positive" />
@@ -174,7 +174,7 @@ export const StocksSection: React.FC = () => {
 
           <InvestCard className="p-5">
             <SectionTitle eyebrow="Technical" title="Trend health" />
-            <div className="grid grid-cols-2 gap-3 mt-5">
+            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <MetricPill label="52W High" value={formatInr(activeStock.high52Week, 0)} />
               <MetricPill label="52W Low" value={formatInr(activeStock.low52Week, 0)} />
               <MetricPill
