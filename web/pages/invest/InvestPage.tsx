@@ -1,79 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { SchemeInfoBox } from '../../components/invest/SchemeInfoBox';
-import { StockSuggester } from '../../components/invest/StockSuggester';
-import { LearnPage } from './LearnPage';
-import { useFinance } from '../../context/FinanceContext';
+import React, { useMemo, useState } from 'react';
+import { useInvestment } from '../../context/InvestmentContext';
+import { MarketOverviewSection } from '../../components/investment/MarketOverviewSection';
+import { PortfolioSection } from '../../components/investment/PortfolioSection';
+import { RoadmapSection } from '../../components/investment/RoadmapSection';
+import { SchemesSection } from '../../components/investment/SchemesSection';
+import { StocksSection } from '../../components/investment/StocksSection';
+import { InvestCard, MetricPill } from '../../components/investment/InvestUI';
+import { formatInr } from '../../components/investment/format';
 
-type InvestTab = 'schemes' | 'stocks' | 'learn';
+type InvestTab = 'overview' | 'stocks' | 'portfolio' | 'schemes' | 'roadmap';
+
+const tabs: { id: InvestTab; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'stocks', label: 'Stocks' },
+  { id: 'portfolio', label: 'Portfolio' },
+  { id: 'schemes', label: 'Schemes' },
+  { id: 'roadmap', label: 'Roadmap' },
+];
 
 export const InvestPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<InvestTab>('schemes');
-  const { learnProgress } = useFinance();
+  const { market, portfolio, profile, investmentGoals, riskBand } = useInvestment();
+  const [activeTab, setActiveTab] = useState<InvestTab>('overview');
 
-  // Auto-redirect new users to learn page on first visit
-  useEffect(() => {
-    const hasVisited = localStorage.getItem('spendwise_invest_visited');
-    const hasAnyProgress = Object.keys(learnProgress).length > 0;
-    
-    if (!hasVisited && !hasAnyProgress) {
-      setActiveTab('learn');
-      localStorage.setItem('spendwise_invest_visited', 'true');
-    }
-  }, []);
+  const fundedGoals = useMemo(
+    () => investmentGoals.filter((goal) => goal.currentAmount >= goal.targetAmount).length,
+    [investmentGoals]
+  );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="flex items-center justify-between py-4">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Investment Hub
-            </h1>
-          </div>
-          
-          {/* Tabs */}
-          <div className="flex gap-1 overflow-x-auto">
-            <button
-              onClick={() => setActiveTab('schemes')}
-              className={`px-6 py-3 font-medium whitespace-nowrap border-b-2 transition-colors ${
-                activeTab === 'schemes'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              💰 Schemes & Plans
-            </button>
-            <button
-              onClick={() => setActiveTab('stocks')}
-              className={`px-6 py-3 font-medium whitespace-nowrap border-b-2 transition-colors ${
-                activeTab === 'stocks'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              📈 Stock Suggester
-            </button>
-            <button
-              onClick={() => setActiveTab('learn')}
-              className={`px-6 py-3 font-medium whitespace-nowrap border-b-2 transition-colors ${
-                activeTab === 'learn'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              📚 Learn
-            </button>
+    <div className="space-y-6 animate-slide-up">
+      <InvestCard className="overflow-hidden">
+        <div className="bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-500 dark:from-blue-700 dark:via-cyan-600 dark:to-emerald-600 p-6 lg:p-8 text-white relative">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_38%)]" />
+          <div className="relative z-10">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-xs uppercase tracking-[0.22em] text-white/80">SpendWise Invest</p>
+                <h1 className="text-3xl lg:text-4xl font-bold mt-2">Professional investment dashboard for Indian markets</h1>
+                <p className="text-white/85 mt-3 max-w-2xl">
+                  Market overview, stock analysis, portfolio tracking, government scheme comparison, and a personalized roadmap in the same design system as the rest of SpendWise.
+                </p>
+              </div>
+              <div className="text-sm text-white/85">
+                <p>Last refresh: {new Date(market.lastUpdated).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}</p>
+                <p className="mt-1">Mode: {market.providerLabel}</p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 mt-6">
+              <MetricPill label="Portfolio Value" value={formatInr(portfolio.totalValue, 0)} />
+              <MetricPill label="Monthly Investable" value={formatInr(profile.monthlyInvestable, 0)} />
+              <MetricPill label="Risk Band" value={riskBand} tone="warning" />
+              <MetricPill label="Goals Funded" value={`${fundedGoals}/${investmentGoals.length}`} tone="positive" />
+            </div>
           </div>
         </div>
+      </InvestCard>
+
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {tabs.map((tab) => (
+          <button
+            type="button"
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors whitespace-nowrap ${
+              activeTab === tab.id
+                ? 'bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20'
+                : 'bg-white dark:bg-zinc-900/60 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto p-4 md:p-6">
-        {activeTab === 'schemes' && <SchemeInfoBox />}
-        {activeTab === 'stocks' && <StockSuggester />}
-        {activeTab === 'learn' && <LearnPage />}
-      </div>
+      {activeTab === 'overview' && <MarketOverviewSection />}
+      {activeTab === 'stocks' && <StocksSection />}
+      {activeTab === 'portfolio' && <PortfolioSection />}
+      {activeTab === 'schemes' && <SchemesSection />}
+      {activeTab === 'roadmap' && <RoadmapSection />}
     </div>
   );
 };

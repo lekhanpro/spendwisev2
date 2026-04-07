@@ -66,18 +66,14 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ isOpen, on
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'sip_reminder':
-        return '💰';
-      case 'savings_milestone':
-        return '🎉';
-      case 'budget_alert':
-        return '⚠️';
-      case 'learn_streak':
-        return '🔥';
-      case 'scheme_deadline':
-        return '📅';
-      case 'weekly_scheme_tip':
-        return '💡';
+      case 'market':
+        return '📈';
+      case 'portfolio':
+        return '🧭';
+      case 'goal':
+        return '🎯';
+      case 'scheme':
+        return '🏛️';
       default:
         return '📢';
     }

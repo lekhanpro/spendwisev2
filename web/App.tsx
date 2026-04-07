@@ -1,25 +1,21 @@
-// App.tsx
-import React, { useContext, useEffect, useState } from "react";
-import { AppProvider, AppContext } from "./context/AppContext";
-import { FinanceProvider } from "./context/FinanceContext";
-import { NotificationProvider } from "./context/NotificationContext";
-import { Layout } from "./components/Layout";
-import { Dashboard } from "./components/Dashboard";
-import { Transactions } from "./components/Transactions";
-import { BudgetView } from "./components/BudgetView";
-import { Reports } from "./components/Reports";
-import { Goals } from "./components/Goals";
-import { Settings } from "./components/Settings";
-import { Bills } from "./components/Bills";
-import { Modal } from "./components/Modal";
-import { TransactionForm } from "./components/TransactionForm";
-import { Auth } from "./components/Auth";
-import { InvestPage } from "./pages/invest/InvestPage";
-import { Toast } from "./components/notifications/Toast";
-
-// Firebase imports
-import { auth } from "./lib/auth";
-import { onAuthStateChanged, type User } from "firebase/auth";
+import React, { useContext, useEffect, useState } from 'react';
+import { onAuthStateChanged, type User } from 'firebase/auth';
+import { AppProvider, AppContext } from './context/AppContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { InvestmentProvider } from './context/InvestmentContext';
+import { auth } from './lib/auth';
+import { Auth } from './components/Auth';
+import { Bills } from './components/Bills';
+import { BudgetView } from './components/BudgetView';
+import { Dashboard } from './components/Dashboard';
+import { Goals } from './components/Goals';
+import { Layout } from './components/Layout';
+import { Modal } from './components/Modal';
+import { Reports } from './components/Reports';
+import { Settings } from './components/Settings';
+import { TransactionForm } from './components/TransactionForm';
+import { Transactions } from './components/Transactions';
+import { InvestPage } from './pages/invest/InvestPage';
 
 const MainContent: React.FC = () => {
   const {
@@ -40,37 +36,32 @@ const MainContent: React.FC = () => {
       setFirebaseUser(user);
       setAuthLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
-  // If auth is still verifying
   if (authLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500" />
       </div>
     );
   }
 
-  // If NO Firebase user → show login screen
   if (!firebaseUser) {
     return <Auth />;
   }
 
-
-
-  // If user exists but email is NOT verified → sign them out and show Auth
   if (!firebaseUser.emailVerified) {
     auth.signOut();
     return <Auth />;
   }
 
-  // Otherwise, render original UI
-  const handleSaveTransaction = (t: any) => {
+  const handleSaveTransaction = (transaction: any) => {
     if (editingTransaction) {
-      updateTransaction(t);
+      updateTransaction(transaction);
     } else {
-      addTransaction(t);
+      addTransaction(transaction);
     }
     setShowTransactionModal(false);
     setEditingTransaction(null);
@@ -78,15 +69,14 @@ const MainContent: React.FC = () => {
 
   return (
     <Layout>
-      <Toast />
-      {activeView === "dashboard" && <Dashboard />}
-      {activeView === "transactions" && <Transactions />}
-      {activeView === "budget" && <BudgetView />}
-      {activeView === "reports" && <Reports />}
-      {activeView === "bills" && <Bills />}
-      {activeView === "goals" && <Goals />}
-      {activeView === "settings" && <Settings />}
-      {activeView === "invest" && <InvestPage />}
+      {activeView === 'dashboard' && <Dashboard />}
+      {activeView === 'transactions' && <Transactions />}
+      {activeView === 'budget' && <BudgetView />}
+      {activeView === 'reports' && <Reports />}
+      {activeView === 'bills' && <Bills />}
+      {activeView === 'goals' && <Goals />}
+      {activeView === 'settings' && <Settings />}
+      {activeView === 'invest' && <InvestPage />}
 
       <Modal
         isOpen={showTransactionModal}
@@ -94,7 +84,7 @@ const MainContent: React.FC = () => {
           setShowTransactionModal(false);
           setEditingTransaction(null);
         }}
-        title={editingTransaction ? "Edit Transaction" : "Add Transaction"}
+        title={editingTransaction ? 'Edit Transaction' : 'Add Transaction'}
       >
         <TransactionForm
           transaction={editingTransaction}
@@ -109,17 +99,14 @@ const MainContent: React.FC = () => {
   );
 };
 
-const App: React.FC = () => {
-  return (
-    <AppProvider>
-      <FinanceProvider>
-        <NotificationProvider>
-          <MainContent />
-        </NotificationProvider>
-      </FinanceProvider>
-    </AppProvider>
-  );
-};
+const App: React.FC = () => (
+  <AppProvider>
+    <NotificationProvider>
+      <InvestmentProvider>
+        <MainContent />
+      </InvestmentProvider>
+    </NotificationProvider>
+  </AppProvider>
+);
 
 export default App;
-

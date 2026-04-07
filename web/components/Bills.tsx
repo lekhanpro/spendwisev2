@@ -244,7 +244,8 @@ export const Bills: React.FC = () => {
       {bills.length === 0 && recurring.length === 0 && !showAddBill && (
         <div className="text-center py-12 bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-2xl">
           <div className="text-6xl mb-4">📅</div>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">No bills added yet</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-2">No recurring bills detected yet</p>
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">Add your first bill to start tracking due dates and reminders.</p>
           <button
             onClick={() => setShowAddBill(true)}
             className="px-6 py-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-medium shadow-lg hover:scale-105 transition-all"

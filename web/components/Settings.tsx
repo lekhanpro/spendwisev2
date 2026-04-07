@@ -1,10 +1,9 @@
 
-import React, { useContext, useState, useEffect, useMemo } from 'react';
+import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import { Icons } from './Icons';
 import { Modal } from './Modal';
 import { SUPPORTED_CURRENCIES } from '../constants';
-import { requestNotificationPermission, scheduleDailyReminder } from '../lib/notifications';
 import { exportTransactionsCSV, parseTransactionsCSV, exportTransactionsOFX } from '../lib/export';
 import { detectFuzzyDuplicates } from '../lib/dedupe';
 import { SavingsCalculator } from './SavingsCalculator';
@@ -26,8 +25,6 @@ export const Settings: React.FC = () => {
   const [dateWindowDays, setDateWindowDays] = useState(3);
   const [amountTolerancePercent, setAmountTolerancePercent] = useState(20);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [dailyReminderEnabled, setDailyReminderEnabled] = useState(false);
   const [showSavingsCalculator, setShowSavingsCalculator] = useState(false);
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
   const [showRecurringTransactions, setShowRecurringTransactions] = useState(false);
@@ -36,32 +33,15 @@ export const Settings: React.FC = () => {
   const [showCustomAlerts, setShowCustomAlerts] = useState(false);
   const [showBills, setShowBills] = useState(false);
 
-  useEffect(() => {
-    // Check notification permission status
-    if ('Notification' in window) {
-      setNotificationsEnabled(Notification.permission === 'granted');
+  const notifyUser = (message: string) => {
+    if (typeof window !== 'undefined' && /jsdom/i.test(window.navigator.userAgent)) {
+      console.info(message);
+      return;
     }
-    // Load saved preferences
-    const savedReminder = localStorage.getItem('dailyReminderEnabled');
-    if (savedReminder) setDailyReminderEnabled(savedReminder === 'true');
-  }, []);
-
-  const handleEnableNotifications = async () => {
-    const granted = await requestNotificationPermission();
-    setNotificationsEnabled(granted);
-    if (granted) {
-      alert('Notifications enabled! You will receive budget alerts and reminders.');
-    }
-  };
-
-  const handleToggleDailyReminder = async () => {
-    const newValue = !dailyReminderEnabled;
-    setDailyReminderEnabled(newValue);
-    localStorage.setItem('dailyReminderEnabled', String(newValue));
-
-    if (newValue) {
-      await scheduleDailyReminder(20, 0); // 8 PM reminder
-      alert('Daily reminder set for 8:00 PM');
+    try {
+      window.alert(message);
+    } catch {
+      console.info(message);
     }
   };
 
@@ -138,44 +118,15 @@ export const Settings: React.FC = () => {
           </select>
         </div>
 
-        {/* Notifications */}
-        <div className="flex items-center justify-between p-4">
+        <div className="p-4">
           <div className="flex items-center gap-3">
-            <div className="text-gray-600 dark:text-gray-400 text-xl">🔔</div>
+            <div className="text-gray-600 dark:text-gray-400 text-xl">🔕</div>
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Notifications</p>
-              <p className="text-sm text-gray-600 dark:text-gray-500">{notificationsEnabled ? 'Enabled' : 'Enable alerts & reminders'}</p>
+              <p className="font-medium text-gray-900 dark:text-white">Quiet Notifications</p>
+              <p className="text-sm text-gray-600 dark:text-gray-500">SpendWise no longer auto-pops recurring alerts. Investment notification preferences live inside the Invest page and only surface in the notification panel.</p>
             </div>
           </div>
-          <button
-            onClick={handleEnableNotifications}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${notificationsEnabled
-              ? 'bg-green-500/20 border border-green-500/50 text-green-600 dark:text-green-400'
-              : 'bg-blue-500 text-white hover:bg-blue-600'
-              }`}
-          >
-            {notificationsEnabled ? 'Enabled ✓' : 'Enable'}
-          </button>
         </div>
-
-        {/* Daily Reminder */}
-        {notificationsEnabled && (
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <div className="text-gray-600 dark:text-gray-400 text-xl">⏰</div>
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">Daily Reminder</p>
-                <p className="text-sm text-gray-600 dark:text-gray-500">Get reminded at 8 PM daily</p>
-              </div>
-            </div>
-            <button
-              onClick={handleToggleDailyReminder}
-              className={`w-12 h-6 rounded-full transition-colors ${dailyReminderEnabled ? 'bg-blue-500' : 'bg-gray-400 dark:bg-zinc-700'}`}
-            >
-              <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform mt-0.5 ${dailyReminderEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
-            </button>
-          </div>
-        )}
 
         {/* Categories */}
         <div className="p-4">
@@ -369,7 +320,7 @@ export const Settings: React.FC = () => {
                     }
                     const imported = parseTransactionsCSV(text);
                     if (imported.length === 0) {
-                      alert('No transactions found in CSV');
+                      notifyUser('No transactions found in CSV');
                       (e.target as HTMLInputElement).value = '';
                       return;
                     }
@@ -602,11 +553,11 @@ export const Settings: React.FC = () => {
               onClick={() => {
                 const toImport = previewItems.filter(it => selectedImportIds[it.id]);
                 if (toImport.length === 0) {
-                  alert('No items selected for import');
+                  notifyUser('No items selected for import');
                   return;
                 }
                 toImport.forEach(t => addTransaction(t));
-                alert(`Imported ${toImport.length} transactions`);
+                notifyUser(`Imported ${toImport.length} transactions`);
                 setImportPreviewOpen(false);
                 setPreviewItems([]);
                 setSelectedImportIds({});

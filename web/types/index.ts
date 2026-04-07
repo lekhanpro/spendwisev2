@@ -53,4 +53,4 @@ export interface Currency {
     locale: string;
 }
 
-export type ViewType = 'dashboard' | 'transactions' | 'budget' | 'reports' | 'goals' | 'settings' | 'invest';
+export type ViewType = 'dashboard' | 'transactions' | 'budget' | 'reports' | 'invest' | 'goals' | 'settings';
