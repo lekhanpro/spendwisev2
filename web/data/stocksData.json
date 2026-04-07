@@ -1,0 +1,188 @@
+{
+  "bluechip": [
+    {
+      "id": "reliance",
+      "name": "Reliance Industries",
+      "symbol": "RELIANCE",
+      "sector": "Conglomerate",
+      "price": 2456,
+      "change": 1.2,
+      "marketCap": "16.6L Cr",
+      "pe": 28.5,
+      "dividendYield": 0.3,
+      "description": "India's largest private sector company with interests in petrochemicals, refining, oil, telecom and retail."
+    },
+    {
+      "id": "tcs",
+      "name": "Tata Consultancy Services",
+      "symbol": "TCS",
+      "sector": "IT Services",
+      "price": 3890,
+      "change": 0.8,
+      "marketCap": "14.2L Cr",
+      "pe": 29.2,
+      "dividendYield": 1.5,
+      "description": "Leading global IT services, consulting and business solutions organization."
+    },
+    {
+      "id": "hdfc-bank",
+      "name": "HDFC Bank",
+      "symbol": "HDFCBANK",
+      "sector": "Banking",
+      "price": 1645,
+      "change": -0.5,
+      "marketCap": "12.5L Cr",
+      "pe": 19.8,
+      "dividendYield": 1.2,
+      "description": "India's largest private sector bank by assets and market capitalization."
+    },
+    {
+      "id": "infosys",
+      "name": "Infosys",
+      "symbol": "INFY",
+      "sector": "IT Services",
+      "price": 1456,
+      "change": 1.5,
+      "marketCap": "6.1L Cr",
+      "pe": 24.3,
+      "dividendYield": 2.1,
+      "description": "Global leader in next-generation digital services and consulting."
+    },
+    {
+      "id": "icici-bank",
+      "name": "ICICI Bank",
+      "symbol": "ICICIBANK",
+      "sector": "Banking",
+      "price": 1089,
+      "change": 0.3,
+      "marketCap": "7.6L Cr",
+      "pe": 18.5,
+      "dividendYield": 0.9,
+      "description": "Second largest private sector bank offering wide range of banking products."
+    }
+  ],
+  "midcap": [
+    {
+      "id": "dmart",
+      "name": "Avenue Supermarts (DMart)",
+      "symbol": "DMART",
+      "sector": "Retail",
+      "price": 3678,
+      "change": 2.1,
+      "marketCap": "2.4L Cr",
+      "pe": 85.2,
+      "dividendYield": 0.4,
+      "description": "Leading retail chain with strong presence in grocery and general merchandise."
+    },
+    {
+      "id": "pidilite",
+      "name": "Pidilite Industries",
+      "symbol": "PIDILITIND",
+      "sector": "Chemicals",
+      "price": 2890,
+      "change": 1.8,
+      "marketCap": "1.5L Cr",
+      "pe": 72.5,
+      "dividendYield": 0.6,
+      "description": "Leading manufacturer of adhesives and construction chemicals (Fevicol, M-Seal)."
+    },
+    {
+      "id": "page-ind",
+      "name": "Page Industries",
+      "symbol": "PAGEIND",
+      "sector": "Textile",
+      "price": 42500,
+      "change": -0.8,
+      "marketCap": "47K Cr",
+      "pe": 95.3,
+      "dividendYield": 0.5,
+      "description": "Exclusive licensee of Jockey International in India, Sri Lanka, Bangladesh."
+    },
+    {
+      "id": "polycab",
+      "name": "Polycab India",
+      "symbol": "POLYCAB",
+      "sector": "Cables",
+      "price": 5234,
+      "change": 3.2,
+      "marketCap": "78K Cr",
+      "pe": 42.1,
+      "dividendYield": 0.8,
+      "description": "Leading manufacturer of cables and wires with strong brand presence."
+    },
+    {
+      "id": "coforge",
+      "name": "Coforge",
+      "symbol": "COFORGE",
+      "sector": "IT Services",
+      "price": 6789,
+      "change": 2.5,
+      "marketCap": "45K Cr",
+      "pe": 38.7,
+      "dividendYield": 0.3,
+      "description": "Global digital services and solutions provider with focus on BFSI sector."
+    }
+  ],
+  "dividend": [
+    {
+      "id": "coal-india",
+      "name": "Coal India",
+      "symbol": "COALINDIA",
+      "sector": "Mining",
+      "price": 456,
+      "change": 0.5,
+      "marketCap": "2.8L Cr",
+      "pe": 8.2,
+      "dividendYield": 6.8,
+      "description": "World's largest coal producer with consistent dividend payout."
+    },
+    {
+      "id": "vedanta",
+      "name": "Vedanta",
+      "symbol": "VEDL",
+      "sector": "Metals & Mining",
+      "price": 389,
+      "change": 1.2,
+      "marketCap": "1.5L Cr",
+      "pe": 12.5,
+      "dividendYield": 5.2,
+      "description": "Diversified natural resources company with operations in zinc, lead, silver, oil & gas."
+    },
+    {
+      "id": "ioc",
+      "name": "Indian Oil Corporation",
+      "symbol": "IOC",
+      "sector": "Oil & Gas",
+      "price": 145,
+      "change": -0.3,
+      "marketCap": "2.1L Cr",
+      "pe": 9.8,
+      "dividendYield": 4.5,
+      "description": "India's largest commercial enterprise with refining and marketing operations."
+    },
+    {
+      "id": "ntpc",
+      "name": "NTPC",
+      "symbol": "NTPC",
+      "sector": "Power",
+      "price": 356,
+      "change": 0.8,
+      "marketCap": "3.5L Cr",
+      "pe": 14.2,
+      "dividendYield": 3.8,
+      "description": "India's largest power generation company with consistent dividend history."
+    },
+    {
+      "id": "powergrid",
+      "name": "Power Grid Corporation",
+      "symbol": "POWERGRID",
+      "sector": "Power",
+      "price": 289,
+      "change": 0.2,
+      "marketCap": "2.7L Cr",
+      "pe": 11.5,
+      "dividendYield": 3.5,
+      "description": "Central transmission utility with monopoly in power transmission."
+    }
+  ]
+}

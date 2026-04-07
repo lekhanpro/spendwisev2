@@ -1,0 +1,218 @@
+[
+  {
+    "id": "saving-basics",
+    "title": "Saving Basics",
+    "icon": "💰",
+    "content": "Saving is the foundation of financial security. The 50-30-20 rule suggests allocating 50% of income to needs, 30% to wants, and 20% to savings. Start by building an emergency fund covering 6 months of expenses. Automate your savings by setting up automatic transfers on payday. Even small amounts compound over time - saving ₹5,000 monthly at 8% returns grows to ₹9.2 lakhs in 10 years.",
+    "keyTakeaway": "Pay yourself first - save before you spend. Automate savings and build an emergency fund equal to 6 months of expenses.",
+    "quiz": [
+      {
+        "question": "What is the recommended emergency fund size?",
+        "options": ["3 months expenses", "6 months expenses", "12 months expenses", "1 month expenses"],
+        "correct": 1
+      },
+      {
+        "question": "According to the 50-30-20 rule, what percentage should go to savings?",
+        "options": ["10%", "15%", "20%", "25%"],
+        "correct": 2
+      },
+      {
+        "question": "What is the best time to save money?",
+        "options": ["End of month", "When you have extra", "As soon as you get paid", "Before festivals"],
+        "correct": 2
+      }
+    ]
+  },
+  {
+    "id": "stocks",
+    "title": "Understanding Stocks",
+    "icon": "📈",
+    "content": "Stocks represent ownership in a company. When you buy a stock, you become a shareholder and can profit from the company's growth through capital appreciation and dividends. Stock prices fluctuate based on company performance, market sentiment, and economic conditions. Blue-chip stocks are shares of large, established companies with stable earnings. Growth stocks offer high potential returns but higher risk. Dividend stocks provide regular income. Diversification across sectors reduces risk.",
+    "keyTakeaway": "Stocks offer ownership in companies. Diversify across sectors, invest for long-term (5+ years), and focus on fundamentals over short-term price movements.",
+    "quiz": [
+      {
+        "question": "What do you own when you buy a stock?",
+        "options": ["Company debt", "Company ownership", "Company products", "Company building"],
+        "correct": 1
+      },
+      {
+        "question": "What are blue-chip stocks?",
+        "options": ["New startups", "Large established companies", "Foreign companies", "Penny stocks"],
+        "correct": 1
+      },
+      {
+        "question": "What is the recommended minimum investment period for stocks?",
+        "options": ["1 year", "2 years", "5+ years", "6 months"],
+        "correct": 2
+      }
+    ]
+  },
+  {
+    "id": "mutual-funds",
+    "title": "Mutual Funds",
+    "icon": "🏦",
+    "content": "Mutual funds pool money from multiple investors to invest in diversified portfolios of stocks, bonds, or other securities. Professional fund managers make investment decisions. Equity funds invest in stocks (higher risk, higher returns), debt funds invest in bonds (lower risk, stable returns), and hybrid funds mix both. Expense ratio is the annual fee charged - lower is better. NAV (Net Asset Value) is the per-unit price of the fund. Mutual funds offer instant diversification and professional management.",
+    "keyTakeaway": "Mutual funds provide professional management and diversification. Choose funds based on your risk profile, check expense ratios, and invest through SIPs for rupee cost averaging.",
+    "quiz": [
+      {
+        "question": "What is NAV in mutual funds?",
+        "options": ["Net Annual Value", "Net Asset Value", "New Asset Value", "National Asset Value"],
+        "correct": 1
+      },
+      {
+        "question": "Which type of mutual fund has the highest risk?",
+        "options": ["Debt funds", "Liquid funds", "Equity funds", "Money market funds"],
+        "correct": 2
+      },
+      {
+        "question": "What should you look for in expense ratio?",
+        "options": ["Higher is better", "Lower is better", "Doesn't matter", "Should be 10%"],
+        "correct": 1
+      }
+    ]
+  },
+  {
+    "id": "sips",
+    "title": "Systematic Investment Plans (SIPs)",
+    "icon": "📊",
+    "content": "SIP is a disciplined way to invest fixed amounts regularly (monthly/quarterly) in mutual funds. It leverages rupee cost averaging - you buy more units when prices are low and fewer when high, averaging out the cost. SIPs remove the need to time the market. A ₹5,000 monthly SIP at 12% annual return grows to ₹11.6 lakhs in 10 years and ₹50 lakhs in 20 years. Start early to benefit from compounding. SIPs can be paused or stopped anytime, offering flexibility.",
+    "keyTakeaway": "SIPs enable disciplined investing through rupee cost averaging. Start early, stay consistent, and let compounding work its magic over 10+ years.",
+    "quiz": [
+      {
+        "question": "What is the main benefit of SIP?",
+        "options": ["Guaranteed returns", "Rupee cost averaging", "No risk", "Tax exemption"],
+        "correct": 1
+      },
+      {
+        "question": "Can you stop a SIP anytime?",
+        "options": ["No, locked for 5 years", "Yes, anytime", "Only after 1 year", "Need permission"],
+        "correct": 1
+      },
+      {
+        "question": "What happens when market falls during SIP?",
+        "options": ["You lose money", "You buy more units", "SIP stops", "You get refund"],
+        "correct": 1
+      }
+    ]
+  },
+  {
+    "id": "bonds-fds",
+    "title": "Bonds & Fixed Deposits",
+    "icon": "🔒",
+    "content": "Bonds are debt instruments where you lend money to governments or companies in exchange for regular interest payments. Government bonds (G-Secs) are safest with lower returns. Corporate bonds offer higher returns but carry credit risk - check ratings (AAA is safest). Fixed Deposits (FDs) are bank deposits with guaranteed returns and capital protection. FD interest is taxable. Senior citizens get 0.5% extra interest. FDs are ideal for short-term goals and emergency funds. Bonds and FDs provide stability to your portfolio.",
+    "keyTakeaway": "Bonds and FDs offer stable, predictable returns with lower risk. Use them for capital preservation, emergency funds, and balancing equity exposure in your portfolio.",
+    "quiz": [
+      {
+        "question": "Which bond is the safest?",
+        "options": ["Corporate bonds", "Government bonds", "Junk bonds", "Foreign bonds"],
+        "correct": 1
+      },
+      {
+        "question": "Are FD returns taxable?",
+        "options": ["No", "Yes", "Only for NRIs", "Only above 10 lakhs"],
+        "correct": 1
+      },
+      {
+        "question": "What does AAA rating mean for bonds?",
+        "options": ["Highest risk", "Lowest risk", "Medium risk", "No rating"],
+        "correct": 1
+      }
+    ]
+  },
+  {
+    "id": "index-funds",
+    "title": "Index Funds",
+    "icon": "📉",
+    "content": "Index funds passively track a market index like Nifty 50 or Sensex. They invest in the same stocks in the same proportion as the index. Benefits include low expense ratios (0.1-0.5% vs 1-2% for active funds), no fund manager risk, and consistent market returns. Index funds are ideal for beginners and long-term investors. Nifty 50 has delivered ~12% annual returns over 20 years. They follow the philosophy that it's hard to consistently beat the market, so match it at low cost.",
+    "keyTakeaway": "Index funds offer low-cost, diversified market exposure. Perfect for beginners and long-term wealth creation. Choose Nifty 50 or Sensex index funds for Indian market exposure.",
+    "quiz": [
+      {
+        "question": "What do index funds track?",
+        "options": ["Individual stocks", "Market index", "Gold prices", "Real estate"],
+        "correct": 1
+      },
+      {
+        "question": "What is the main advantage of index funds?",
+        "options": ["Guaranteed returns", "Low expense ratio", "No risk", "Daily withdrawals"],
+        "correct": 1
+      },
+      {
+        "question": "Which index is most popular in India?",
+        "options": ["Dow Jones", "Nifty 50", "FTSE 100", "DAX"],
+        "correct": 1
+      }
+    ]
+  },
+  {
+    "id": "taxes-80c",
+    "title": "Taxes & Section 80C",
+    "icon": "💼",
+    "content": "Section 80C allows tax deduction up to ₹1.5 lakhs annually on investments in PPF, ELSS, life insurance, NSC, and home loan principal. ELSS has the shortest lock-in (3 years) among 80C options. Section 80CCD(1B) offers additional ₹50,000 deduction for NPS. Long-term capital gains (LTCG) on equity above ₹1 lakh are taxed at 10%. Short-term gains are taxed at 15%. Debt fund gains are taxed as per your income slab. Tax-loss harvesting can offset gains. Plan investments to maximize tax benefits.",
+    "keyTakeaway": "Use Section 80C (₹1.5L) and 80CCD(1B) (₹50K) to save taxes. ELSS offers best combination of tax saving and growth potential with 3-year lock-in.",
+    "quiz": [
+      {
+        "question": "What is the maximum 80C deduction limit?",
+        "options": ["₹1 lakh", "₹1.5 lakhs", "₹2 lakhs", "₹50,000"],
+        "correct": 1
+      },
+      {
+        "question": "What is the lock-in period for ELSS?",
+        "options": ["1 year", "3 years", "5 years", "No lock-in"],
+        "correct": 1
+      },
+      {
+        "question": "What is LTCG tax rate on equity above ₹1 lakh?",
+        "options": ["5%", "10%", "15%", "20%"],
+        "correct": 1
+      }
+    ]
+  },
+  {
+    "id": "balance-sheet",
+    "title": "Reading a Balance Sheet",
+    "icon": "📋",
+    "content": "A balance sheet shows a company's financial position at a point in time. Assets = Liabilities + Equity. Assets include cash, inventory, property. Liabilities are debts and obligations. Equity is shareholders' ownership. Key ratios: Debt-to-Equity (lower is better, <1 is good), Current Ratio (current assets/current liabilities, >1.5 is healthy), Return on Equity (net profit/equity, higher is better). Look for consistent revenue growth, improving profit margins, and manageable debt levels. Compare with industry peers.",
+    "keyTakeaway": "Balance sheet reveals company health. Check debt-to-equity (<1), current ratio (>1.5), and ROE (>15%). Compare trends over 3-5 years and with competitors.",
+    "quiz": [
+      {
+        "question": "What does the balance sheet equation state?",
+        "options": ["Assets = Liabilities", "Assets = Equity", "Assets = Liabilities + Equity", "Assets = Revenue"],
+        "correct": 2
+      },
+      {
+        "question": "What is a good debt-to-equity ratio?",
+        "options": ["Above 2", "Below 1", "Exactly 1", "Above 5"],
+        "correct": 1
+      },
+      {
+        "question": "What does ROE measure?",
+        "options": ["Company debt", "Profitability", "Asset size", "Revenue"],
+        "correct": 1
+      }
+    ]
+  },
+  {
+    "id": "diversification",
+    "title": "Diversification",
+    "icon": "🎯",
+    "content": "Diversification means spreading investments across different asset classes, sectors, and geographies to reduce risk. Don't put all eggs in one basket. A balanced portfolio might include 60% equity (large-cap, mid-cap, small-cap), 30% debt (bonds, FDs), and 10% gold. Diversify within equity across sectors - IT, banking, pharma, FMCG. Consider international exposure through global funds. Rebalance annually to maintain target allocation. Diversification reduces volatility and protects against sector-specific downturns.",
+    "keyTakeaway": "Diversify across asset classes (equity, debt, gold), sectors, and geographies. Rebalance annually. Diversification reduces risk without sacrificing long-term returns.",
+    "quiz": [
+      {
+        "question": "What is the main purpose of diversification?",
+        "options": ["Maximize returns", "Reduce risk", "Avoid taxes", "Increase liquidity"],
+        "correct": 1
+      },
+      {
+        "question": "How often should you rebalance your portfolio?",
+        "options": ["Daily", "Weekly", "Monthly", "Annually"],
+        "correct": 3
+      },
+      {
+        "question": "A diversified portfolio should include:",
+        "options": ["Only stocks", "Only bonds", "Multiple asset classes", "Only one sector"],
+        "correct": 2
+      }
+    ]
+  }
+]

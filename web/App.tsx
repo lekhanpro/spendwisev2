@@ -1,6 +1,8 @@
 // App.tsx
 import React, { useContext, useEffect, useState } from "react";
 import { AppProvider, AppContext } from "./context/AppContext";
+import { FinanceProvider } from "./context/FinanceContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import { Layout } from "./components/Layout";
 import { Dashboard } from "./components/Dashboard";
 import { Transactions } from "./components/Transactions";
@@ -12,7 +14,8 @@ import { Bills } from "./components/Bills";
 import { Modal } from "./components/Modal";
 import { TransactionForm } from "./components/TransactionForm";
 import { Auth } from "./components/Auth";
-
+import { InvestPage } from "./pages/invest/InvestPage";
+import { Toast } from "./components/notifications/Toast";
 
 // Firebase imports
 import { auth } from "./lib/auth";
@@ -75,6 +78,7 @@ const MainContent: React.FC = () => {
 
   return (
     <Layout>
+      <Toast />
       {activeView === "dashboard" && <Dashboard />}
       {activeView === "transactions" && <Transactions />}
       {activeView === "budget" && <BudgetView />}
@@ -82,6 +86,7 @@ const MainContent: React.FC = () => {
       {activeView === "bills" && <Bills />}
       {activeView === "goals" && <Goals />}
       {activeView === "settings" && <Settings />}
+      {activeView === "invest" && <InvestPage />}
 
       <Modal
         isOpen={showTransactionModal}
@@ -107,7 +112,11 @@ const MainContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <AppProvider>
-      <MainContent />
+      <FinanceProvider>
+        <NotificationProvider>
+          <MainContent />
+        </NotificationProvider>
+      </FinanceProvider>
     </AppProvider>
   );
 };

@@ -29,6 +29,7 @@ mobile/.env
 .idea/
 *.swp
 *.swo
+.claude/
 
 # OS
 .DS_Store
@@ -52,4 +53,19 @@ flutter_app/.metadata
 flutter_app/pubspec.lock
 expo-app/node_modules/
 expo-app/.expo/
-SpendWise-Flutter-v2.2.1.apk
+
+# APK and PDF files
+*.apk
+*.pdf
+
+# Old/Temporary files
+old_*.html
+*_COMPLETE.md
+*_SUMMARY.txt
+*_READY.txt
+FINAL_*.txt
+COMPILE_*.md
+APPLY_*.md
+*.bat
+apply_*.py
+merge_*.py

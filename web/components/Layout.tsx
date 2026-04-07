@@ -3,6 +3,8 @@ import { AppContext } from '../context/AppContext';
 import { Icons } from './Icons';
 import { ViewType } from '../types';
 import { AIChatbot } from './AIChatbot';
+import { NotificationBell } from './notifications/NotificationBell';
+import { NotificationPanel } from './notifications/NotificationPanel';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,12 +13,13 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { activeView, setActiveView, setShowTransactionModal, setEditingTransaction } = useContext(AppContext)!;
   const [showAIChat, setShowAIChat] = React.useState(false);
+  const [showNotifications, setShowNotifications] = React.useState(false);
 
   const navItems: { id: ViewType; label: string; Icon: any }[] = [
     { id: 'dashboard', label: 'Home', Icon: Icons.Home },
     { id: 'transactions', label: 'Transactions', Icon: Icons.List },
     { id: 'budget', label: 'Budget', Icon: Icons.Budget },
-    { id: 'reports', label: 'Reports', Icon: Icons.Chart },
+    { id: 'invest', label: 'Invest', Icon: Icons.Chart },
     { id: 'goals', label: 'Goals', Icon: Icons.Target },
   ];
 
@@ -32,6 +35,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <span className="font-bold text-gray-900 dark:text-white text-lg">SpendWise</span>
           </div>
           <div className="flex items-center gap-2">
+            {/* Notification Bell */}
+            <NotificationBell onClick={() => setShowNotifications(true)} />
             {/* AI Chatbot Button */}
             <button
               onClick={() => setShowAIChat(!showAIChat)}
@@ -73,6 +78,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </>
       )}
+
+      {/* Notification Panel */}
+      <NotificationPanel isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 px-4 py-2 safe-area-inset-bottom shadow-lg">
