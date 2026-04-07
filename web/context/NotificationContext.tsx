@@ -20,6 +20,8 @@ export interface NotificationContextType {
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   dismissNotification: (id: string) => void;
+  clearReadNotifications: () => void;
+  clearAllNotifications: () => void;
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
 }
 
@@ -82,6 +84,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     setNotifications((current) => current.filter((item) => item.id !== id));
   };
 
+  const clearReadNotifications = () => {
+    setNotifications((current) => current.filter((item) => !item.read));
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
   const unreadCount = useMemo(() => notifications.filter((item) => !item.read).length, [notifications]);
 
   const value: NotificationContextType = {
@@ -90,6 +100,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     markAsRead,
     markAllAsRead,
     dismissNotification,
+    clearReadNotifications,
+    clearAllNotifications,
     addNotification,
   };
 

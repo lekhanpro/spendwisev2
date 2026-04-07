@@ -19,13 +19,13 @@ interface SectionTitleProps {
 }
 
 export const SectionTitle: React.FC<SectionTitleProps> = ({ eyebrow, title, description, action }) => (
-  <div className="flex items-start justify-between gap-4">
-    <div>
+  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div className="min-w-0">
       {eyebrow && <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">{eyebrow}</p>}
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-1">{title}</h2>
-      {description && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-2xl">{description}</p>}
+      <h2 className="mt-1 break-words text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
+      {description && <p className="mt-1 max-w-2xl break-words text-sm text-gray-600 dark:text-gray-400">{description}</p>}
     </div>
-    {action}
+    {action && <div className="w-full shrink-0 sm:w-auto">{action}</div>}
   </div>
 );
 
@@ -46,9 +46,9 @@ export const MetricPill: React.FC<MetricPillProps> = ({ label, value, tone = 'ne
           : 'bg-gray-50 text-gray-700 dark:bg-zinc-800 dark:text-gray-300 border-gray-200 dark:border-zinc-700';
 
   return (
-    <div className={`rounded-2xl border px-4 py-3 ${toneClass}`}>
-      <p className="text-xs uppercase tracking-wide opacity-80">{label}</p>
-      <p className="text-lg font-semibold mt-1">{value}</p>
+    <div className={`min-w-0 rounded-2xl border px-4 py-3 ${toneClass}`}>
+      <p className="break-words text-xs uppercase tracking-wide opacity-80">{label}</p>
+      <p className="mt-1 break-words text-base font-semibold leading-tight sm:text-lg">{value}</p>
     </div>
   );
 };
@@ -84,15 +84,15 @@ interface ToggleProps {
 }
 
 export const QuietToggle: React.FC<ToggleProps> = ({ label, description, checked, onChange }) => (
-  <div className="flex items-center justify-between gap-4 py-3">
-    <div>
+  <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="min-w-0">
       <p className="font-medium text-gray-900 dark:text-white">{label}</p>
       <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
     </div>
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className={`w-12 h-6 rounded-full transition-colors ${checked ? 'bg-blue-500' : 'bg-gray-300 dark:bg-zinc-700'}`}
+      className={`h-6 w-12 shrink-0 rounded-full transition-colors ${checked ? 'bg-blue-500' : 'bg-gray-300 dark:bg-zinc-700'}`}
     >
       <div className={`w-5 h-5 mt-0.5 rounded-full bg-white transition-transform ${checked ? 'translate-x-6' : 'translate-x-0.5'}`} />
     </button>

@@ -1,236 +1,258 @@
-
-import React, { useState, useContext } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
+import {
+  Bar,
+  BarChart,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { AppContext } from '../context/AppContext';
-import { Icons } from './Icons';
+import {
+  buildCategoryBreakdown,
+  buildMonthlyCashflowSeries,
+  buildPaymentMethodBreakdown,
+  getDateRangeStart,
+  RangePreset,
+  sumTransactions,
+} from '../lib/financeInsights';
 import { PAYMENT_METHODS } from '../constants';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { Icons } from './Icons';
+import { InvestCard, MetricPill, ProgressBar, SectionTitle } from './investment/InvestUI';
+
+const periods: Array<{ id: RangePreset; label: string }> = [
+  { id: 'week', label: 'Week' },
+  { id: 'month', label: 'Month' },
+  { id: '3months', label: '3 Months' },
+  { id: 'year', label: 'Year' },
+];
 
 export const Reports: React.FC = () => {
   const { transactions, categories, formatCurrency, currency } = useContext(AppContext)!;
-  const [period, setPeriod] = useState('month');
+  const [period, setPeriod] = useState<RangePreset>('month');
 
-  const getMonthStart = (date = new Date()) => {
-    const d = new Date(date);
-    d.setDate(1);
-    d.setHours(0, 0, 0, 0);
-    return d.getTime();
-  };
-
-  const getMonthEnd = (date = new Date()) => {
-    const d = new Date(date);
-    d.setMonth(d.getMonth() + 1);
-    d.setDate(0);
-    d.setHours(23, 59, 59, 999);
-    return d.getTime();
-  };
-
-  const getDateRange = () => {
-    const now = new Date();
-    switch (period) {
-      case 'week': return now.getTime() - 7 * 86400000;
-      case 'month': return getMonthStart();
-      case '3months': return now.getTime() - 90 * 86400000;
-      case 'year': return now.getTime() - 365 * 86400000;
-      default: return 0;
-    }
-  };
-
-  const filtered = transactions.filter(t => t.date >= getDateRange());
-  const income = filtered.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-  const expenses = filtered.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-
-  const expensesByCategory = filtered
-    .filter(t => t.type === 'expense')
-    .reduce((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + t.amount;
-      return acc;
-    }, {} as Record<string, number>);
-
-  const categoryData = Object.entries(expensesByCategory)
-    .map(([catId, amount]) => {
-      const value = amount as number;
-      const cat = categories.find(c => c.id === catId);
-      return {
-        name: cat?.name || catId,
-        value,
-        color: cat?.color || '#64748b',
-        icon: cat?.icon || '📦',
-        id: catId,
-        percentage: (value / expenses) * 100
-      };
-    })
-    .sort((a, b) => b.value - a.value);
-
-  // Comparison Data
-  const comparisonData = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - (5 - i));
-    const start = getMonthStart(d);
-    const end = getMonthEnd(d);
-    const monthTxns = transactions.filter(t => t.date >= start && t.date <= end);
-    return {
-      name: d.toLocaleDateString('en-US', { month: 'short' }),
-      Income: monthTxns.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0),
-      Expenses: monthTxns.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0)
-    };
-  });
+  const rangeStart = useMemo(() => getDateRangeStart(period), [period]);
+  const filtered = useMemo(
+    () => transactions.filter((transaction) => transaction.date >= rangeStart),
+    [rangeStart, transactions]
+  );
+  const income = useMemo(() => sumTransactions(filtered, 'income'), [filtered]);
+  const expenses = useMemo(() => sumTransactions(filtered, 'expense'), [filtered]);
+  const net = income - expenses;
+  const savingsRate = income > 0 ? (net / income) * 100 : 0;
+  const categoryData = useMemo(() => buildCategoryBreakdown(filtered, categories), [categories, filtered]);
+  const paymentMethodData = useMemo(
+    () => buildPaymentMethodBreakdown(filtered, PAYMENT_METHODS),
+    [filtered]
+  );
+  const comparisonData = useMemo(() => buildMonthlyCashflowSeries(transactions, 6), [transactions]);
+  const topCategory = categoryData[0];
+  const averageMonthlyExpense =
+    comparisonData.length > 0
+      ? comparisonData.reduce((sum, item) => sum + item.expense, 0) / comparisonData.length
+      : 0;
 
   const exportCSV = () => {
     const headers = ['Date', 'Type', 'Category', 'Amount', 'Currency', 'Description', 'Payment Method'];
-    const rows = transactions.map(t => {
-      const cat = categories.find(c => c.id === t.category);
-      const pm = PAYMENT_METHODS.find(p => p.id === t.paymentMethod);
+    const rows = transactions.map((transaction) => {
+      const category = categories.find((item) => item.id === transaction.category);
+      const paymentMethod = PAYMENT_METHODS.find((item) => item.id === transaction.paymentMethod);
       return [
-        new Date(t.date).toLocaleDateString(),
-        t.type,
-        cat?.name || t.category,
-        t.amount,
+        new Date(transaction.date).toLocaleDateString(),
+        transaction.type,
+        category?.name || transaction.category,
+        transaction.amount,
         currency.code,
-        `"${t.description || ''}"`,
-        pm?.name || t.paymentMethod
+        `"${transaction.description || ''}"`,
+        paymentMethod?.name || transaction.paymentMethod,
       ].join(',');
     });
+
     const csv = [headers.join(','), ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `spendwise-export-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `spendwise-export-${new Date().toISOString().split('T')[0]}.csv`;
+    anchor.click();
   };
 
   return (
-    <div className="space-y-4 animate-slide-up">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reports</h1>
-        <button onClick={exportCSV} className="p-2 bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 rounded-xl shadow-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+    <div className="space-y-6 animate-slide-up">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-gray-500 dark:text-gray-400">Performance readout</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reports</h1>
+        </div>
+        <button
+          type="button"
+          onClick={exportCSV}
+          className="rounded-xl border border-gray-200 bg-white p-2 text-gray-600 shadow-lg hover:text-gray-900 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-gray-400 dark:hover:text-white"
+        >
           <Icons.Download />
         </button>
       </div>
 
-      {/* Period Selector */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
-        {[['week', 'Week'], ['month', 'Month'], ['3months', '3 Months'], ['year', 'Year']].map(([value, label]) => (
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {periods.map((item) => (
           <button
-            key={value}
-            onClick={() => setPeriod(value)}
-            className={`px-4 py-2 rounded-full font-medium whitespace-nowrap transition-all border ${period === value
-              ? 'bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20'
-              : 'bg-white dark:bg-zinc-900/50 border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-zinc-700'}`}
+            type="button"
+            key={item.id}
+            onClick={() => setPeriod(item.id)}
+            className={`px-4 py-2 rounded-full font-medium whitespace-nowrap transition-all border ${
+              period === item.id
+                ? 'bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20'
+                : 'bg-white dark:bg-zinc-900/60 border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-gray-400'
+            }`}
           >
-            {label}
+            {item.label}
           </button>
         ))}
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-emerald-50 dark:bg-emerald-500/20 backdrop-blur-md border-2 border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-4 shadow-lg">
-          <p className="text-sm text-emerald-700 dark:text-emerald-200/70">Total Income</p>
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(income)}</p>
-        </div>
-        <div className="bg-red-50 dark:bg-red-500/20 backdrop-blur-md border-2 border-red-200 dark:border-red-500/30 rounded-2xl p-4 shadow-lg">
-          <p className="text-sm text-red-700 dark:text-red-200/70">Total Expenses</p>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(expenses)}</p>
-        </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricPill label="Income" value={formatCurrency(income)} tone="positive" />
+        <MetricPill label="Expenses" value={formatCurrency(expenses)} tone="negative" />
+        <MetricPill label="Net" value={formatCurrency(net)} tone={net >= 0 ? 'positive' : 'negative'} />
+        <MetricPill label="Savings Rate" value={`${savingsRate.toFixed(1)}%`} tone={savingsRate >= 20 ? 'positive' : savingsRate >= 0 ? 'warning' : 'negative'} />
       </div>
 
-      {/* Spending Breakdown - Glass Card */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Spending Breakdown</h3>
-        <div className="flex gap-4 items-center">
-          <div className="w-40 h-40 flex-shrink-0">
-            {categoryData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={categoryData} dataKey="value" nameKey="name" outerRadius={60} innerRadius={0} stroke="none">
-                    {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-zinc-800 rounded-full border border-zinc-700">
-                <p className="text-xs text-gray-500">No data</p>
-              </div>
-            )}
+      <div className="grid gap-4 xl:grid-cols-[0.6fr_0.4fr]">
+        <InvestCard className="p-5">
+          <SectionTitle
+            eyebrow="Comparison"
+            title="6-Month Cashflow"
+            description="Income and expense trends over the latest six monthly closes."
+          />
+          <div className="h-72 mt-5">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={comparisonData}>
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                <Bar dataKey="income" fill="#10b981" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="expense" fill="#ef4444" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-          <div className="flex-1 space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-            {categoryData.map(cat => (
-              <div key={cat.id} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                <span className="flex-1 text-sm text-gray-300 truncate">{cat.name}</span>
-                <span className="text-sm font-medium text-white">{cat.percentage.toFixed(0)}%</span>
+        </InvestCard>
+
+        <InvestCard className="p-5">
+          <SectionTitle
+            eyebrow="Summary"
+            title="Expense Drivers"
+            description={topCategory ? `${topCategory.name} is leading spend for the selected period.` : 'Add expenses to build a useful breakdown.'}
+          />
+          <div className="mt-5 grid grid-cols-1 items-center gap-4 md:grid-cols-[0.46fr_0.54fr]">
+            <div className="h-48">
+              {categoryData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={categoryData.slice(0, 5)} dataKey="value" innerRadius={42} outerRadius={72} stroke="none">
+                      {categoryData.slice(0, 5).map((entry) => (
+                        <Cell key={entry.id} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full rounded-3xl bg-gray-50 dark:bg-zinc-950/40 border border-gray-200 dark:border-zinc-800 flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+                  No data
+                </div>
+              )}
+            </div>
+            <div className="space-y-3">
+              <MetricPill label="Top Category" value={topCategory ? topCategory.name : 'No data'} tone="warning" />
+              <MetricPill label="Top Spend" value={topCategory ? formatCurrency(topCategory.value) : 'No data'} />
+              <MetricPill label="Avg / Month" value={formatCurrency(averageMonthlyExpense)} />
+            </div>
+          </div>
+        </InvestCard>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-[0.58fr_0.42fr]">
+        <InvestCard className="p-5">
+          <SectionTitle
+            eyebrow="Details"
+            title="Category Contribution"
+            description="The biggest buckets by amount and share of expense."
+          />
+          <div className="space-y-4 mt-5">
+            {categoryData.map((item) => (
+              <div key={item.id} className="rounded-2xl border border-gray-200 dark:border-zinc-800 p-4 bg-gray-50 dark:bg-zinc-950/40">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="w-11 h-11 rounded-2xl border border-gray-200 dark:border-zinc-700 flex items-center justify-center text-xl" style={{ backgroundColor: `${item.color}18` }}>
+                      {item.icon}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-gray-900 dark:text-white">{item.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{formatCurrency(item.value)}</p>
+                    </div>
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {item.percentage.toFixed(0)}%
+                  </span>
+                </div>
+                <ProgressBar value={item.percentage} tone="blue" />
               </div>
             ))}
+            {categoryData.length === 0 && (
+              <p className="text-center text-gray-500 dark:text-gray-400 py-6">
+                No expense categories in the selected period.
+              </p>
+            )}
           </div>
-        </div>
-      </div>
+        </InvestCard>
 
-      {/* Category Details - Glass Card */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Category Details</h3>
-        <div className="space-y-3">
-          {categoryData.map(cat => (
-            <div key={cat.id} className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl border border-zinc-700" style={{ backgroundColor: cat.color + '15' }}>
-                {cat.icon}
+        <div className="space-y-4">
+          <InvestCard className="p-5">
+            <SectionTitle eyebrow="Payment" title="Method Distribution" />
+            <div className="space-y-3 mt-5">
+              {paymentMethodData.slice(0, 5).map((item) => (
+                <div key={item.id} className="rounded-2xl border border-gray-200 dark:border-zinc-800 p-4 bg-gray-50 dark:bg-zinc-950/40">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {item.icon} {item.name}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{item.count} txns</p>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{formatCurrency(item.value)}</p>
+                </div>
+              ))}
+              {paymentMethodData.length === 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">No payment method data yet.</p>
+              )}
+            </div>
+          </InvestCard>
+
+          <InvestCard className="p-5">
+            <SectionTitle eyebrow="Readout" title="Quick Insights" />
+            <div className="space-y-3 mt-5">
+              {topCategory && (
+                <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 p-4 bg-blue-50 dark:bg-blue-500/10">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                    <span className="font-semibold">{topCategory.name}</span> accounts for {topCategory.percentage.toFixed(0)}% of expense.
+                  </p>
+                </div>
+              )}
+              <div className={`rounded-2xl border p-4 ${net >= 0 ? 'border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10' : 'border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10'}`}>
+                <p className={`text-sm ${net >= 0 ? 'text-emerald-800 dark:text-emerald-200' : 'text-red-800 dark:text-red-200'}`}>
+                  {net >= 0
+                    ? `You are positive by ${formatCurrency(net)} in the selected period.`
+                    : `You are negative by ${formatCurrency(Math.abs(net))} in the selected period.`}
+                </p>
               </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-gray-200">{cat.name}</span>
-                  <span className="font-semibold text-white">{formatCurrency(cat.value)}</span>
-                </div>
-                <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
-                  <div className="h-1.5 rounded-full" style={{ width: `${cat.percentage}%`, backgroundColor: cat.color }} />
-                </div>
+              <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 p-4 bg-gray-50 dark:bg-zinc-950/40">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  Average monthly expense over the last six closes is <span className="font-semibold">{formatCurrency(averageMonthlyExpense)}</span>.
+                </p>
               </div>
             </div>
-          ))}
-          {categoryData.length === 0 && (
-            <p className="text-center text-gray-500 py-4">No expenses in this period</p>
-          )}
-        </div>
-      </div>
-
-      {/* Monthly Comparison - Glass Card */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">6-Month Comparison</h3>
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={comparisonData}>
-              <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <YAxis hide />
-              <Tooltip
-                contentStyle={{ backgroundColor: 'rgba(24, 24, 27, 0.9)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#fff' }}
-                cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
-              />
-              <Legend wrapperStyle={{ fontSize: '12px', color: '#9ca3af' }} />
-              <Bar dataKey="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Expenses" fill="#ef4444" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Insights - Glass Card */}
-      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-gray-200 dark:border-zinc-800 shadow-lg rounded-2xl p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">💡 Insights</h3>
-        <div className="space-y-2">
-          {categoryData[0] && (
-            <p className="text-sm text-gray-300">
-              <span className="font-medium text-white">{categoryData[0].name}</span> is your biggest expense category at {formatCurrency(categoryData[0].value)} ({categoryData[0].percentage.toFixed(0)}% of total).
-            </p>
-          )}
-          {income > expenses && (
-            <p className="text-sm text-green-400">
-              Great job! You saved {formatCurrency(income - expenses)} this period.
-            </p>
-          )}
-          {expenses > income && (
-            <p className="text-sm text-red-400">
-              Watch out! You spent {formatCurrency(expenses - income)} more than you earned.
-            </p>
-          )}
+          </InvestCard>
         </div>
       </div>
     </div>
