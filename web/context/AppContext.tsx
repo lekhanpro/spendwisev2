@@ -12,7 +12,7 @@ import {
   subscribeToTransactions,
 } from '../lib/database';
 import { DEFAULT_CATEGORIES, SUPPORTED_CURRENCIES, generateId } from '../constants';
-import { AppContextType, Budget, Category, Currency, Goal, Transaction, UserSettings, ViewType } from '../types';
+import { AppContextType, AppNotification, Budget, Category, Currency, Goal, Transaction, UserSettings, ViewType } from '../types';
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -37,7 +37,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const categories = useMemo(() => [...DEFAULT_CATEGORIES, ...customCategories], [customCategories]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       setFirebaseUser(user);
       if (!user) {
         setTransactions([]);
@@ -274,6 +274,21 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       currency: currency.code,
     }).format(amount);
 
+  const [appNotifications, setAppNotifications] = useState<AppNotification[]>([]);
+
+  const unreadCount = appNotifications.filter(n => !n.read).length;
+
+  const addNotification = useCallback((n: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => {
+    setAppNotifications(prev => [
+      { ...n, id: generateId(), timestamp: Date.now(), read: false },
+      ...prev.slice(0, 49),
+    ]);
+  }, []);
+
+  const markNotificationsRead = useCallback(() => {
+    setAppNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  }, []);
+
   const contextValue: AppContextType = {
     transactions,
     budgets,
@@ -314,6 +329,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     formatCurrency,
     addCustomCategory,
     removeCustomCategory,
+    notifications: appNotifications,
+    unreadCount,
+    addNotification,
+    markNotificationsRead,
   };
 
   if (isLoading) {

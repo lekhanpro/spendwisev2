@@ -37,7 +37,7 @@ export const Goals: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-slide-up">
+    <div className="space-y-4 animate-slide-up">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-gray-500 dark:text-gray-400">Long-range planning</p>

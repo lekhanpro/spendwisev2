@@ -62,6 +62,18 @@ export interface UserSettings {
 
 export type ViewType = 'dashboard' | 'transactions' | 'budget' | 'reports' | 'invest' | 'goals' | 'bills' | 'settings';
 
+export type AppNotificationType = 'budget_alert' | 'budget_exceeded' | 'goal_achieved' | 'savings_milestone' | 'tip' | 'info';
+
+export interface AppNotification {
+  id: string;
+  type: AppNotificationType;
+  title: string;
+  message: string;
+  timestamp: number;
+  read: boolean;
+  icon?: string;
+}
+
 export interface AppContextType {
   transactions: Transaction[];
   budgets: Budget[];
@@ -93,4 +105,8 @@ export interface AppContextType {
   formatCurrency: (amount: number) => string;
   addCustomCategory: (category: Omit<Category, 'id'>) => Category | null;
   removeCustomCategory: (id: string) => void;
+  notifications: AppNotification[];
+  unreadCount: number;
+  addNotification: (n: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => void;
+  markNotificationsRead: () => void;
 }
