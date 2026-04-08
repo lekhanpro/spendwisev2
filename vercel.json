@@ -1,8 +1,6 @@
 {
-  "buildCommand": "cd web && npm ci && npm run build",
   "outputDirectory": "web/dist",
-  "installCommand": "echo 'deps installed in buildCommand'",
-  "framework": null,
+  "buildCommand": "cd web && npm ci && npm run build",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
