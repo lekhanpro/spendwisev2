@@ -233,6 +233,32 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
   };
 
+  const updateCustomCategory = (id: string, updates: Partial<Omit<Category, 'id'>>) => {
+    const nextCustomCategories = customCategories.map((cat) =>
+      cat.id === id ? { ...cat, ...updates } : cat
+    );
+    setCustomCategories(nextCustomCategories);
+    syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
+  };
+
+  /** Reassign all transactions + budgets from sourceId to targetId, then delete source category */
+  const mergeCategories = (sourceId: string, targetId: string) => {
+    if (sourceId === targetId) return;
+    const rewrittenTx = transactions.map((t) =>
+      t.category === sourceId ? { ...t, category: targetId } : t
+    );
+    const rewrittenBudgets = budgets.map((b) =>
+      b.category === sourceId ? { ...b, category: targetId } : b
+    );
+    setTransactions(rewrittenTx);
+    setBudgets(rewrittenBudgets);
+    syncTransactions(rewrittenTx);
+    syncBudgets(rewrittenBudgets);
+    const nextCustomCategories = customCategories.filter((c) => c.id !== sourceId);
+    setCustomCategories(nextCustomCategories);
+    syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
+  };
+
   const resetData = () => {
     if (firebaseUser) {
       setTransactions([]);
@@ -329,6 +355,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     formatCurrency,
     addCustomCategory,
     removeCustomCategory,
+    updateCustomCategory,
+    mergeCategories,
     notifications: appNotifications,
     unreadCount,
     addNotification,

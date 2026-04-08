@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { AppContext } from '../context/AppContext';
-import { SUPPORTED_CURRENCIES } from '../constants';
+import { CATEGORY_COLOR_SWATCHES, CATEGORY_ICON_PRESETS, SUPPORTED_CURRENCIES } from '../constants';
 import { detectFuzzyDuplicates } from '../lib/dedupe';
 import { exportTransactionsCSV, exportTransactionsOFX, parseTransactionsCSV } from '../lib/export';
 import { generatePDFReport } from '../lib/pdfExport';
@@ -14,6 +14,7 @@ import { Modal } from './Modal';
 import { ReceiptScanner } from './ReceiptScanner';
 import { RecurringTransactions } from './RecurringTransactions';
 import { SavingsCalculator } from './SavingsCalculator';
+import { Category } from '../types';
 
 export const Settings: React.FC = () => {
   const {
@@ -23,6 +24,8 @@ export const Settings: React.FC = () => {
     categories,
     customCategories,
     removeCustomCategory,
+    updateCustomCategory,
+    mergeCategories,
     handleLogout,
     session,
     currency,
@@ -49,6 +52,50 @@ export const Settings: React.FC = () => {
   const [showAchievements, setShowAchievements] = useState(false);
   const [showCustomAlerts, setShowCustomAlerts] = useState(false);
   const [showBills, setShowBills] = useState(false);
+
+  // Category management state
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editCatName, setEditCatName] = useState('');
+  const [editCatIcon, setEditCatIcon] = useState('');
+  const [editCatColor, setEditCatColor] = useState('');
+  const [mergingCategoryId, setMergingCategoryId] = useState<string | null>(null);
+  const [mergeTargetId, setMergeTargetId] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
+
+  const startEditCategory = (cat: Category) => {
+    setEditingCategoryId(cat.id);
+    setEditCatName(cat.name);
+    setEditCatIcon(cat.icon);
+    setEditCatColor(cat.color);
+    setMergingCategoryId(null);
+  };
+
+  const saveEditCategory = () => {
+    if (!editingCategoryId || !editCatName.trim()) return;
+    updateCustomCategory(editingCategoryId, {
+      name: editCatName.trim(),
+      icon: editCatIcon || '📁',
+      color: editCatColor,
+    });
+    setEditingCategoryId(null);
+  };
+
+  const startMerge = (cat: Category) => {
+    setMergingCategoryId(cat.id);
+    setMergeTargetId('');
+    setEditingCategoryId(null);
+  };
+
+  const confirmMerge = () => {
+    if (!mergingCategoryId || !mergeTargetId) return;
+    mergeCategories(mergingCategoryId, mergeTargetId);
+    setMergingCategoryId(null);
+    setMergeTargetId('');
+  };
+
+  const toggleArchive = (cat: Category) => {
+    updateCustomCategory(cat.id, { archived: !cat.archived });
+  };
 
   const expenseCategories = useMemo(() => categories.filter((category) => category.type === 'expense'), [categories]);
   const incomeCategories = useMemo(() => categories.filter((category) => category.type === 'income'), [categories]);
@@ -198,38 +245,105 @@ export const Settings: React.FC = () => {
               <CategoryCreator defaultOpen title="Add a custom category" description="Use this for personal buckets like tuition, side hustle, or pet care." />
               <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Custom categories</p>
-                <div className="mt-3 space-y-3">
+                {/* Archive toggle */}
+                <div className="flex items-center justify-between mt-3 mb-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{customCategories.filter(c => !c.archived).length} active · {customCategories.filter(c => c.archived).length} archived</p>
+                  <button type="button" onClick={() => setShowArchived(v => !v)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                    {showArchived ? 'Hide archived' : 'Show archived'}
+                  </button>
+                </div>
+                <div className="mt-2 space-y-3">
                   {customCategories.length === 0 && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">No custom categories yet. Add one above and it will show up in both transaction and budget flows.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 py-2">No custom categories yet. Add one above.</p>
                   )}
-                  {customCategories.map((category) => {
-                    const usageCount = customUsage.get(category.id) ?? 0;
-                    return (
-                      <div key={category.id} className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xl" style={{ backgroundColor: `${category.color}20` }}>
-                            {category.icon}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="truncate font-medium text-gray-900 dark:text-white">{category.name}</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{category.type} · {usageCount} linked items</p>
-                          </div>
+                  {customCategories
+                    .filter(cat => showArchived || !cat.archived)
+                    .map((category) => {
+                      const usageCount = customUsage.get(category.id) ?? 0;
+                      const isEditing = editingCategoryId === category.id;
+                      const isMerging = mergingCategoryId === category.id;
+                      const mergeCandidates = customCategories.filter(c => c.id !== category.id && c.type === category.type && !c.archived);
+                      return (
+                        <div key={category.id} className={`rounded-2xl border p-3 ${category.archived ? 'border-gray-100 dark:border-zinc-900 opacity-60' : 'border-gray-200 dark:border-zinc-800'} bg-white dark:bg-zinc-900`}>
+                          {/* Main row */}
+                          {!isEditing && !isMerging && (
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                              <div className="flex min-w-0 items-center gap-3">
+                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xl" style={{ backgroundColor: `${category.color}22` }}>
+                                  {category.icon}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="truncate font-medium text-gray-900 dark:text-white">{category.name}</p>
+                                  <p className="text-xs text-gray-400 dark:text-gray-500">{category.type} · {usageCount} linked · {category.archived ? '🗄 archived' : 'active'}</p>
+                                </div>
+                              </div>
+                              <div className="flex gap-2 flex-wrap">
+                                <button type="button" onClick={() => startEditCategory(category)} className="px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 text-xs font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                                  Edit
+                                </button>
+                                {mergeCandidates.length > 0 && (
+                                  <button type="button" onClick={() => startMerge(category)} className="px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 text-xs font-medium hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
+                                    Merge
+                                  </button>
+                                )}
+                                <button type="button" onClick={() => toggleArchive(category)} className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${category.archived ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-gray-400'}`}>
+                                  {category.archived ? 'Restore' : 'Archive'}
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={usageCount > 0}
+                                  onClick={() => removeCustomCategory(category.id)}
+                                  title={usageCount > 0 ? `Used in ${usageCount} items — merge or reassign first` : 'Delete permanently'}
+                                  className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${usageCount > 0 ? 'cursor-not-allowed bg-gray-100 text-gray-300 dark:bg-zinc-800 dark:text-gray-600' : 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100'}`}
+                                >
+                                  {usageCount > 0 ? `In use (${usageCount})` : 'Delete'}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Edit inline form */}
+                          {isEditing && (
+                            <div className="space-y-3">
+                              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">✏️ Edit category</p>
+                              <div className="grid grid-cols-[1fr_auto] gap-2">
+                                <input value={editCatName} onChange={e => setEditCatName(e.target.value)} placeholder="Category name" className="px-3 py-2 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input value={editCatIcon} maxLength={2} onChange={e => setEditCatIcon(e.target.value)} placeholder="🏷" className="w-14 px-2 py-2 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 text-center text-lg outline-none" />
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {CATEGORY_COLOR_SWATCHES.map(swatch => (
+                                  <button key={swatch} type="button" onClick={() => setEditCatColor(swatch)} className={`h-8 w-8 rounded-xl border-2 ${editCatColor === swatch ? 'border-gray-900 dark:border-white' : 'border-transparent'}`} style={{ backgroundColor: swatch }} />
+                                ))}
+                              </div>
+                              <div className="flex gap-2">
+                                <div className="flex items-center gap-2 flex-1 rounded-xl bg-gray-50 dark:bg-zinc-800 px-3 py-2">
+                                  <span style={{ backgroundColor: `${editCatColor}22` }} className="w-7 h-7 rounded-lg flex items-center justify-center text-lg">{editCatIcon}</span>
+                                  <span className="text-sm text-gray-900 dark:text-white truncate">{editCatName || 'Preview'}</span>
+                                </div>
+                                <button type="button" onClick={saveEditCategory} disabled={!editCatName.trim()} className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-40 transition-colors">Save</button>
+                                <button type="button" onClick={() => setEditingCategoryId(null)} className="px-3 py-2 rounded-xl border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 text-sm">Cancel</button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Merge form */}
+                          {isMerging && (
+                            <div className="space-y-3">
+                              <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">🔀 Merge "{category.name}" into…</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">All {usageCount} linked transactions and budgets will move to the selected category. This cannot be undone.</p>
+                              <select value={mergeTargetId} onChange={e => setMergeTargetId(e.target.value)} className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="">Select target category…</option>
+                                {mergeCandidates.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
+                              </select>
+                              <div className="flex gap-2">
+                                <button type="button" onClick={confirmMerge} disabled={!mergeTargetId} className="flex-1 py-2 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 disabled:opacity-40 transition-colors">Confirm merge</button>
+                                <button type="button" onClick={() => setMergingCategoryId(null)} className="px-4 py-2 rounded-xl border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-300 text-sm">Cancel</button>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <button
-                          type="button"
-                          disabled={usageCount > 0}
-                          onClick={() => removeCustomCategory(category.id)}
-                          className={`rounded-xl px-3 py-2 text-sm font-medium ${
-                            usageCount > 0
-                              ? 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-zinc-800 dark:text-gray-500'
-                              : 'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300'
-                          }`}
-                        >
-                          {usageCount > 0 ? 'In use' : 'Remove'}
-                        </button>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               </div>
             </div>

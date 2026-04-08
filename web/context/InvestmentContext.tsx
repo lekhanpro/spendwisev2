@@ -320,10 +320,10 @@ export const InvestmentProvider: React.FC<InvestmentProviderProps> = ({ children
     readArrayStorage(buildStorageKey(userId, 'watchlist'), DEFAULT_WATCHLIST)
   );
   const [holdings, setHoldings] = useState<PortfolioHolding[]>(() =>
-    readArrayStorage(buildStorageKey(userId, 'holdings'), defaultHoldings)
+    readArrayStorage(buildStorageKey(userId, 'holdings'), [])
   );
   const [investmentGoals, setInvestmentGoals] = useState<InvestmentGoal[]>(() =>
-    readArrayStorage(buildStorageKey(userId, 'goals'), defaultInvestmentGoals)
+    readArrayStorage(buildStorageKey(userId, 'goals'), [])
   );
   const [selectedStock, setSelectedStock] = useState(() => DEFAULT_WATCHLIST[0]);
   const [selectedRange, setSelectedRange] = useState<'1D' | '1W' | '1M' | '3M' | '1Y' | '5Y'>('1M');
@@ -337,8 +337,8 @@ export const InvestmentProvider: React.FC<InvestmentProviderProps> = ({ children
   useEffect(() => {
     setProfile(readStorage(buildStorageKey(userId, 'profile'), defaultInvestorProfile));
     setWatchlist(readArrayStorage(buildStorageKey(userId, 'watchlist'), DEFAULT_WATCHLIST));
-    setHoldings(readArrayStorage(buildStorageKey(userId, 'holdings'), defaultHoldings));
-    setInvestmentGoals(readArrayStorage(buildStorageKey(userId, 'goals'), defaultInvestmentGoals));
+    setHoldings(readArrayStorage(buildStorageKey(userId, 'holdings'), []));
+    setInvestmentGoals(readArrayStorage(buildStorageKey(userId, 'goals'), []));
     setComparisonSchemeIds(readArrayStorage(buildStorageKey(userId, 'comparisonSchemes'), ['ppf', 'nps', 'elss']));
     setNotificationPreferences(readStorage(buildStorageKey(userId, 'notificationPrefs'), defaultNotificationPreferences));
   }, [userId]);

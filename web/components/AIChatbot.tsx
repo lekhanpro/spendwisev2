@@ -3,15 +3,27 @@ import React, { useState, useRef, useEffect, useContext, useMemo } from 'react';
 import { AppContext } from '../context/AppContext';
 import { X, Send, Bot, Loader2 } from './Icons';
 import {
-  getFinancialInsights,
   computeFinancialScorecard,
   getInvestmentSuggestions,
   FinancialScorecard,
   InvestmentSuggestion,
 } from '../lib/ai';
 
-const GROQ_API_KEY = (import.meta as any).env?.VITE_GROQ_API_KEY || '';
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+// AI requests are proxied through /api/chat (Vercel edge function) — key never in browser bundle.
+const CHAT_ENDPOINT = '/api/chat';
+
+/** User-friendly messages for each server error code */
+const ERROR_MESSAGES: Record<string, string> = {
+  NO_KEY: "The AI service isn't configured yet. Ask the site admin to add the GROQ_API_KEY environment variable in Vercel.",
+  AUTH_ERROR: "AI authentication failed on the server. The API key may have expired.",
+  RATE_LIMIT: "You've hit the AI rate limit. Please wait a moment and try again.",
+  TIMEOUT: "The AI took too long to respond. Please try again.",
+  MALFORMED: "The AI returned an unexpected response. Please try again.",
+  EMPTY_REPLY: "The AI returned an empty response. Please try again.",
+  API_ERROR: "The AI service returned an error. Please try again shortly.",
+  INTERNAL: "An internal server error occurred. Please try again.",
+  NETWORK: "Could not reach the AI service. Check your internet connection.",
+};
 
 type Tab = 'chat' | 'scorecard' | 'invest';
 
@@ -113,34 +125,57 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onClose }) => {
     const userMessage = (text || input).trim();
     if (!userMessage || isLoading) return;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
+    setMessages(newMessages);
     setIsLoading(true);
-    if (!GROQ_API_KEY) {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'AI not configured. Add VITE_GROQ_API_KEY to use AI chat.' }]);
-      setIsLoading(false);
-      return;
-    }
+
     try {
-      const res = await fetch(GROQ_API_URL, {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+      const res = await fetch(CHAT_ENDPOINT, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
-            { role: 'system', content: `You are a helpful financial advisor for SpendWise. Be concise and friendly. ${buildContext()}` },
-            ...messages.slice(-8).map(m => ({ role: m.role, content: m.content })),
-            { role: 'user', content: userMessage },
-          ],
-          temperature: 0.7,
-          max_tokens: 500,
+          messages: newMessages
+            .filter(m => m.role === 'user' || m.role === 'assistant')
+            .slice(-8)
+            .map(m => ({ role: m.role, content: m.content })),
+          context: buildContext(),
         }),
-      });
-      if (!res.ok) throw new Error(`API error ${res.status}`);
-      const data = await res.json();
-      const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't process that.";
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-    } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err instanceof Error ? err.message : 'Unknown error'}` }]);
+        signal: controller.signal,
+      }).finally(() => clearTimeout(timeoutId));
+
+      let data: { reply?: string; error?: string; code?: string; retryAfter?: number };
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('MALFORMED');
+      }
+
+      if (!res.ok) {
+        const code = data.code ?? 'API_ERROR';
+        const msg = ERROR_MESSAGES[code] ?? data.error ?? `AI error (${res.status})`;
+        setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${msg}` }]);
+        return;
+      }
+
+      if (!data.reply) {
+        setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${ERROR_MESSAGES.EMPTY_REPLY}` }]);
+        return;
+      }
+
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply! }]);
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${ERROR_MESSAGES.TIMEOUT}` }]);
+      } else if (err instanceof TypeError) {
+        setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${ERROR_MESSAGES.NETWORK}` }]);
+      } else {
+        const code = err instanceof Error ? err.message : 'INTERNAL';
+        const msg = ERROR_MESSAGES[code] ?? ERROR_MESSAGES.INTERNAL;
+        setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${msg}` }]);
+      }
     } finally {
       setIsLoading(false);
     }

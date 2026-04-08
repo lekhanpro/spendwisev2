@@ -10,6 +10,7 @@ export interface Category {
   color: string;
   type: TransactionType;
   isCustom?: boolean;
+  archived?: boolean;
 }
 
 export interface PaymentMethod {
@@ -105,6 +106,8 @@ export interface AppContextType {
   formatCurrency: (amount: number) => string;
   addCustomCategory: (category: Omit<Category, 'id'>) => Category | null;
   removeCustomCategory: (id: string) => void;
+  updateCustomCategory: (id: string, updates: Partial<Omit<Category, 'id'>>) => void;
+  mergeCategories: (sourceId: string, targetId: string) => void;
   notifications: AppNotification[];
   unreadCount: number;
   addNotification: (n: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => void;
