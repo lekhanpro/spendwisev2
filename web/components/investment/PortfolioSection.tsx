@@ -250,53 +250,121 @@ export const PortfolioSection: React.FC = () => {
 
         <InvestCard className="p-5">
           <SectionTitle eyebrow="Positions" title="Tracked holdings" description="Edit average cost, link a goal, and monitor mark-to-market value." />
-          <div className="overflow-x-auto mt-5">
-            <table className="w-full min-w-[720px]">
-              <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-zinc-800">
-                  <th className="pb-3 pr-4">Instrument</th>
-                  <th className="pb-3 pr-4">Units</th>
-                  <th className="pb-3 pr-4">Avg Cost</th>
-                  <th className="pb-3 pr-4">Current</th>
-                  <th className="pb-3 pr-4">Value</th>
-                  <th className="pb-3 pr-4">Goal</th>
-                  <th className="pb-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+
+          {holdings.length === 0 ? (
+            <div className="mt-5 flex flex-col items-center justify-center py-12 text-center text-gray-400 dark:text-gray-500 gap-3">
+              <span className="text-4xl">📂</span>
+              <p className="text-base font-medium text-gray-600 dark:text-gray-300">No holdings yet</p>
+              <p className="text-sm">Add your first holding using the form above.</p>
+            </div>
+          ) : (
+            <>
+              {/* Desktop table — hidden on small screens */}
+              <div className="hidden sm:block overflow-x-auto mt-5">
+                <table className="w-full min-w-[600px]">
+                  <thead>
+                    <tr className="text-left text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-zinc-800">
+                      <th className="pb-3 pr-4">Instrument</th>
+                      <th className="pb-3 pr-4">Units</th>
+                      <th className="pb-3 pr-4">Avg Cost</th>
+                      <th className="pb-3 pr-4">Current</th>
+                      <th className="pb-3 pr-4">Value</th>
+                      <th className="pb-3 pr-4">Goal</th>
+                      <th className="pb-3">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {holdings.map((holding) => {
+                      const stock = priceMap.get(holding.symbol);
+                      const currentPrice = stock ? stock.price : holding.averageCost;
+                      const currentValue = currentPrice * holding.quantity;
+                      const linkedGoal = investmentGoals.find((goal) => goal.id === holding.goalId);
+                      const gainPct = holding.averageCost > 0 ? ((currentPrice - holding.averageCost) / holding.averageCost) * 100 : 0;
+                      return (
+                        <tr key={holding.id} className="border-b border-gray-100 dark:border-zinc-900">
+                          <td className="py-4 pr-4">
+                            <p className="font-medium text-gray-900 dark:text-white">{holding.name}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{holding.symbol}</p>
+                          </td>
+                          <td className="py-4 pr-4 text-gray-700 dark:text-gray-300">{holding.quantity}</td>
+                          <td className="py-4 pr-4 text-gray-700 dark:text-gray-300">{formatInr(holding.averageCost, 2)}</td>
+                          <td className="py-4 pr-4">
+                            <span className={gainPct >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}>
+                              {formatInr(currentPrice, 2)}
+                            </span>
+                            <span className={`ml-1 text-xs ${gainPct >= 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                              ({gainPct >= 0 ? '+' : ''}{gainPct.toFixed(1)}%)
+                            </span>
+                          </td>
+                          <td className="py-4 pr-4 font-semibold text-gray-900 dark:text-white">{formatInr(currentValue, 0)}</td>
+                          <td className="py-4 pr-4 text-gray-700 dark:text-gray-300">{linkedGoal?.name ?? '-'}</td>
+                          <td className="py-4">
+                            <div className="flex gap-2">
+                              <button type="button" onClick={() => startEdit(holding)} className="px-3 py-1.5 rounded-xl bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-gray-200 text-sm">
+                                Edit
+                              </button>
+                              <button type="button" onClick={() => removeHolding(holding.id)} className="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300 text-sm">
+                                Remove
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards — shown only on small screens */}
+              <div className="sm:hidden mt-4 flex flex-col gap-3">
                 {holdings.map((holding) => {
                   const stock = priceMap.get(holding.symbol);
                   const currentPrice = stock ? stock.price : holding.averageCost;
                   const currentValue = currentPrice * holding.quantity;
                   const linkedGoal = investmentGoals.find((goal) => goal.id === holding.goalId);
-
+                  const gainPct = holding.averageCost > 0 ? ((currentPrice - holding.averageCost) / holding.averageCost) * 100 : 0;
+                  const isGain = gainPct >= 0;
                   return (
-                    <tr key={holding.id} className="border-b border-gray-100 dark:border-zinc-900">
-                      <td className="py-4 pr-4">
-                        <p className="font-medium text-gray-900 dark:text-white">{holding.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{holding.symbol}</p>
-                      </td>
-                      <td className="py-4 pr-4 text-gray-700 dark:text-gray-300">{holding.quantity}</td>
-                      <td className="py-4 pr-4 text-gray-700 dark:text-gray-300">{formatInr(holding.averageCost, 2)}</td>
-                      <td className="py-4 pr-4 text-gray-700 dark:text-gray-300">{formatInr(currentPrice, 2)}</td>
-                      <td className="py-4 pr-4 font-semibold text-gray-900 dark:text-white">{formatInr(currentValue, 0)}</td>
-                      <td className="py-4 pr-4 text-gray-700 dark:text-gray-300">{linkedGoal?.name ?? '-'}</td>
-                      <td className="py-4">
-                        <div className="flex gap-2">
-                          <button type="button" onClick={() => startEdit(holding)} className="px-3 py-1.5 rounded-xl bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-gray-200 text-sm">
-                            Edit
-                          </button>
-                          <button type="button" onClick={() => removeHolding(holding.id)} className="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300 text-sm">
-                            Remove
-                          </button>
+                    <div key={holding.id} className="rounded-2xl border border-gray-100 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 p-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="font-semibold text-gray-900 dark:text-white">{holding.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{holding.symbol}</p>
                         </div>
-                      </td>
-                    </tr>
+                        <span className={`text-sm font-semibold ${isGain ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                          {isGain ? '+' : ''}{gainPct.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                        <div className="text-gray-500 dark:text-gray-400">Units</div>
+                        <div className="text-gray-900 dark:text-white font-medium">{holding.quantity}</div>
+                        <div className="text-gray-500 dark:text-gray-400">Avg Cost</div>
+                        <div className="text-gray-900 dark:text-white font-medium">{formatInr(holding.averageCost, 2)}</div>
+                        <div className="text-gray-500 dark:text-gray-400">Current</div>
+                        <div className={`font-medium ${isGain ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>{formatInr(currentPrice, 2)}</div>
+                        <div className="text-gray-500 dark:text-gray-400">Value</div>
+                        <div className="text-gray-900 dark:text-white font-semibold">{formatInr(currentValue, 0)}</div>
+                        {linkedGoal && (
+                          <>
+                            <div className="text-gray-500 dark:text-gray-400">Goal</div>
+                            <div className="text-gray-700 dark:text-gray-300 truncate">{linkedGoal.name}</div>
+                          </>
+                        )}
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <button type="button" onClick={() => startEdit(holding)} className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-gray-200 text-sm font-medium">
+                          Edit
+                        </button>
+                        <button type="button" onClick={() => removeHolding(holding.id)} className="flex-1 py-2 rounded-xl bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300 text-sm font-medium">
+                          Remove
+                        </button>
+                      </div>
+                    </div>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            </>
+          )}
         </InvestCard>
       </div>
     </div>

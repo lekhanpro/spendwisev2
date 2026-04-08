@@ -227,10 +227,37 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return nextCategory;
   };
 
-  const removeCustomCategory = (id: string) => {
-    const nextCustomCategories = customCategories.filter((category) => category.id !== id);
+  const updateCustomCategory = (updated: Category) => {
+    if (!updated.isCustom) return;
+    // Check for duplicate name (excluding itself)
+    const normalizedName = updated.name.trim().toLowerCase();
+    const duplicate = categories.find(
+      (c) => c.id !== updated.id && c.type === updated.type && c.name.trim().toLowerCase() === normalizedName
+    );
+    if (duplicate) return; // silently reject duplicates
+    const nextCustomCategories = customCategories.map((c) => (c.id === updated.id ? { ...updated, name: updated.name.trim() } : c));
     setCustomCategories(nextCustomCategories);
     syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
+  };
+
+  const archiveCustomCategory = (id: string) => {
+    const nextCustomCategories = customCategories.map((c) => (c.id === id ? { ...c, archived: true } : c));
+    setCustomCategories(nextCustomCategories);
+    syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
+  };
+
+  const mergeCustomCategories = (fromId: string, toId: string) => {
+    // Move all transactions from `fromId` category to `toId`
+    const fromCat = categories.find((c) => c.id === fromId);
+    const toCat = categories.find((c) => c.id === toId);
+    if (!fromCat || !toCat) return;
+    const updatedTx = transactions.map((t) =>
+      t.category === fromCat.name ? { ...t, category: toCat.name } : t
+    );
+    setTransactions(updatedTx);
+    syncTransactions(updatedTx);
+    // Archive the merged-from category
+    archiveCustomCategory(fromId);
   };
 
   const resetData = () => {
@@ -313,7 +340,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setCurrency: handleSetCurrency,
     formatCurrency,
     addCustomCategory,
+    updateCustomCategory,
     removeCustomCategory,
+    archiveCustomCategory,
+    mergeCustomCategories,
   };
 
   if (isLoading) {

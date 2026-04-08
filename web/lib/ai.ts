@@ -1,9 +1,88 @@
-// lib/ai.ts - Groq AI Integration for Financial Insights
-// API key should be set via environment variable (VITE_GROQ_API_KEY for web)
+// lib/ai.ts - AI integration for SpendWise
+// Server-side proxy (/api/chat) is preferred; direct Groq call is the fallback.
+// To harden security: create web/api/chat.ts as a Vercel serverless function,
+// set GROQ_API_KEY (no VITE_ prefix) in Vercel env vars, remove VITE_GROQ_API_KEY.
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const SERVER_PROXY_URL = '/api/chat';
+const TIMEOUT_MS = 20000;
 
 import { Transaction, Budget, Goal } from '../types';
+
+async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    try {
+        return await fetch(url, { ...options, signal: controller.signal });
+    } finally {
+        clearTimeout(id);
+    }
+}
+
+// Try server proxy first (more secure), fall back to direct Groq call.
+async function callAI(messages: Array<{ role: string; content: string }>, systemPrompt?: string): Promise<string> {
+    // Attempt server-side proxy
+    try {
+        const probeRes = await fetch(SERVER_PROXY_URL, { method: 'HEAD' }).catch(() => null);
+        if (probeRes && probeRes.status !== 404) {
+            const proxyRes = await fetchWithTimeout(SERVER_PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages, systemPrompt }),
+            });
+            if (proxyRes.ok) {
+                const data = await proxyRes.json();
+                if (data?.content) return data.content;
+            }
+            if (proxyRes.status === 429) throw new AIError('rate_limit', 'AI service is busy. Try again in a moment.');
+            if (proxyRes.status === 504) throw new AIError('timeout', 'AI request timed out. Try a shorter message.');
+            if (proxyRes.status === 503) throw new AIError('not_configured', 'AI assistant is not configured on this server.');
+        }
+    } catch (err) {
+        if (err instanceof AIError) throw err;
+        // proxy not available — fall through to direct call
+    }
+
+    // Direct Groq call fallback
+    if (!GROQ_API_KEY) {
+        throw new AIError('not_configured', 'AI assistant needs a GROQ_API_KEY. See .env.example for setup.');
+    }
+
+    const allMessages = [
+        ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
+        ...messages,
+    ];
+
+    let res: Response;
+    try {
+        res = await fetchWithTimeout(GROQ_API_URL, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: allMessages, temperature: 0.7, max_tokens: 800 }),
+        });
+    } catch (err: any) {
+        if (err?.name === 'AbortError') throw new AIError('timeout', 'AI request timed out. Try a shorter message.');
+        throw new AIError('network', 'Network error reaching AI service. Check your connection.');
+    }
+
+    if (!res.ok) {
+        if (res.status === 401) throw new AIError('auth', 'Invalid Groq API key. Check VITE_GROQ_API_KEY in .env.local.');
+        if (res.status === 429) throw new AIError('rate_limit', 'Rate limit hit. Please wait a moment and try again.');
+        throw new AIError('upstream', `AI service error (${res.status}). Try again shortly.`);
+    }
+
+    const data = await res.json();
+    const content = data?.choices?.[0]?.message?.content;
+    if (!content) throw new AIError('empty', 'AI returned an empty response. Try again.');
+    return content;
+}
+
+export class AIError extends Error {
+    constructor(public readonly code: 'not_configured' | 'auth' | 'rate_limit' | 'timeout' | 'network' | 'upstream' | 'empty', message: string) {
+        super(message);
+        this.name = 'AIError';
+    }
+}
 
 interface AIInsight {
     title: string;
@@ -91,50 +170,24 @@ Provide a JSON response with:
 
 Respond ONLY with valid JSON, no markdown or explanation.`;
 
-        const response = await fetch(GROQ_API_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${GROQ_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    { role: 'system', content: 'You are a helpful financial advisor. Always respond with valid JSON only.' },
-                    { role: 'user', content: prompt }
-                ],
-                temperature: 0.7,
-                max_tokens: 1000,
-            }),
-        });
+        const rawContent = await callAI(
+            [{ role: 'user', content: prompt }],
+            'You are a helpful financial advisor. Always respond with valid JSON only.'
+        );
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Groq API error:', response.status, errorText);
-            
-            if (response.status === 401) {
-                throw new Error('Invalid API key. Please check your VITE_GROQ_API_KEY.');
-            } else if (response.status === 429) {
-                throw new Error('Rate limit exceeded. Please try again later.');
-            }
-            
-            throw new Error(`Groq API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const content = data.choices[0]?.message?.content;
-
-        if (!content) {
-            throw new Error('Empty response from Groq API');
-        }
-
-        // Parse JSON response
-        let parsed;
+        // Parse JSON response — strip markdown code fences if present
+        const stripped = rawContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        let parsed: any;
         try {
-            parsed = JSON.parse(content);
-        } catch (parseError) {
-            console.error('Failed to parse AI response:', content);
-            throw new Error('Invalid response format from AI');
+            parsed = JSON.parse(stripped);
+        } catch {
+            // Try to extract JSON from the response
+            const match = stripped.match(/\{[\s\S]*\}/);
+            if (match) {
+                try { parsed = JSON.parse(match[0]); } catch { throw new Error('Could not parse AI response as JSON'); }
+            } else {
+                throw new Error('AI returned non-JSON response');
+            }
         }
 
         return {
