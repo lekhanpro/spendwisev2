@@ -310,10 +310,6 @@ export const InvestmentProvider: React.FC<InvestmentProviderProps> = ({ children
   const userId = appContext?.session?.user?.id as string | undefined;
   const liveMarketEnabled = isLiveMarketDataEnabled();
 
-  // Authenticated users start with empty state — no demo data.
-  // Guest users (userId === undefined) get demo data as a preview.
-  const emptyForAuth = <T,>(fallback: T): T => (userId ? ([] as unknown as T) : fallback);
-
   const [tick, setTick] = useState(0);
   const [market, setMarket] = useState(() => createMockMarketSnapshot(0));
   const [detailedSymbols, setDetailedSymbols] = useState<Record<string, true>>({});
@@ -321,15 +317,15 @@ export const InvestmentProvider: React.FC<InvestmentProviderProps> = ({ children
     readStorage(buildStorageKey(userId, 'profile'), defaultInvestorProfile)
   );
   const [watchlist, setWatchlist] = useState<string[]>(() =>
-    readArrayStorage(buildStorageKey(userId, 'watchlist'), emptyForAuth(DEFAULT_WATCHLIST))
+    readArrayStorage(buildStorageKey(userId, 'watchlist'), DEFAULT_WATCHLIST)
   );
   const [holdings, setHoldings] = useState<PortfolioHolding[]>(() =>
-    readArrayStorage(buildStorageKey(userId, 'holdings'), emptyForAuth(defaultHoldings))
+    readArrayStorage(buildStorageKey(userId, 'holdings'), [])
   );
   const [investmentGoals, setInvestmentGoals] = useState<InvestmentGoal[]>(() =>
-    readArrayStorage(buildStorageKey(userId, 'goals'), emptyForAuth(defaultInvestmentGoals))
+    readArrayStorage(buildStorageKey(userId, 'goals'), [])
   );
-  const [selectedStock, setSelectedStock] = useState(() => watchlist[0] ?? DEFAULT_WATCHLIST[0]);
+  const [selectedStock, setSelectedStock] = useState(() => DEFAULT_WATCHLIST[0]);
   const [selectedRange, setSelectedRange] = useState<'1D' | '1W' | '1M' | '3M' | '1Y' | '5Y'>('1M');
   const [comparisonSchemeIds, setComparisonSchemeIds] = useState<string[]>(() =>
     readArrayStorage(buildStorageKey(userId, 'comparisonSchemes'), ['ppf', 'nps', 'elss'])
@@ -339,11 +335,10 @@ export const InvestmentProvider: React.FC<InvestmentProviderProps> = ({ children
   );
 
   useEffect(() => {
-    const emptyFA = <T,>(fallback: T): T => (userId ? ([] as unknown as T) : fallback);
     setProfile(readStorage(buildStorageKey(userId, 'profile'), defaultInvestorProfile));
-    setWatchlist(readArrayStorage(buildStorageKey(userId, 'watchlist'), emptyFA(DEFAULT_WATCHLIST)));
-    setHoldings(readArrayStorage(buildStorageKey(userId, 'holdings'), emptyFA(defaultHoldings)));
-    setInvestmentGoals(readArrayStorage(buildStorageKey(userId, 'goals'), emptyFA(defaultInvestmentGoals)));
+    setWatchlist(readArrayStorage(buildStorageKey(userId, 'watchlist'), DEFAULT_WATCHLIST));
+    setHoldings(readArrayStorage(buildStorageKey(userId, 'holdings'), []));
+    setInvestmentGoals(readArrayStorage(buildStorageKey(userId, 'goals'), []));
     setComparisonSchemeIds(readArrayStorage(buildStorageKey(userId, 'comparisonSchemes'), ['ppf', 'nps', 'elss']));
     setNotificationPreferences(readStorage(buildStorageKey(userId, 'notificationPrefs'), defaultNotificationPreferences));
   }, [userId]);

@@ -12,7 +12,7 @@ import {
   subscribeToTransactions,
 } from '../lib/database';
 import { DEFAULT_CATEGORIES, SUPPORTED_CURRENCIES, generateId } from '../constants';
-import { AppContextType, Budget, Category, Currency, Goal, Transaction, UserSettings, ViewType } from '../types';
+import { AppContextType, AppNotification, Budget, Category, Currency, Goal, Transaction, UserSettings, ViewType } from '../types';
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -37,7 +37,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const categories = useMemo(() => [...DEFAULT_CATEGORIES, ...customCategories], [customCategories]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       setFirebaseUser(user);
       if (!user) {
         setTransactions([]);
@@ -227,37 +227,36 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return nextCategory;
   };
 
-  const updateCustomCategory = (updated: Category) => {
-    if (!updated.isCustom) return;
-    // Check for duplicate name (excluding itself)
-    const normalizedName = updated.name.trim().toLowerCase();
-    const duplicate = categories.find(
-      (c) => c.id !== updated.id && c.type === updated.type && c.name.trim().toLowerCase() === normalizedName
-    );
-    if (duplicate) return; // silently reject duplicates
-    const nextCustomCategories = customCategories.map((c) => (c.id === updated.id ? { ...updated, name: updated.name.trim() } : c));
+  const removeCustomCategory = (id: string) => {
+    const nextCustomCategories = customCategories.filter((category) => category.id !== id);
     setCustomCategories(nextCustomCategories);
     syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
   };
 
-  const archiveCustomCategory = (id: string) => {
-    const nextCustomCategories = customCategories.map((c) => (c.id === id ? { ...c, archived: true } : c));
+  const updateCustomCategory = (id: string, updates: Partial<Omit<Category, 'id'>>) => {
+    const nextCustomCategories = customCategories.map((cat) =>
+      cat.id === id ? { ...cat, ...updates } : cat
+    );
     setCustomCategories(nextCustomCategories);
     syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
   };
 
-  const mergeCustomCategories = (fromId: string, toId: string) => {
-    // Move all transactions from `fromId` category to `toId`
-    const fromCat = categories.find((c) => c.id === fromId);
-    const toCat = categories.find((c) => c.id === toId);
-    if (!fromCat || !toCat) return;
-    const updatedTx = transactions.map((t) =>
-      t.category === fromCat.name ? { ...t, category: toCat.name } : t
+  /** Reassign all transactions + budgets from sourceId to targetId, then delete source category */
+  const mergeCategories = (sourceId: string, targetId: string) => {
+    if (sourceId === targetId) return;
+    const rewrittenTx = transactions.map((t) =>
+      t.category === sourceId ? { ...t, category: targetId } : t
     );
-    setTransactions(updatedTx);
-    syncTransactions(updatedTx);
-    // Archive the merged-from category
-    archiveCustomCategory(fromId);
+    const rewrittenBudgets = budgets.map((b) =>
+      b.category === sourceId ? { ...b, category: targetId } : b
+    );
+    setTransactions(rewrittenTx);
+    setBudgets(rewrittenBudgets);
+    syncTransactions(rewrittenTx);
+    syncBudgets(rewrittenBudgets);
+    const nextCustomCategories = customCategories.filter((c) => c.id !== sourceId);
+    setCustomCategories(nextCustomCategories);
+    syncSettings({ darkMode, currency, customCategories: nextCustomCategories });
   };
 
   const resetData = () => {
@@ -301,6 +300,21 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       currency: currency.code,
     }).format(amount);
 
+  const [appNotifications, setAppNotifications] = useState<AppNotification[]>([]);
+
+  const unreadCount = appNotifications.filter(n => !n.read).length;
+
+  const addNotification = useCallback((n: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => {
+    setAppNotifications(prev => [
+      { ...n, id: generateId(), timestamp: Date.now(), read: false },
+      ...prev.slice(0, 49),
+    ]);
+  }, []);
+
+  const markNotificationsRead = useCallback(() => {
+    setAppNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  }, []);
+
   const contextValue: AppContextType = {
     transactions,
     budgets,
@@ -340,10 +354,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setCurrency: handleSetCurrency,
     formatCurrency,
     addCustomCategory,
-    updateCustomCategory,
     removeCustomCategory,
-    archiveCustomCategory,
-    mergeCustomCategories,
+    updateCustomCategory,
+    mergeCategories,
+    notifications: appNotifications,
+    unreadCount,
+    addNotification,
+    markNotificationsRead,
   };
 
   if (isLoading) {

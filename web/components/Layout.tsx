@@ -84,20 +84,20 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <NotificationPanel isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-gray-200 dark:border-zinc-800 px-3 py-2 safe-area-inset-bottom shadow-lg">
-        <div className="grid grid-cols-6 gap-1 max-w-7xl mx-auto">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-gray-200 dark:border-zinc-800 px-2 py-1.5 safe-area-inset-bottom shadow-lg">
+        <div className="grid grid-cols-6 gap-0.5 max-w-7xl mx-auto">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveView(item.id)}
-              className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+              className={`flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl transition-all min-w-0 ${
                 activeView === item.id
                   ? 'text-blue-600 dark:text-white bg-blue-50 dark:bg-zinc-800'
                   : 'text-gray-600 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <item.Icon />
-              <span className="text-[11px] font-medium">{item.label}</span>
+              <span className="text-[10px] font-medium truncate w-full text-center leading-tight hidden xs:block sm:block">{item.label}</span>
             </button>
           ))}
         </div>
