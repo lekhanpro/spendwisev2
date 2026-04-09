@@ -71,3 +71,16 @@ apply_*.py
 merge_*.py
 
 .vercel
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.lot
+*.lof
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.run.xml
+*.bbl
+*.blg
