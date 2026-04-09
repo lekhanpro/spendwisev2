@@ -1,0 +1,106 @@
+\contentsline {chapter}{Abstract}{ii}{chapter*.1}%
+\contentsline {chapter}{Abbreviations}{viii}{chapter*.2}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Background of the Study}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Need for AI in Personal Finance Support}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Limitations of Conventional Expense Trackers}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Explainability and Privacy as Core Requirements}{2}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Research Direction of the Proposed Work}{3}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Objectives of the Proposed Project}{3}{section.1.6}%
+\contentsline {section}{\numberline {1.7}Expected Contributions}{4}{section.1.7}%
+\contentsline {chapter}{\numberline {2}Problem Statement and Motivation}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Problem Statement}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Manual Tracking and Cognitive Burden}{5}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Lack of Intelligent Guidance}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Low Financial Literacy and Decision Difficulty}{6}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Trust Deficit in Black-Box AI}{6}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Privacy Concerns in Intelligent Finance Applications}{7}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Motivation for the Proposed System}{7}{section.2.7}%
+\contentsline {chapter}{\numberline {3}Literature Review}{8}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Overview of Relevant Research}{8}{section.3.1}%
+\contentsline {section}{\numberline {3.2}AI in Personal Finance Management}{8}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Expense Tracking and Budgeting Systems}{9}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Explainable AI in Finance}{9}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Privacy-Preserving Intelligent Applications}{9}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Personalized Recommendation and Trust}{10}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Comparative Review of Selected Studies}{10}{section.3.7}%
+\contentsline {section}{\numberline {3.8}Research Gap}{12}{section.3.8}%
+\contentsline {chapter}{\numberline {4}Proposed System and Methodology}{14}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Overview of the Proposed System}{14}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Major Modules of the Proposed System}{14}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}User Authentication and Profile Module}{14}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Transaction Entry and Categorization Module}{15}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Budget Allocation Module}{15}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Savings Goal Management Module}{15}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}Financial Health Score Module}{15}{subsection.4.2.5}%
+\contentsline {subsection}{\numberline {4.2.6}AI-Based Recommendation Module}{16}{subsection.4.2.6}%
+\contentsline {subsection}{\numberline {4.2.7}Explainability Module}{16}{subsection.4.2.7}%
+\contentsline {subsection}{\numberline {4.2.8}Alert and Reminder Engine}{16}{subsection.4.2.8}%
+\contentsline {subsection}{\numberline {4.2.9}Analytics Dashboard Module}{16}{subsection.4.2.9}%
+\contentsline {subsection}{\numberline {4.2.10}Secure Data Handling and Privacy Layer}{16}{subsection.4.2.10}%
+\contentsline {section}{\numberline {4.3}Overall Methodology}{17}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Proposed Workflow}{17}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Data Flow Explanation}{17}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Expected Research Value of the Methodology}{18}{section.4.6}%
+\contentsline {chapter}{\numberline {5}System Design}{19}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Overall Architecture}{19}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Module Decomposition}{20}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Use Case Diagram Description}{21}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Activity Flow Description}{22}{section.5.4}%
+\contentsline {section}{\numberline {5.5}ER Diagram Description}{23}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Database Design}{23}{section.5.6}%
+\contentsline {section}{\numberline {5.7}UI Design Considerations}{24}{section.5.7}%
+\contentsline {chapter}{\numberline {6}Proposed Algorithms / AI Model Logic}{26}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Overview of the Analytical Intelligence Layer}{26}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Spending Pattern Analysis}{26}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Budget Risk Estimation}{27}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Anomaly Detection for Overspending}{27}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Savings Recommendation Logic}{28}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Financial Health Score}{28}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Explainable Recommendation Generation}{29}{section.6.7}%
+\contentsline {section}{\numberline {6.8}Proposed Pseudocode}{30}{section.6.8}%
+\contentsline {section}{\numberline {6.9}Why the Proposed Logic is Academically Suitable}{30}{section.6.9}%
+\contentsline {chapter}{\numberline {7}Implementation Plan}{32}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Proposed Software Stack}{32}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Implementation Philosophy}{32}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Phase-Wise Development Plan}{33}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Phase 1: Requirement Analysis}{33}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Phase 2: UI/UX and Database Design}{33}{subsection.7.3.2}%
+\contentsline {subsection}{\numberline {7.3.3}Phase 3: Core Finance Modules}{33}{subsection.7.3.3}%
+\contentsline {subsection}{\numberline {7.3.4}Phase 4: AI and Explainability Integration}{33}{subsection.7.3.4}%
+\contentsline {subsection}{\numberline {7.3.5}Phase 5: Testing and Validation}{33}{subsection.7.3.5}%
+\contentsline {subsection}{\numberline {7.3.6}Phase 6: Deployment}{34}{subsection.7.3.6}%
+\contentsline {section}{\numberline {7.4}Feasibility Perspective}{34}{section.7.4}%
+\contentsline {chapter}{\numberline {8}Testing and Evaluation Plan}{35}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Purpose of Evaluation}{35}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Functional Testing}{35}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Performance Testing}{35}{section.8.3}%
+\contentsline {section}{\numberline {8.4}AI and Analytics Evaluation}{35}{section.8.4}%
+\contentsline {section}{\numberline {8.5}Interpretability and Trust Evaluation}{36}{section.8.5}%
+\contentsline {section}{\numberline {8.6}Privacy and Security Checks}{36}{section.8.6}%
+\contentsline {section}{\numberline {8.7}Proposed Metrics}{37}{section.8.7}%
+\contentsline {section}{\numberline {8.8}Pilot User Study Plan}{37}{section.8.8}%
+\contentsline {section}{\numberline {8.9}Expected Validity Considerations}{38}{section.8.9}%
+\contentsline {chapter}{\numberline {9}Expected Results and Discussion}{39}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Nature of Expected Results}{39}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Expected User-Level Outcomes}{39}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Expected Technical Outcomes}{39}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Expected Discussion Points}{40}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Sample Placeholder Result Tables}{40}{section.9.5}%
+\contentsline {section}{\numberline {9.6}Interpretation of Expected Significance}{41}{section.9.6}%
+\contentsline {chapter}{\numberline {10}Advantages, Limitations, and Future Scope}{42}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Advantages of the Proposed System}{42}{section.10.1}%
+\contentsline {subsection}{\numberline {10.1.1}Personalization}{42}{subsection.10.1.1}%
+\contentsline {subsection}{\numberline {10.1.2}Explainability}{42}{subsection.10.1.2}%
+\contentsline {subsection}{\numberline {10.1.3}Accessibility}{42}{subsection.10.1.3}%
+\contentsline {subsection}{\numberline {10.1.4}Practical Budgeting Support}{42}{subsection.10.1.4}%
+\contentsline {subsection}{\numberline {10.1.5}Privacy Awareness}{42}{subsection.10.1.5}%
+\contentsline {subsection}{\numberline {10.1.6}Educational Value}{43}{subsection.10.1.6}%
+\contentsline {section}{\numberline {10.2}Limitations of the Proposed System}{43}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}Dependence on Input Quality}{43}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}Cold Start Problem}{43}{subsection.10.2.2}%
+\contentsline {subsection}{\numberline {10.2.3}Generalization Limits}{43}{subsection.10.2.3}%
+\contentsline {subsection}{\numberline {10.2.4}Privacy-Computation Trade-Off}{43}{subsection.10.2.4}%
+\contentsline {subsection}{\numberline {10.2.5}Interpretability-Complexity Trade-Off}{43}{subsection.10.2.5}%
+\contentsline {section}{\numberline {10.3}Future Scope}{43}{section.10.3}%
+\contentsline {chapter}{Conclusion}{45}{chapter*.16}%

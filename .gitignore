@@ -69,3 +69,5 @@ APPLY_*.md
 *.bat
 apply_*.py
 merge_*.py
+
+.vercel
