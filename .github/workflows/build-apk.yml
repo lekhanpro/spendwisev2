@@ -1,21 +1,30 @@
-name: Build and Release APK
+name: Build & Release Android (Signed AAB + APK)
 
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'versionName (e.g. 1.0.0). Defaults to tag name without leading v.'
+        required: false
+        default: ''
+      publish_to_play:
+        description: 'Upload AAB to Play Console internal track?'
+        required: false
+        default: 'false'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     defaults:
       run:
         working-directory: web
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,7 +36,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: web/package-lock.json
 
-      - name: Setup Java
+      - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -36,55 +45,107 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Compute version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            RAW="${GITHUB_REF#refs/tags/}"
+          else
+            RAW="${{ github.event.inputs.version_name }}"
+          fi
+          # Strip a leading 'v' if present.
+          VERSION_NAME="${RAW#v}"
+          if [[ -z "$VERSION_NAME" ]]; then
+            VERSION_NAME="0.0.0-${GITHUB_RUN_NUMBER}"
+          fi
+          # versionCode must be a monotonically increasing integer for Play.
+          # Use the workflow run number as a safe baseline.
+          VERSION_CODE="${GITHUB_RUN_NUMBER}"
+          echo "version_name=${VERSION_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version_code=${VERSION_CODE}" >> "$GITHUB_OUTPUT"
+          echo "Building versionName=${VERSION_NAME} versionCode=${VERSION_CODE}"
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build web app
         run: npm run build
 
-      - name: Remove docs from dist (if any)
+      - name: Strip docs from dist (if any)
         run: rm -rf dist/docs 2>/dev/null || true
 
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build Debug APK
+      - name: Decode upload keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          cd android
+          if [[ -z "${KEYSTORE_BASE64}" ]]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set. See web/android/PLAY_STORE_RELEASE.md"
+            exit 1
+          fi
+          echo "${KEYSTORE_BASE64}" | base64 -d > "${RUNNER_TEMP}/spendwise-upload.jks"
+          echo "KEYSTORE_PATH=${RUNNER_TEMP}/spendwise-upload.jks" >> "$GITHUB_ENV"
+
+      - name: Build signed AAB and APK
+        working-directory: web/android
+        env:
+          SPENDWISE_KEYSTORE_PATH: ${{ env.KEYSTORE_PATH }}
+          SPENDWISE_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          SPENDWISE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          SPENDWISE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          SPENDWISE_VERSION_NAME: ${{ steps.version.outputs.version_name }}
+          SPENDWISE_VERSION_CODE: ${{ steps.version.outputs.version_code }}
+        run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew bundleRelease assembleRelease
 
-      - name: Copy APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk SpendWise-${{ github.ref_name }}.apk
+      - name: Stage release artifacts
+        run: |
+          mkdir -p release-artifacts
+          cp android/app/build/outputs/bundle/release/app-release.aab \
+             release-artifacts/SpendWise-${{ steps.version.outputs.version_name }}.aab
+          cp android/app/build/outputs/apk/release/app-release.apk \
+             release-artifacts/SpendWise-${{ steps.version.outputs.version_name }}.apk
 
-      - name: Upload APK artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: SpendWise-APK
-          path: SpendWise-*.apk
+          name: SpendWise-Android-${{ steps.version.outputs.version_name }}
+          path: web/release-artifacts/*
 
-      - name: Create Release
+      - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: SpendWise-*.apk
+          files: |
+            web/release-artifacts/SpendWise-${{ steps.version.outputs.version_name }}.aab
+            web/release-artifacts/SpendWise-${{ steps.version.outputs.version_name }}.apk
           generate_release_notes: true
           name: SpendWise ${{ github.ref_name }}
           body: |
-            ## 📱 SpendWise Android App
-            
-            **Download and install the APK on your Android device.**
-            
-            ### Features:
-            - 💰 Track income & expenses
-            - 📊 Budget management
-            - 🎯 Savings goals
-            - 📈 Financial reports
-            - 🔔 Notifications & reminders
-            
-            ### Installation:
-            1. Download the APK file
-            2. Enable "Install from unknown sources" in Settings
-            3. Open the APK file to install
+            ## SpendWise Android (signed release)
+
+            Wraps the live web app at https://spendwisev2.vercel.app for Android.
+
+            - `*.aab` — upload to Google Play Console.
+            - `*.apk` — sideload / direct install.
+
+            ### Install (APK):
+            1. Download the APK.
+            2. Enable "Install from unknown sources" for your browser.
+            3. Open the APK to install.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to Play Console (internal track)
+        if: ${{ startsWith(github.ref, 'refs/tags/') || github.event.inputs.publish_to_play == 'true' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.spendwise.app
+          releaseFiles: web/release-artifacts/SpendWise-${{ steps.version.outputs.version_name }}.aab
+          track: internal
+          status: completed
+          mappingFile: web/android/app/build/outputs/mapping/release/mapping.txt

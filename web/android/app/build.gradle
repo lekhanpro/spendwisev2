@@ -1,5 +1,25 @@
 apply plugin: 'com.android.application'
 
+// --- Release signing ---------------------------------------------------------
+// Reads keystore info from one of:
+//   1. keystore.properties (file in this module, gitignored)
+//   2. Environment variables (used by CI)
+//        SPENDWISE_KEYSTORE_PATH, SPENDWISE_KEYSTORE_PASSWORD,
+//        SPENDWISE_KEY_ALIAS, SPENDWISE_KEY_PASSWORD
+// If neither is present, release falls back to debug signing so local
+// `assembleRelease` still succeeds (do NOT publish such a build).
+def keystorePropertiesFile = rootProject.file("app/keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
+def releaseStoreFile = keystoreProperties['storeFile'] ?: System.getenv('SPENDWISE_KEYSTORE_PATH')
+def releaseStorePassword = keystoreProperties['storePassword'] ?: System.getenv('SPENDWISE_KEYSTORE_PASSWORD')
+def releaseKeyAlias = keystoreProperties['keyAlias'] ?: System.getenv('SPENDWISE_KEY_ALIAS')
+def releaseKeyPassword = keystoreProperties['keyPassword'] ?: System.getenv('SPENDWISE_KEY_PASSWORD')
+def hasReleaseSigning = releaseStoreFile && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
+
 android {
     namespace = "com.spendwise.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +27,8 @@ android {
         applicationId "com.spendwise.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode (System.getenv('SPENDWISE_VERSION_CODE') ?: '1') as Integer
+        versionName System.getenv('SPENDWISE_VERSION_NAME') ?: '1.0.0'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +36,26 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (hasReleaseSigning) {
+            release {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            } else {
+                logger.warn("WARNING: No release keystore configured. Release build will be signed with the debug key and is NOT acceptable for Play Store.")
+                signingConfig signingConfigs.debug
+            }
         }
     }
 }
