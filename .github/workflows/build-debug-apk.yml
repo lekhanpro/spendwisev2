@@ -46,11 +46,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build web app
-        run: npm run build
-
-      - name: Strip docs from dist (if any)
-        run: rm -rf dist/docs 2>/dev/null || true
+      # Note: we don't run `npm run build` because the Capacitor wrapper loads
+      # the live web app from https://spendwisev2.vercel.app — nothing local
+      # is shipped inside the APK. We just need a non-empty dist/ folder for
+      # `npx cap sync` to be happy.
+      - name: Create placeholder dist
+        run: |
+          mkdir -p dist
+          echo '<!doctype html><meta charset="utf-8"><title>SpendWise</title>' > dist/index.html
 
       - name: Sync Capacitor
         run: npx cap sync android
